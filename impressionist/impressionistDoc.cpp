@@ -7,7 +7,7 @@
 
 
 #include <FL/fl_ask.H>
-
+#include <math.h>
 #include <algorithm>
 
 #include "impressionistDoc.h"
@@ -148,6 +148,11 @@ int ImpressionistDoc::loadImage(char *iname)
 	delete [] m_ucPreviewBackup;
 
 	m_ucBitmap		= data;
+
+  gradMag = new float [width*height];
+  gradDir = new float [width*height];
+
+  fillGradBuffers(m_ucBitmap, width, height, gradMag, gradDir);
 
 	// allocate space for draw view
 	m_ucPainting		= new unsigned char [width*height*3];
@@ -329,6 +334,43 @@ GLubyte* ImpressionistDoc::GetOriginalPixel( int x, int y )
 GLubyte* ImpressionistDoc::GetOriginalPixel( const Point p )
 {
 	return GetOriginalPixel( p.x, p.y );
+}
+
+
+void ImpressionistDoc::fillGradBuffers(
+    unsigned char* src, int w, int h, float* magBuf, float* dirBuf) {
+  for (int x = 0; x < w; x++) {
+    for (int y = 0; y < h; y++) {
+      float xdiff, ydiff;
+      for (int o = 0; o < 3; o++) {
+        float dx, dy;
+        if (x == w - 1 && y == 0) {
+          //bottom right pixel, 0
+          dx = 0;
+          dy = 0;
+        } else if (x == w - 1) { 
+          dx = 0;
+          dy = src[3 * ((y - 1) * w + x) + o] - src[3 * (y * w + x) + o]; 
+        } else if (y == 0) {
+          dx = src[3 * (y * w + x + 1) + o] - src[3 * (y * w + x) + o];
+          dy = 0;
+        } else {
+          dx = src[3 * (y * w + x + 1) + o] - src[3 * (y * w + x) + o];
+          dy = src[3 * ((y - 1) * w + x) + o] - src[3 * (y * w + x) + o]; 
+        }
+        xdiff += dx;
+        ydiff += dy;
+      }
+      magBuf[y * w + x] = sqrt(xdiff*xdiff + ydiff*ydiff);
+      float radians = atan(ydiff / xdiff);
+      if (radians > M_PI * 2) {
+        radians = M_PI * 2;
+      } else if (radians < -M_PI * 2) {
+        radians = -M_PI * 2;
+      }
+      dirBuf[y * w + x] = radians;
+    }
+  }
 }
 
 

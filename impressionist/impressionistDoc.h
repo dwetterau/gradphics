@@ -45,6 +45,7 @@ public:
   int getAngle();
   void setAngle(int angle);
   int getAngleChoice();
+  void fillGradBuffers(unsigned char* src, int w, int h, float* magBuf, float* dirBuf);
 
 // Attributes
 public:
@@ -57,6 +58,9 @@ public:
 	// Bitmaps for original image and painting.
 	unsigned char*	m_ucBitmap;
 	unsigned char*	m_ucPainting;
+	
+  float* gradMag;
+	float* gradDir;
 
 	// Used by the filtering code so that we can
 	// preview filters before applying.
@@ -79,7 +83,7 @@ public:
 	GLubyte* GetOriginalPixel( int x, int y );   
 	// Get the color of the original picture at the specified point	
 	GLubyte* GetOriginalPixel( const Point p );
-
+  
 
 
 private:
