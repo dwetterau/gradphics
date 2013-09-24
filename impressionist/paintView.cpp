@@ -111,11 +111,16 @@ void PaintView::draw()
 		{
 		case LEFT_MOUSE_DOWN:
 			m_pDoc->m_pCurrentBrush->BrushBegin( source, target );
-			break;
+			m_pDoc->m_pUI->m_origView->drawCross(target.x, target.y);
+      break;
 		case LEFT_MOUSE_DRAG:
-			m_pDoc->m_pCurrentBrush->BrushMove( source, target );
+			m_pDoc->m_pUI->m_origView->removeCross();
+      m_pDoc->m_pCurrentBrush->BrushMove( source, target );
+			m_pDoc->m_pUI->m_origView->drawCross(target.x, target.y);
 			break;
 		case LEFT_MOUSE_UP:
+			m_pDoc->m_pUI->m_origView->removeCross();
+			m_pDoc->m_pUI->m_origView->refresh();
 			m_pDoc->m_pCurrentBrush->BrushEnd( source, target );
 
 			SaveCurrentContent();

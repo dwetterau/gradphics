@@ -29,6 +29,9 @@ public:
 
 	void resizeWindow(int width, int height);
 
+  void drawCross(int x, int y);
+  void removeCross();
+
 	ImpressionistDoc*	m_pDoc;
 
 private:
