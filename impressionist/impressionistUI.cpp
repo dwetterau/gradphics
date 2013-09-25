@@ -374,7 +374,11 @@ void ImpressionistUI::cb_KColSlides(Fl_Widget* o, void* v)
 {
 	((ImpressionistUI*)(o->user_data()))->setKCol(int(((Fl_Slider *)o)->value()));
 }
-
+void ImpressionistUI::cb_threshSlides(Fl_Widget* o, void* v)
+{
+	ImpressionistDoc * pDoc = ((ImpressionistUI*)(o->user_data()))->getDocument();
+	pDoc->thresh = (float(((Fl_Slider *)o)->value()));
+}
 
 //---------------------------------- per instance functions --------------------------------------
 
@@ -728,8 +732,18 @@ ImpressionistUI::ImpressionistUI() {
     Fl_Light_Button* clipEdges = new Fl_Light_Button(10,200,150,25,"&Clip Edges");
 	  clipEdges->user_data((void*)(this));   // record self to be used by static callback functions
 	  clipEdges->callback(cb_clipEdges);
-
-
+    threshSlider = new Fl_Value_Slider(180, 200, 130, 25, "Edge Threshold");
+  	threshSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		threshSlider->type(FL_HOR_NICE_SLIDER);
+        threshSlider->labelfont(FL_COURIER);
+        threshSlider->labelsize(12);
+		threshSlider->minimum(0);
+		threshSlider->maximum(255);
+		threshSlider->step(1);
+		threshSlider->value(50);
+		threshSlider->align(FL_ALIGN_RIGHT);
+		threshSlider->callback(cb_threshSlides);
+    
     m_KRowSlider = new Fl_Value_Slider(10, 250, 300, 20, "Kernel Rows");
 		m_KRowSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_KRowSlider->type(FL_HOR_NICE_SLIDER);

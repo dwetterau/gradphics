@@ -50,6 +50,7 @@ public:
 	Fl_Slider*			m_AngleSlider;
 	Fl_Slider*			m_KRowSlider;
 	Fl_Slider*			m_KColSlider;
+	Fl_Slider*			threshSlider;
   
   Fl_Button*      m_ClearCanvasButton;
   Fl_Light_Button* clipEdges;
@@ -149,6 +150,7 @@ private:
 	static void	cb_angleSlides(Fl_Widget* o, void* v);
 	static void	cb_KRowSlides(Fl_Widget* o, void* v);
 	static void	cb_KColSlides(Fl_Widget* o, void* v);
+	static void	cb_threshSlides(Fl_Widget* o, void* v);
 	static void	cb_kernel_source(Fl_Widget* o, void* v);
 	static void	cb_kernel_paint(Fl_Widget* o, void* v);
   static void cb_clipEdges(Fl_Widget* o, void* v);
