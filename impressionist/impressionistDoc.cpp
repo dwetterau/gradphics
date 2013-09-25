@@ -252,13 +252,6 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
 		double divisor, double offset )
 {
 	// This needs to be implemented for image filtering to work.
-  float kernel_sum = 0;
-  for (int r = 0; r < knlHeight; r++) {
-    for (int c = 0; c < knlWidth; c++) {
-      kernel_sum += filterKernel[r][c];
-    }
-  }
-  kernel_sum = kernel_sum == 0 ? 1: kernel_sum;
   for (int r = 0; r < srcBufferHeight; r++) {
     for (int c = 0; c < srcBufferWidth; c++) {
       int r_total_sum = 0;
@@ -273,9 +266,9 @@ void ImpressionistDoc::applyFilter( const unsigned char* sourceBuffer,
           b_total_sum += filterKernel[kr][kc] * int(getColor(sourceBuffer, r + r_offset + kr, c + c_offset + kc, srcBufferWidth, srcBufferHeight, 2));
         }
       }
-      r_total_sum = bound(int(r_total_sum / kernel_sum / divisor + offset));
-      g_total_sum = bound(int(g_total_sum / kernel_sum / divisor + offset));
-      b_total_sum = bound(int(b_total_sum / kernel_sum / divisor + offset));
+      r_total_sum = bound(int(r_total_sum / divisor + offset));
+      g_total_sum = bound(int(g_total_sum / divisor + offset));
+      b_total_sum = bound(int(b_total_sum / divisor + offset));
       destBuffer[3 * (r * srcBufferWidth + c) + 0] = r_total_sum;
       destBuffer[3 * (r * srcBufferWidth + c) + 1] = g_total_sum;
       destBuffer[3 * (r * srcBufferWidth + c) + 2] = b_total_sum;
@@ -355,12 +348,23 @@ GLubyte* ImpressionistDoc::GetOriginalPixel( const Point p )
 
 void ImpressionistDoc::fillGradBuffers(
     const unsigned char* src, int w, int h, float* magBuf, float* dirBuf) {
+  unsigned char* smoothed = new unsigned char [w * h * 3];
+  int ks = 5;
+  int ** kernel = new int* [ks];
+  for (int r = 0; r < ks; r++) {
+    kernel[r] = new int [ks];
+    for (int c = 0; c < ks; c++) {
+     kernel[r][c] = 1;
+    }
+  }
+  applyFilter(src, w, h, smoothed, kernel, ks, ks, float(ks * ks), 0.0); 
+  const unsigned char* const_smoothed = (const unsigned char*) smoothed;
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
       float xdiff = 0, ydiff = 0;
       for (int o = 0; o < 3; o++) {
-        float dx = getColor(src, y, x + 1, w, h, o) - getColor(src, y, x - 1, w, h, o);
-        float dy = getColor(src, y + 1, x, w, h, o) - getColor(src, y - 1, x, w, h, o);
+        float dx = getColor(const_smoothed, y, x + 1, w, h, o) - getColor(const_smoothed, y, x - 1, w, h, o);
+        float dy = getColor(const_smoothed, y + 1, x, w, h, o) - getColor(const_smoothed, y - 1, x, w, h, o);
         xdiff += dx;
         ydiff += dy;
       }
