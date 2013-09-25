@@ -604,10 +604,11 @@ Fl_Menu_Item ImpressionistUI::brushTypeMenu[NUM_BRUSH_TYPE+1] = {
 };
 
 // Brush choice menu definition
-Fl_Menu_Item ImpressionistUI::angleChoiceMenu[4] = {
+Fl_Menu_Item ImpressionistUI::angleChoiceMenu[5] = {
   {"Slider",			FL_ALT+'p', (Fl_Callback *)ImpressionistUI::cb_angleChoice, (void *)0},
   {"Right click",				FL_ALT+'l', (Fl_Callback *)ImpressionistUI::cb_angleChoice, (void *)1},
   {"Paint direction",			FL_ALT+'c', (Fl_Callback *)ImpressionistUI::cb_angleChoice, (void *)2},
+  {"Gradient direction",			FL_ALT+'g', (Fl_Callback *)ImpressionistUI::cb_angleChoice, (void *)3},
   {0}
 };
 

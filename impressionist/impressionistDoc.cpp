@@ -338,29 +338,18 @@ GLubyte* ImpressionistDoc::GetOriginalPixel( const Point p )
 
 
 void ImpressionistDoc::fillGradBuffers(
-    unsigned char* src, int w, int h, float* magBuf, float* dirBuf) {
+    const unsigned char* src, int w, int h, float* magBuf, float* dirBuf) {
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
-      float xdiff, ydiff;
+      float xdiff = 0, ydiff = 0;
       for (int o = 0; o < 3; o++) {
-        float dx, dy;
-        if (x == w - 1 && y == 0) {
-          //bottom right pixel, 0
-          dx = 0;
-          dy = 0;
-        } else if (x == w - 1) { 
-          dx = 0;
-          dy = src[3 * ((y - 1) * w + x) + o] - src[3 * (y * w + x) + o]; 
-        } else if (y == 0) {
-          dx = src[3 * (y * w + x + 1) + o] - src[3 * (y * w + x) + o];
-          dy = 0;
-        } else {
-          dx = src[3 * (y * w + x + 1) + o] - src[3 * (y * w + x) + o];
-          dy = src[3 * ((y - 1) * w + x) + o] - src[3 * (y * w + x) + o]; 
-        }
+        float dx = getColor(src, y, x + 1, w, h, o) - getColor(src, y, x - 1, w, h, o);
+        float dy = getColor(src, y + 1, x, w, h, o) - getColor(src, y - 1, x, w, h, o);
         xdiff += dx;
         ydiff += dy;
       }
+      xdiff /= 3.0;
+      ydiff /= 3.0;
       magBuf[y * w + x] = sqrt(xdiff*xdiff + ydiff*ydiff);
       float radians = atan(ydiff / xdiff);
       if (radians > M_PI * 2) {
