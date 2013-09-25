@@ -368,11 +368,31 @@ void ImpressionistDoc::fillGradBuffers(
     for (int y = 0; y < h; y++) {
       float xdiff = 0, ydiff = 0, xdiffm = 0, ydiffm = 0;
       for (int o = 0; o < 3; o++) {
-        xdiff += getColor(const_smoothed, y, x + 1, w, h, o) - getColor(const_smoothed, y, x - 1, w, h, o);
-        ydiff += getColor(const_smoothed, y + 1, x, w, h, o) - getColor(const_smoothed, y - 1, x, w, h, o);
+        xdiff += 2 * getColor(const_smoothed, y, x + 1, w, h, o) 
+            - 2 * getColor(const_smoothed, y, x - 1, w, h, o) 
+            + getColor(const_smoothed, y + 1, x + 1, w, h, o) 
+            + getColor(const_smoothed, y - 1, x + 1, w, h, o)
+            - getColor(const_smoothed, y + 1, x - 1, w, h, o)
+            - getColor(const_smoothed, y - 1, x - 1, w, h, o);
+        ydiff += 2 * getColor(const_smoothed, y + 1, x, w, h, o) 
+            - 2 * getColor(const_smoothed, y - 1, x, w, h, o)
+            + getColor(const_smoothed, y + 1, x - 1, w, h, o)
+            + getColor(const_smoothed, y + 1, x + 1, w, h, o)
+            - getColor(const_smoothed, y - 1, x - 1, w, h, o)
+            - getColor(const_smoothed, y - 1, x + 1, w, h, o);
         
-        xdiffm += getColor(src, y, x + 1, w, h, o) - getColor(src, y, x - 1, w, h, o);
-        ydiffm += getColor(src, y + 1, x, w, h, o) - getColor(src, y - 1, x, w, h, o);
+        xdiffm += 2 * getColor(src, y, x + 1, w, h, o) 
+            - 2 * getColor(src, y, x - 1, w, h, o) 
+            + getColor(src, y + 1, x + 1, w, h, o) 
+            + getColor(src, y - 1, x + 1, w, h, o)
+            - getColor(src, y + 1, x - 1, w, h, o)
+            - getColor(src, y - 1, x - 1, w, h, o);
+        ydiffm += 2 * getColor(src, y + 1, x, w, h, o) 
+            - 2 * getColor(src, y - 1, x, w, h, o)
+            + getColor(src, y + 1, x - 1, w, h, o)
+            + getColor(src, y + 1, x + 1, w, h, o)
+            - getColor(src, y - 1, x - 1, w, h, o)
+            - getColor(src, y - 1, x + 1, w, h, o);
       }
       xdiff /= 3.0;
       ydiff /= 3.0;
