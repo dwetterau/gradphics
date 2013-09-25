@@ -366,16 +366,19 @@ void ImpressionistDoc::fillGradBuffers(
   const unsigned char* const_smoothed = (const unsigned char*) smoothed;
   for (int x = 0; x < w; x++) {
     for (int y = 0; y < h; y++) {
-      float xdiff = 0, ydiff = 0;
+      float xdiff = 0, ydiff = 0, xdiffm = 0, ydiffm = 0;
       for (int o = 0; o < 3; o++) {
-        float dx = getColor(const_smoothed, y, x + 1, w, h, o) - getColor(const_smoothed, y, x - 1, w, h, o);
-        float dy = getColor(const_smoothed, y + 1, x, w, h, o) - getColor(const_smoothed, y - 1, x, w, h, o);
-        xdiff += dx;
-        ydiff += dy;
+        xdiff += getColor(const_smoothed, y, x + 1, w, h, o) - getColor(const_smoothed, y, x - 1, w, h, o);
+        ydiff += getColor(const_smoothed, y + 1, x, w, h, o) - getColor(const_smoothed, y - 1, x, w, h, o);
+        
+        xdiffm += getColor(src, y, x + 1, w, h, o) - getColor(src, y, x - 1, w, h, o);
+        ydiffm += getColor(src, y + 1, x, w, h, o) - getColor(src, y - 1, x, w, h, o);
       }
       xdiff /= 3.0;
       ydiff /= 3.0;
-      magBuf[y * w + x] = sqrt(xdiff*xdiff + ydiff*ydiff);
+      xdiffm /= 3.0;
+      ydiffm /= 3.0;
+      magBuf[y * w + x] = sqrt(xdiffm*xdiffm + ydiffm*ydiffm);
       float radians = atan(ydiff / xdiff);
       if (radians > M_PI * 2) {
         radians = M_PI * 2;
