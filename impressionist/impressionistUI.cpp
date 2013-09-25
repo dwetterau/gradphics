@@ -291,6 +291,12 @@ void ImpressionistUI::cb_clear_canvas_button(Fl_Widget* o, void* v)
 	pDoc->clearCanvas();
 }
 
+void ImpressionistUI::cb_clipEdges(Fl_Widget* o, void* v)
+	{
+	  ImpressionistDoc * pDoc = ((ImpressionistUI*)(o->user_data()))->getDocument();
+    pDoc->clip = bool(((Fl_Light_Button*)o)->value()); 
+	}
+
 void ImpressionistUI::cb_kernel_source(Fl_Widget* o, void* v)
 {
 	ImpressionistDoc * pDoc = ((ImpressionistUI*)(o->user_data()))->getDocument();
@@ -660,7 +666,7 @@ ImpressionistUI::ImpressionistUI() {
 		m_BrushTypeChoice->menu(brushTypeMenu);
 		m_BrushTypeChoice->callback(cb_brushChoice);
 
-    m_AngleChoiceDropdown = new Fl_Choice(150,200,150,25,"&Angle Choice");
+    m_AngleChoiceDropdown = new Fl_Choice(150,170,150,25,"&Angle Choice");
     m_AngleChoiceDropdown->user_data((void*)(this));
     m_AngleChoiceDropdown->menu(angleChoiceMenu);
     m_AngleChoiceDropdown->callback(cb_angleChoice);
@@ -717,6 +723,12 @@ ImpressionistUI::ImpressionistUI() {
 		m_AngleSlider->value(m_nAngle);
 		m_AngleSlider->align(FL_ALIGN_RIGHT);
 		m_AngleSlider->callback(cb_angleSlides);
+
+
+    Fl_Light_Button* clipEdges = new Fl_Light_Button(10,200,150,25,"&Clip Edges");
+	  clipEdges->user_data((void*)(this));   // record self to be used by static callback functions
+	  clipEdges->callback(cb_clipEdges);
+
 
     m_KRowSlider = new Fl_Value_Slider(10, 250, 300, 20, "Kernel Rows");
 		m_KRowSlider->user_data((void*)(this));	// record self to be used by static callback functions

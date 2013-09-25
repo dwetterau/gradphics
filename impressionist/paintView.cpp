@@ -114,9 +114,12 @@ void PaintView::draw()
 			m_pDoc->m_pUI->m_origView->drawCross(target.x, target.y);
       break;
 		case LEFT_MOUSE_DRAG:
-			m_pDoc->m_pUI->m_origView->removeCross();
+			if (m_pDoc->stopBrush) {
+        break;
+      }
+      m_pDoc->m_pUI->m_origView->removeCross();
       m_pDoc->m_pCurrentBrush->BrushMove( source, target );
-			m_pDoc->m_pUI->m_origView->drawCross(target.x, target.y);
+      m_pDoc->m_pUI->m_origView->drawCross(target.x, target.y);
 			break;
 		case LEFT_MOUSE_UP:
 			m_pDoc->m_pUI->m_origView->removeCross();
@@ -208,10 +211,11 @@ int PaintView::handle(int event)
 	case FL_RELEASE:
 		coord.x = Fl::event_x();
 		coord.y = Fl::event_y();
-		if (Fl::event_button()>1)
+		if (Fl::event_button()>1) {
 			eventToDo=RIGHT_MOUSE_UP;
-		else
+    } else {
 			eventToDo=LEFT_MOUSE_UP;
+    }
 		isAnEvent=1;
 		redraw();
 		break;

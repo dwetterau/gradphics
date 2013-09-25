@@ -20,11 +20,11 @@ void PointBrush::BrushBegin( const Point source, const Point target )
 {
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
-
+  pDoc->stopBrush = 0;
 	int size = pDoc->getSize();
 
 	glPointSize( (float)size );
-
+  
 	BrushMove( source, target );
 }
 
@@ -32,11 +32,13 @@ void PointBrush::BrushMove( const Point source, const Point target )
 {
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
-
 	if ( pDoc == NULL ) {
 		printf( "PointBrush::BrushMove  document is NULL\n" );
 		return;
 	}
+  if (pDoc->clip && pDoc->getFloatXY(pDoc->gradMag, target.x, target.y) > pDoc->thresh) {
+    pDoc->stopBrush = 1;
+  }
 	SetColor(source, pDoc->getAlpha());
 	glBegin( GL_POINTS );
 

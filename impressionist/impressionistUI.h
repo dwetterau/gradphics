@@ -52,6 +52,8 @@ public:
 	Fl_Slider*			m_KColSlider;
   
   Fl_Button*      m_ClearCanvasButton;
+  Fl_Light_Button* clipEdges;
+
 
   Fl_Int_Input*** kernel_inputs;
   Fl_Input* m_KDivisor;
@@ -149,6 +151,7 @@ private:
 	static void	cb_KColSlides(Fl_Widget* o, void* v);
 	static void	cb_kernel_source(Fl_Widget* o, void* v);
 	static void	cb_kernel_paint(Fl_Widget* o, void* v);
+  static void cb_clipEdges(Fl_Widget* o, void* v);
 
 };
 

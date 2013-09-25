@@ -75,8 +75,10 @@ public:
   float m_nAlpha;
   int m_nLineThickness;
   int m_nAngle;
-
-	ImpressionistUI*	m_pUI;
+  bool clip;
+	bool stopBrush;
+  float thresh;
+  ImpressionistUI*	m_pUI;
 
 // Operations
 public:

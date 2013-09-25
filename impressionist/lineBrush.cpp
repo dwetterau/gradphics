@@ -22,6 +22,7 @@ void LineBrush::BrushBegin( const Point source, const Point target )
 {
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
+  pDoc->stopBrush = 0;
 	BrushMove(source, target);
   prev_x = -1; 
   prev_y = -1;
@@ -36,6 +37,10 @@ void LineBrush::BrushMove( const Point source, const Point target )
 		printf( "LineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
+
+  if (pDoc->clip && pDoc->getFloatXY(pDoc->gradMag, target.x, target.y) > pDoc->thresh) {
+    pDoc->stopBrush = 1;
+  }
   SetColor(source, pDoc->getAlpha()); 
   //Set size = linewidth
   glLineWidth((float)pDoc->getLineThickness());

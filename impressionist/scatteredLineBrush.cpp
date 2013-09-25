@@ -23,6 +23,7 @@ void ScatteredLineBrush::BrushBegin( const Point source, const Point target )
 {
 	ImpressionistDoc* pDoc = GetDocument();
 	ImpressionistUI* dlg=pDoc->m_pUI;
+  pDoc->stopBrush = 0;
 	BrushMove(source, target);
 }
 
@@ -35,6 +36,9 @@ void ScatteredLineBrush::BrushMove( const Point source, const Point target )
 		printf( "ScatteredLineBrush::BrushMove  document is NULL\n" );
 		return;
 	}
+  if (pDoc->clip && pDoc->getFloatXY(pDoc->gradMag, target.x, target.y) > pDoc->thresh) {
+    pDoc->stopBrush = 1;
+  }
   SetColor(source, pDoc->getAlpha()); 
   //Set size = linewidth
   glLineWidth((float)pDoc->getLineThickness());

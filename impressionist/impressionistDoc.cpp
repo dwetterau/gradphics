@@ -56,7 +56,9 @@ ImpressionistDoc::ImpressionistDoc()
 
 	// make one of the brushes current
 	m_pCurrentBrush	= ImpBrush::c_pBrushes[0];
-
+  clip = 0;
+  stopBrush = 0;
+  thresh = 50.0;
 }
 
 
