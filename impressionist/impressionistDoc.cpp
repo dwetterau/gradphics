@@ -309,6 +309,22 @@ unsigned char ImpressionistDoc::getColor(const unsigned char* buf, int r, int c,
   return buf[3 * (r * width + c) + offset];
 }
 
+float ImpressionistDoc::getFloatXY(float* buf, int x, int y) {
+  int width = m_nWidth;
+  int height = m_nHeight;
+  if (y < 0) {
+    y = 0;
+  } else if (y >= height) {
+    y = height - 1;
+  }
+  if (x < 0) {
+    x = 0;
+  } else if (x >= width) {
+    x = width - 1;
+  }
+  return buf[x + y * width];
+}
+
 
 //------------------------------------------------------------------
 // Get the color of the pixel in the original image at coord x and y

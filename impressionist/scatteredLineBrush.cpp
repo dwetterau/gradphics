@@ -60,7 +60,7 @@ void ScatteredLineBrush::BrushMove( const Point source, const Point target )
     prev_x = target.x;
     prev_y = target.y;
   } else if (angleChoice == 3) {
-    angle = pDoc->gradDir[target.y * pDoc->m_nWidth + target.x];
+    angle = pDoc->getFloatXY(pDoc->gradDir, target.x, target.y);
     angle += M_PI / 2.0;
     if (angle > 2 * M_PI) {
       angle -= 2 * M_PI;

@@ -46,6 +46,7 @@ public:
   void setAngle(int angle);
   int getAngleChoice();
   void fillGradBuffers(const unsigned char* src, int w, int h, float* magBuf, float* dirBuf);
+  float getFloatXY(float* buf, int x, int y);
 
 // Attributes
 public:
