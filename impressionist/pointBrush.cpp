@@ -36,7 +36,6 @@ void PointBrush::BrushMove( const Point source, const Point target )
 		printf( "PointBrush::BrushMove  document is NULL\n" );
 		return;
 	}
-  printf("%f\n", pDoc->thresh);
   if (pDoc->clip && pDoc->getFloatXY(pDoc->gradMag, target.x, target.y) > pDoc->thresh) {
     pDoc->stopBrush = 1;
   }
