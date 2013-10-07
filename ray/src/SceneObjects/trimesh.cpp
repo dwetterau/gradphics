@@ -81,10 +81,32 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     const Vec3d& a = parent->vertices[ids[0]];
     const Vec3d& b = parent->vertices[ids[1]];
     const Vec3d& c = parent->vertices[ids[2]];
+    
+    Vec3d n = (b - a) ^ (c - a);
+    n.normalize();
+    double area = n.length() / 2;
+    double d = n * a;
+    d -= n * r.getPosition();
+    double t = d / (n * r.getDirection());
 
-    // YOUR CODE HERE
-
-    return false;
+    Vec3d p = r.at((float)t);
+    Vec3d temp = (b - p) ^ (c - p);
+    double alpha = (temp * n > 0 ? 1 : -1) * (temp.length() / 2) / area;
+    temp = (c - p) ^ (a - p); 
+    double beta = (temp * n > 0 ? 1 : -1) * (temp.length() / 2) / area;
+    temp = (a - p) ^ (b - p);
+    double gamma = (temp * n > 0 ? 1 : -1) * (temp.length() / 2) / area;
+    //cout << alpha << ", " << beta << ", " << gamma << "\n";
+    if (alpha < 0 || beta < 0 || gamma < 0) {
+      return false;
+    }
+    i.setT(t);
+    n.normalize();
+    i.setN(n);
+    i.setBary(alpha, beta, gamma);
+    i.setObject(this);
+    // figure out and set material
+    return true;
 }
 
 void Trimesh::generateNormals()
