@@ -96,16 +96,35 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     double beta = (temp * n > 0 ? 1 : -1) * (temp.length() / 2) / area;
     temp = (a - p) ^ (b - p);
     double gamma = (temp * n > 0 ? 1 : -1) * (temp.length() / 2) / area;
-    //cout << alpha << ", " << beta << ", " << gamma << "\n";
-    if (alpha < 0 || beta < 0 || gamma < 0) {
+    if (alpha < 0 || beta < 0 || gamma < 0 || abs(t) < RAY_EPSILON) {
       return false;
     }
     i.setT(t);
-    n.normalize();
-    i.setN(n);
     i.setBary(alpha, beta, gamma);
     i.setObject(this);
-    // figure out and set material
+    if (parent->vertNorms) {
+      const Vec3d& aNorm = parent->normals[ids[0]];
+      const Vec3d& bNorm = parent->normals[ids[1]];
+      const Vec3d& cNorm = parent->normals[ids[2]];
+      i.setN(alpha * aNorm + beta * bNorm + gamma * cNorm);
+    } else {
+      n.normalize();
+      i.setN(n);
+    }
+    // material preference
+    if (parent->materials.size()) {
+      const Material* aM = parent->materials[ids[0]];
+      const Material* bM = parent->materials[ids[1]];
+      const Material* cM = parent->materials[ids[2]];
+      Material toSet = alpha * (*aM); 
+      toSet += beta * (*bM);
+      toSet += gamma * (*cM);
+      i.setMaterial(toSet);
+    } else if (this->material) {
+      i.setMaterial(this->getMaterial());
+    } else {
+      i.setMaterial(parent->getMaterial());
+    }
     return true;
 }
 
