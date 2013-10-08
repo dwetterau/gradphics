@@ -82,8 +82,6 @@ TextureMap::TextureMap( string filename ) {
 
 Vec3d TextureMap::getMappedValue( const Vec2d& coord ) const
 {
-	// YOUR CODE HERE
-
     // In order to add texture mapping support to the 
     // raytracer, you need to implement this function.
     // What this function should do is convert from
@@ -91,11 +89,7 @@ Vec3d TextureMap::getMappedValue( const Vec2d& coord ) const
     // [0, 1] x [0, 1] in 2-space to bitmap coordinates,
     // and use these to perform bilinear interpolation
     // of the values.
-
-
-
-    return Vec3d(1.0, 1.0, 1.0);
-
+    return getPixelAt((int)(coord[0] * width), (int)(coord[1] * height));
 }
 
 
