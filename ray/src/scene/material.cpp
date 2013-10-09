@@ -39,10 +39,42 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
 	// 		.
 	// 		.
 	// }
-	
+  Vec3d I = ke(i);
+  
+  Vec3d ambient = scene->ambient();
+  Vec3d Ka = ka(i);
+  Ka[0] *= ambient[0];
+  Ka[1] *= ambient[1];
+  Ka[2] *= ambient[2];
+  I += Ka;
+  
+  Vec3d P = r.at(i.t + RAY_EPSILON);
+  Vec3d N = i.N;
+  Vec3d D = r.getDirection();
+  Vec3d V = -D;
+  // compute R
+  Vec3d Ci = (V * N) * N;
+  Vec3d Si = Ci + D;
+  Vec3d R = Ci + Si;
+  for (vector<Light*>::const_iterator litr = scene->beginLights();
+      litr != scene->endLights();
+      ++litr) {
+    Light* light = *litr;
+    Vec3d atten = light->distanceAttenuation(P) * light->shadowAttenuation(P);
+    Vec3d L = light->getDirection(P);
+    Vec3d diffuse = kd(i) * max(0.0, N * L);
+    Vec3d specular = ks(i) * pow(max(0.0, V * R), shininess(i));
 
-	return kd(i);
+    diffuse[0] += specular[0];
+    diffuse[1] += specular[1];
+    diffuse[2] += specular[2];
 
+    diffuse[0] *= atten[0]; 
+    diffuse[1] *= atten[1]; 
+    diffuse[2] *= atten[2]; 
+    I += diffuse;
+  }
+	return I;
 }
 
 TextureMap::TextureMap( string filename ) {

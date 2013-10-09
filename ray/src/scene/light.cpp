@@ -15,10 +15,15 @@ double DirectionalLight::distanceAttenuation( const Vec3d& P ) const
 
 Vec3d DirectionalLight::shadowAttenuation( const Vec3d& P ) const
 {
-    // YOUR CODE HERE:
-    // You should implement shadow-handling code here.
-    return Vec3d(1,1,1);
-
+  Vec3d dir = getDirection(P);
+  ray r = ray(P, dir, ray::SHADOW);
+  isect i;
+  if(this->scene->intersect(r,i)) {
+    return Vec3d(0,0,0);
+    //TODO: Add fancy shit.
+  } else {
+    return getColor(P);
+  }
 }
 
 Vec3d DirectionalLight::getColor( const Vec3d& P ) const
@@ -63,8 +68,20 @@ Vec3d PointLight::getDirection( const Vec3d& P ) const
 
 Vec3d PointLight::shadowAttenuation(const Vec3d& P) const
 {
-    // YOUR CODE HERE:
-    // You should implement shadow-handling code here.
-    
-    return Vec3d(1,1,1);
+  // YOUR CODE HERE:
+  // You should implement shadow-handling code here.
+  Vec3d dir = position - P;
+  double tp = dir.length();
+  dir.normalize();
+  ray r = ray(P, dir, ray::SHADOW);
+  isect i;
+  if(this->scene->intersect(r,i)) {
+    if (i.t > tp) {
+      return getColor(P);
+    }
+    //TODO: Add fancy shit.
+    return Vec3d(0,0,0);
+  } else {
+    return getColor(P);
+  }
 }
