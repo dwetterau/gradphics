@@ -52,10 +52,6 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
   Vec3d N = i.N;
   Vec3d D = r.getDirection();
   Vec3d V = -D;
-  // compute R
-  //Vec3d Ci = (V * N) * N;
-  //Vec3d Si = Ci + D;
-  //Vec3d R = Ci + Si;
   for (vector<Light*>::const_iterator litr = scene->beginLights();
       litr != scene->endLights();
       ++litr) {

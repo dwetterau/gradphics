@@ -47,6 +47,11 @@ Vec3d RayTracer::trace( double x, double y )
 // (or places called from here) to handle reflection, refraction, etc etc.
 Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 {
+  //TODO use real limit
+  int limit = 1;
+  if (depth >= limit) {
+    return Vec3d(0,0,0);
+  }
 	isect i;
 
 	if( scene->intersect( r, i ) ) {
@@ -62,10 +67,35 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 		// rays.
 
 		const Material& m = i.getMaterial();
-
-		return m.shade(scene, r, i);
-
-	
+    
+    Vec3d N = i.N;
+    Vec3d D = r.getDirection();
+    Vec3d V = -D;
+    Vec3d Ci = (V * N) * N;
+    Vec3d Si = Ci + D;
+    Vec3d R = Ci + Si;
+    double ni, nt;
+    Vec3d Pr, Pt;
+    if (D * N < 0) {
+      // going in
+      ni = 1.0;
+      nt = m.index(i);
+    } else {
+      // going out
+      ni = m.index(i);
+      nt = 1.0;
+    }
+    Pr = r.at(i.t - RAY_EPSILON);
+    Pt = r.at(i.t + RAY_EPSILON);
+    
+    Vec3d St = (ni / nt) * Si;
+    Vec3d Ct = pow(1 - St*St, 0.5) * (-N);
+    Vec3d T = St + Ct;
+		Vec3d local = m.shade(scene, r, i);
+    Vec3d ref = traceRay(ray(Pr, R, ray::REFLECTION), thresh, depth + 1);
+    Vec3d tra = traceRay(ray(Pt, T, ray::REFRACTION), thresh, depth + 1);
+    // TODO: see if I need to do piecewise stuff
+	  return local + m.kr(i) * ref + m.kt(i) * tra;
 	} else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
