@@ -48,22 +48,27 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
   Ka[2] *= ambient[2];
   I += Ka;
   
-  Vec3d P = r.at(i.t + RAY_EPSILON);
+  Vec3d P = r.at(i.t - RAY_EPSILON);
   Vec3d N = i.N;
   Vec3d D = r.getDirection();
   Vec3d V = -D;
   // compute R
-  Vec3d Ci = (V * N) * N;
-  Vec3d Si = Ci + D;
-  Vec3d R = Ci + Si;
+  //Vec3d Ci = (V * N) * N;
+  //Vec3d Si = Ci + D;
+  //Vec3d R = Ci + Si;
   for (vector<Light*>::const_iterator litr = scene->beginLights();
       litr != scene->endLights();
       ++litr) {
     Light* light = *litr;
     Vec3d atten = light->distanceAttenuation(P) * light->shadowAttenuation(P);
+    
     Vec3d L = light->getDirection(P);
-    Vec3d diffuse = kd(i) * max(0.0, N * L);
-    Vec3d specular = ks(i) * pow(max(0.0, V * R), shininess(i));
+    Vec3d Cl = (L * N) * N;
+    Vec3d S = L - Cl;
+    Vec3d Rl = Cl - S;
+
+    Vec3d diffuse = max(0.0, N * L) * kd(i);
+    Vec3d specular = pow(max(0.0, V * Rl), shininess(i)) * ks(i);
 
     diffuse[0] += specular[0];
     diffuse[1] += specular[1];
