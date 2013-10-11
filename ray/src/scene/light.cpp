@@ -18,13 +18,25 @@ Vec3d DirectionalLight::shadowAttenuation( const Vec3d& P ) const
   Vec3d dir = getDirection(P);
   ray r = ray(P, dir, ray::SHADOW);
   isect i;
-  if(this->scene->intersect(r,i)) {
-    return Vec3d(0,0,0);
-    //TODO: Add fancy shit.
-  } else {
-    return getColor(P);
+  Vec3d color = getColor(P);
+  while(this->scene->intersect(r,i)) {
+    if (!(i.t > 0)) {
+      break;
+    }
+    // check if object is see through, if so add its color to color
+    Vec3d seethrough = i.getMaterial().kt(i);
+    if (!seethrough[0] && !seethrough[1] && !seethrough[2]) {
+      return Vec3d(0,0,0);
+    }
+    color[0] *= seethrough[0];
+    color[1] *= seethrough[1];
+    color[2] *= seethrough[2];
+    // throw another ray from t + RAY_EPSILON
+    Vec3d newP = r.at(i.t + RAY_EPSILON);
+    r = ray(newP, dir, ray::SHADOW);
   }
-}
+  return color;
+ }
 
 Vec3d DirectionalLight::getColor( const Vec3d& P ) const
 {
@@ -75,13 +87,22 @@ Vec3d PointLight::shadowAttenuation(const Vec3d& P) const
   dir.normalize();
   ray r = ray(P, dir, ray::SHADOW);
   isect i;
-  if(this->scene->intersect(r,i)) {
-    if (i.t > tp) {
-      return getColor(P);
+  Vec3d color = getColor(P);
+  while(this->scene->intersect(r,i)) {
+    if (i.t > tp || i.t < 0) {
+      break;
+    } else {
+      Vec3d seethrough = i.getMaterial().kt(i);
+      if (!seethrough[0] && !seethrough[1] && !seethrough[2]) {
+        return Vec3d(0,0,0);
+      }
+      color[0] *= seethrough[0];
+      color[1] *= seethrough[1];
+      color[2] *= seethrough[2];
+      // throw another ray from t + RAY_EPSILON
+      Vec3d newP = r.at(i.t + RAY_EPSILON);
+      r = ray(newP, dir, ray::SHADOW);
     }
-    //TODO: Add fancy shit.
-    return Vec3d(0,0,0);
-  } else {
-    return getColor(P);
-  }
+  } 
+  return color;
 }
