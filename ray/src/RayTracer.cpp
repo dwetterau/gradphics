@@ -107,7 +107,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     tra[2] *= kt[2];
 
     local[0] += ref[0];
-    local[1] += ref[2];
+    local[1] += ref[1];
     local[2] += ref[2];
 
     local[0] += tra[0];
