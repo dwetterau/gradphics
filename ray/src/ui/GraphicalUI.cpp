@@ -111,6 +111,11 @@ void GraphicalUI::cb_depthSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nDepth=int( ((Fl_Slider *)o)->value() ) ;
 }
 
+void GraphicalUI::cb_aaSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_nAa=int( ((Fl_Slider *)o)->value() ) ;
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
@@ -282,6 +287,20 @@ GraphicalUI::GraphicalUI() {
 		m_sizeSlider->value(m_nSize);
 		m_sizeSlider->align(FL_ALIGN_RIGHT);
 		m_sizeSlider->callback(cb_sizeSlides);
+
+   	m_aaSlider = new Fl_Value_Slider(10, 80, 180, 20, "AA (n x n)");
+		m_aaSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_aaSlider->type(FL_HOR_NICE_SLIDER);
+        m_aaSlider->labelfont(FL_COURIER);
+        m_aaSlider->labelsize(12);
+		m_aaSlider->minimum(1);
+		m_aaSlider->maximum(10);
+		m_aaSlider->step(1);
+		m_aaSlider->value(m_nAa);
+		m_aaSlider->align(FL_ALIGN_RIGHT);
+		m_aaSlider->callback(cb_aaSlides);
+
+ 
 
 		// set up debugging display checkbox
         m_debuggingDisplayCheckButton = new Fl_Check_Button(0, 280, 180, 20, "Debugging display");

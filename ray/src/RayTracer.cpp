@@ -217,9 +217,10 @@ void RayTracer::traceSetup( int w, int h )
 
 void RayTracer::tracePixel( int i, int j )
 {
-	Vec3d col;
-  int aa = 1;
-	if( ! sceneLoaded() )
+	Vec3d col = Vec3d(0,0,0);
+  int aa = traceUI->getAa();
+	cout << aa << endl;
+  if( ! sceneLoaded() )
 		return;
   double div = (double) aa * aa;
 

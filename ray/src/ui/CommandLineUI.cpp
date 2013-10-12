@@ -36,7 +36,9 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 			case 'r':
 				m_nDepth = atoi( optarg );
 				break;
-
+      case 'a':
+        m_nAa = atoi( optarg );
+        break;
 			case 'w':
 				m_nSize = atoi( optarg );
 				break;
