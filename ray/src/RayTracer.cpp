@@ -218,16 +218,15 @@ void RayTracer::traceSetup( int w, int h )
 void RayTracer::tracePixel( int i, int j )
 {
 	Vec3d col = Vec3d(0,0,0);
-  int aa = traceUI->getAa();
-	cout << aa << endl;
+  double aa = traceUI->getAa();
   if( ! sceneLoaded() )
 		return;
-  double div = (double) aa * aa;
+  double div = aa * aa;
 
   for (int r = 0; r < aa; r++) {
     for (int c = 0; c < aa; c++) {
-      double x = double(i + r/div)/double(buffer_width);
-	    double y = double(j + c/div)/double(buffer_height);
+      double x = double(i + r/aa)/double(buffer_width);
+	    double y = double(j + c/aa)/double(buffer_height);
   
 	    Vec3d tempCol = trace(x, y);
 
