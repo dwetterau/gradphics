@@ -69,6 +69,8 @@ bool Scene::intersect( const ray& r, isect& i ) const {
 	return have_one;
 }
 
+
+
 TextureMap* Scene::getTexture( string name ) {
 	tmap::const_iterator itr = textureCache.find( name );
 	if( itr == textureCache.end() ) {
@@ -77,4 +79,21 @@ TextureMap* Scene::getTexture( string name ) {
 	} else return (*itr).second;
 }
 
+kdNode::kdNode(int min_x, int max_x, int min_y, int max_y, int min_z, int max_z) {
+  xmin = min_x;
+  xmax = max_x;
+  ymin = min_y;
+  ymax = max_y;
+  zmin = min_z;
+  zmax = max_z;
+}
+
+void kdNode::fill(std::vector<Geometry*> objs, int depth) {
+  if (depth >= depthLimit || objs.size() <= objectLimit) {
+    this->objects = objs;
+    return;
+  }
+
+  //TODO: do the not base case thing... lol
+}
 

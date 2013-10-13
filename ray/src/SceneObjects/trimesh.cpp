@@ -84,7 +84,7 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     
     Vec3d n = (b - a) ^ (c - a);
     double area = n.length() / 2;
-    n.normalize();
+    n /= area * 2;
     double d = n * a;
     d -= n * r.getPosition();
     double t = d / (n * r.getDirection());

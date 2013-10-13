@@ -285,4 +285,27 @@ public:
 	mutable std::vector< std::pair<ray, isect> > intersectCache;
 };
 
+class kdNode {
+  const static int objectLimit = 5;
+  const static int depthLimit = 10;
+  
+  public:
+    kdNode(int min_x, int max_x, int min_y, int max_y, int min_z, int max_z);
+
+    Vec3d N;
+    Vec3d d;
+    kdNode* front;
+    kdNode* back;
+    std::vector<Geometry*> objects;
+    
+    int xmin;
+    int xmax;
+    int ymin;
+    int ymax;
+    int zmin;
+    int zmax;
+
+    void fill(std::vector<Geometry*> objs, int depth);
+};
+
 #endif // __SCENE_H__
