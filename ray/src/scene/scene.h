@@ -216,7 +216,7 @@ protected:
 };
 
 class kdNode {
-  const static int objectLimit = 5;
+  const static int objectLimit = 2;
   const static int depthLimit = 10;
   
   public:
@@ -254,7 +254,8 @@ public:
 	}
 	void add( Light* light ) { lights.push_back( light ); }
   void buildKdTree();
-	bool intersect( const ray& r, isect& i ) const;
+	bool findFirstIntersection( const ray& r, isect& i, const kdNode* root) const;
+  bool intersect( const ray& r, isect& i ) const;
 
 	std::vector<Light*>::const_iterator beginLights() const { return lights.begin(); }
 	std::vector<Light*>::const_iterator endLights() const { return lights.end(); }

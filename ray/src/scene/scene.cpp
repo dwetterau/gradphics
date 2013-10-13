@@ -48,26 +48,99 @@ Scene::~Scene() {
 	for( t = textureCache.begin(); t != textureCache.end(); t++ ) delete (*t).second;
 }
 
+bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) const {
+  if (root->leaf) {
+    bool have_one = false;
+	  typedef vector<Geometry*>::const_iterator iter;
+    for( iter j = root->objects.begin(); j != root->objects.end(); ++j ) {
+		  isect cur;
+		  if( (*j)->intersect( r, cur ) ) {
+			  if( !have_one || (cur.t < i.t) ) {
+				  i = cur;
+				  have_one = true;
+			  }
+		  }
+	  }
+	  return have_one; 
+  } else {
+    // See which side(s) to recurse down
+  	double tmin, tmax;
+	  if (!root->bounds.intersect(r, tmin, tmax)) {
+      // Doesn't intersect empty space...
+      return false;
+    }
+    // compute t*
+    double d = root->d * root->N;
+    d -= root->N * r.getPosition();
+    double dot = root->N * r.getDirection();
+    double t = d / dot;
+    if (t > tmax) {
+      if (dot > 0) {
+        return findFirstIntersection(r, i, root->back); 
+      } else {
+        return findFirstIntersection(r, i, root->front);
+      }
+    } else if (t < tmin) {
+      if (dot > 0) {
+        return findFirstIntersection(r, i, root->front);
+      } else {
+        return findFirstIntersection(r, i, root->back);
+      }
+    } else {
+      if (dot > 0) {
+        isect cur;
+        bool inFirst = findFirstIntersection(r, cur, root->back);
+        if (!inFirst) {
+          return findFirstIntersection(r, i, root->front);
+        }
+        i = cur;
+        return true;
+      } else {
+        isect cur;
+        bool inFirst = findFirstIntersection(r, cur, root->front);
+        if (!inFirst) {
+          return findFirstIntersection(r, i, root->back);
+        }
+        i = cur;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
 bool Scene::intersect( const ray& r, isect& i ) const {
-	double tmin = 0.0;
-	double tmax = 0.0;
 	bool have_one = false;
 	typedef vector<Geometry*>::const_iterator iter;
-	for( iter j = objects.begin(); j != objects.end(); ++j ) {
-		isect cur;
-		if( (*j)->intersect( r, cur ) ) {
-			if( !have_one || (cur.t < i.t) ) {
-				i = cur;
-				have_one = true;
-			}
-		}
-	}
-	if( !have_one ) i.setT(1000.0);
-	// if debugging,
-	intersectCache.push_back( std::make_pair(r,i) );
-	return have_one;
+  //TODO add UI for switching
+  bool accelerated = true;
+  if (accelerated) {
+    if (findFirstIntersection(r, i, &root)) {
+      intersectCache.push_back( std::make_pair(r,i) );
+      return true; 
+    } else {
+      i.setT(1000.0);
+      intersectCache.push_back( std::make_pair(r,i) );
+      return false;
+    }
+
+  } else {
+    for( iter j = objects.begin(); j != objects.end(); ++j ) {
+		  isect cur;
+		  if( (*j)->intersect( r, cur ) ) {
+			  if( !have_one || (cur.t < i.t) ) {
+				  i = cur;
+				  have_one = true;
+			  }
+		  }
+	  }
+	  if( !have_one ) i.setT(1000.0);
+	  // if debugging,
+	  intersectCache.push_back( std::make_pair(r,i) );
+	  return have_one;
+  }
 }
 
 
