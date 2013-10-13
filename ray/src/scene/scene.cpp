@@ -55,7 +55,7 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
     for( iter j = root->objects.begin(); j != root->objects.end(); ++j ) {
 		  isect cur;
 		  if( (*j)->intersect( r, cur ) ) {
-			  if( !have_one || (cur.t < i.t) ) {
+        if((cur.t >= 0) && (!have_one || (cur.t < i.t))) {
 				  i = cur;
 				  have_one = true;
 			  }
@@ -65,15 +65,19 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
   } else {
     // See which side(s) to recurse down
   	double tmin, tmax;
-	  if (!root->bounds.intersect(r, tmin, tmax)) {
+	  if (!root->bounds.intersect(r, tmin, tmax) || tmax < 0) {
       // Doesn't intersect empty space...
       return false;
     }
     // compute t*
-    double d = root->d * root->N;
+    double d = root->d[0] + root->d[1] + root->d[2];
     d -= root->N * r.getPosition();
     double dot = root->N * r.getDirection();
+    if (dot == 0) {
+      dot = RAY_EPSILON;
+    }
     double t = d / dot;
+    
     if (t > tmax) {
       if (dot > 0) {
         return findFirstIntersection(r, i, root->back); 
@@ -86,8 +90,11 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
       } else {
         return findFirstIntersection(r, i, root->back);
       }
-    } else {
+    } else if (t <= tmax && t >= tmin) {
       if (dot > 0) {
+        if (t < 0) {
+          return findFirstIntersection(r, i, root->front);
+        }
         isect cur;
         bool inFirst = findFirstIntersection(r, cur, root->back);
         if (!inFirst) {
@@ -96,6 +103,9 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
         i = cur;
         return true;
       } else {
+        if (t < 0) {
+          return findFirstIntersection(r, i, root->back);
+        }
         isect cur;
         bool inFirst = findFirstIntersection(r, cur, root->front);
         if (!inFirst) {
@@ -176,12 +186,7 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   
   // try splitting on all x values
   // first sort objects based off xMin
-  double totalObjArea = 0;
-  for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
-    BoundingBox bb = objs[i]->getBoundingBox();
-    totalObjArea += bb.area();
-  }
-  double S = bounds.area(); 
+   double S = bounds.area(); 
   std::vector<Geometry*> a_objs;
   std::vector<Geometry*> b_objs;
   double bestC = 2000000000;
@@ -220,8 +225,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       if (C < bestC) {
         a_objs = temp_a_objs;
         b_objs = temp_b_objs;
-        Vec3d N = Vec3d(1, 0, 0);
-        Vec3d d = Vec3d(x_line, 0, 0);
+        N = Vec3d(1, 0, 0);
+        d = Vec3d(x_line, 0, 0);
         Vec3d newMaxBounds = bounds.getMax();
         newMaxBounds[0] = x_line;
         Vec3d newMinBounds = bounds.getMin();
@@ -261,8 +266,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       if (C < bestC) {
         a_objs = temp_a_objs;
         b_objs = temp_b_objs;
-        Vec3d N = Vec3d(1, 0, 0);
-        Vec3d d = Vec3d(x_line, 0, 0);
+        N = Vec3d(1, 0, 0);
+        d = Vec3d(x_line, 0, 0);
         Vec3d newMaxBounds = bounds.getMax();
         newMaxBounds[0] = x_line;
         Vec3d newMinBounds = bounds.getMin();
@@ -302,8 +307,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       if (C < bestC) {
         a_objs = temp_a_objs;
         b_objs = temp_b_objs;
-        Vec3d N = Vec3d(0, 1, 0);
-        Vec3d d = Vec3d(0, y_line, 0);
+        N = Vec3d(0, 1, 0);
+        d = Vec3d(0, y_line, 0);
         Vec3d newMaxBounds = bounds.getMax();
         newMaxBounds[1] = y_line;
         Vec3d newMinBounds = bounds.getMin();
@@ -343,8 +348,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       if (C < bestC) {
         a_objs = temp_a_objs;
         b_objs = temp_b_objs;
-        Vec3d N = Vec3d(0, 1, 0);
-        Vec3d d = Vec3d(0, y_line, 0);
+        N = Vec3d(0, 1, 0);
+        d = Vec3d(0, y_line, 0);
         Vec3d newMaxBounds = bounds.getMax();
         newMaxBounds[1] = y_line;
         Vec3d newMinBounds = bounds.getMin();
@@ -384,8 +389,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       if (C < bestC) {
         a_objs = temp_a_objs;
         b_objs = temp_b_objs;
-        Vec3d N = Vec3d(0, 0, 1);
-        Vec3d d = Vec3d(0, 0, z_line);
+        N = Vec3d(0, 0, 1);
+        d = Vec3d(0, 0, z_line);
         Vec3d newMaxBounds = bounds.getMax();
         newMaxBounds[2] = z_line;
         Vec3d newMinBounds = bounds.getMin();
@@ -425,8 +430,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       if (C < bestC) {
         a_objs = temp_a_objs;
         b_objs = temp_b_objs;
-        Vec3d N = Vec3d(0, 0, 1);
-        Vec3d d = Vec3d(0, 0, z_line);
+        N = Vec3d(0, 0, 1);
+        d = Vec3d(0, 0, z_line);
         Vec3d newMaxBounds = bounds.getMax();
         newMaxBounds[2] = z_line;
         Vec3d newMinBounds = bounds.getMin();
