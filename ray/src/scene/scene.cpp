@@ -173,6 +173,55 @@ kdNode::kdNode(const BoundingBox& bb) {
   bounds = BoundingBox(bb.getMin(), bb.getMax()); 
 }
 
+double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs, 
+    double S, double bestC, 
+    std::vector<Geometry*>* front_objs, std::vector<Geometry*>* back_objs) {
+  
+  if (val >= bounds.getMin()[index] && val <= bounds.getMax()[index]) {
+    double Sa = 0;
+    double Sb = 0;
+    int Na = 0;
+    int Nb = 0;
+    std::vector<Geometry*> temp_front_objs;
+    std::vector<Geometry*> temp_back_objs;
+    for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
+      BoundingBox bb = objs[j]->getBoundingBox();
+      double cur_area = bb.area();
+      double cur_min = bb.getMin()[index];
+      double cur_max = bb.getMax()[index];
+      if (cur_min <= val) {
+        Sa += cur_area;
+        Na += 1;
+        temp_back_objs.push_back(objs[j]);
+      }
+      if (cur_max >= val) {
+        Sb += cur_area;
+        Nb += 1;
+        temp_front_objs.push_back(objs[j]);
+      }
+    }
+    double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
+    if (C < bestC) {
+      *front_objs = std::vector<Geometry*>(temp_front_objs);
+      *back_objs = std::vector<Geometry*>(temp_back_objs);
+      this->N = Vec3d(0, 0, 0);
+      this->d = Vec3d(0, 0, 0);
+      this->N[index] = 1;
+      this->d[index] = val;
+
+      Vec3d newMaxBounds = bounds.getMax();
+      newMaxBounds[index] = val;
+      Vec3d newMinBounds = bounds.getMin();
+      newMinBounds[index] = val;
+      this->back_bb = BoundingBox(bounds.getMin(), newMaxBounds);
+      this->front_bb = BoundingBox(newMinBounds, bounds.getMax());
+    }
+    return C;
+  } else {
+    return 2000000000;
+  }
+}
+
 void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   if (depth >= depthLimit || objs.size() <= objectLimit) {
     cout << "made node with # " << objs.size() << endl;
@@ -181,270 +230,69 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
     return;
   }
   this->leaf = false;
-  int kt = 2;
-  int ki = 80 * kt;
-  
   // try splitting on all x values
   // first sort objects based off xMin
-   double S = bounds.area(); 
-  std::vector<Geometry*> a_objs;
-  std::vector<Geometry*> b_objs;
+  double S = bounds.area(); 
+  std::vector<Geometry*> best_front_objs;
+  std::vector<Geometry*> best_back_objs;
   double bestC = 2000000000;
   BoundingBox front;
   BoundingBox back;
 
   for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
     // bad n^2 algorithm for this
+    std::vector<Geometry*>* front_objs = new std::vector<Geometry*>(); 
+    std::vector<Geometry*>* back_objs = new std::vector<Geometry*>(); 
    
     // xMin for this object:
-    double x_line = objs[i]->getBoundingBox().getMin()[0];
-    if (x_line > bounds.getMin()[0] && x_line < bounds.getMax()[0]) {
-      double Sa = 0;
-      double Sb = 0;
-      int Na = 0;
-      int Nb = 0;
-      std::vector<Geometry*> temp_a_objs;
-      std::vector<Geometry*> temp_b_objs;
-      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
-        BoundingBox bb = objs[j]->getBoundingBox();
-        double cur_area = bb.area();
-        double cur_x_min = bb.getMin()[0];
-        double cur_x_max = bb.getMax()[0];
-        if (cur_x_min <= x_line) {
-          Sa += cur_area;
-          Na += 1;
-          temp_a_objs.push_back(objs[j]);
-        }
-        if (cur_x_max >= x_line) {
-          Sb += cur_area;
-          Nb += 1;
-          temp_b_objs.push_back(objs[j]);
-        }
-      }
-      double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
-      if (C < bestC) {
-        a_objs = temp_a_objs;
-        b_objs = temp_b_objs;
-        N = Vec3d(1, 0, 0);
-        d = Vec3d(x_line, 0, 0);
-        Vec3d newMaxBounds = bounds.getMax();
-        newMaxBounds[0] = x_line;
-        Vec3d newMinBounds = bounds.getMin();
-        newMinBounds[0] = x_line;
-        back = BoundingBox(bounds.getMin(), newMaxBounds);
-        front = BoundingBox(newMinBounds, bounds.getMax());
-        bestC = C;
-      }
+    double val = objs[i]->getBoundingBox().getMin()[0];
+    double C = tryPlane(val, 0, objs, S, bestC, front_objs, back_objs);
+    if (C < bestC) {
+      bestC = C;
+      best_front_objs = std::vector<Geometry*>(*front_objs);
+      best_back_objs = std::vector<Geometry*>(*back_objs);
+    }
+    val = objs[i]->getBoundingBox().getMax()[0];
+    C = tryPlane(val, 0, objs, S, bestC, front_objs, back_objs);
+    if (C < bestC) {
+      bestC = C;
+      best_front_objs = std::vector<Geometry*>(*front_objs);
+      best_back_objs = std::vector<Geometry*>(*back_objs);
     }
     
-    //x_max
-    x_line = objs[i]->getBoundingBox().getMax()[0];
-    if (x_line > bounds.getMin()[0] && x_line < bounds.getMax()[0]) {
-      double Sa = 0;
-      double Sb = 0;
-      int Na = 0;
-      int Nb = 0;
-      std::vector<Geometry*> temp_a_objs;
-      std::vector<Geometry*> temp_b_objs;
-      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
-        BoundingBox bb = objs[j]->getBoundingBox();
-        double cur_area = bb.area();
-        double cur_x_min = bb.getMin()[0];
-        double cur_x_max = bb.getMax()[0];
-        if (cur_x_min <= x_line) {
-          Sa += cur_area;
-          Na += 1;
-          temp_a_objs.push_back(objs[j]);
-        }
-        if (cur_x_max >= x_line) {
-          Sb += cur_area;
-          Nb += 1;
-          temp_b_objs.push_back(objs[j]);
-        }
-      }
-      double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
-      if (C < bestC) {
-        a_objs = temp_a_objs;
-        b_objs = temp_b_objs;
-        N = Vec3d(1, 0, 0);
-        d = Vec3d(x_line, 0, 0);
-        Vec3d newMaxBounds = bounds.getMax();
-        newMaxBounds[0] = x_line;
-        Vec3d newMinBounds = bounds.getMin();
-        newMinBounds[0] = x_line;
-        back = BoundingBox(bounds.getMin(), newMaxBounds);
-        front = BoundingBox(newMinBounds, bounds.getMax());
-        bestC = C;
-      }
+    val = objs[i]->getBoundingBox().getMin()[1];
+    C = tryPlane(val, 1, objs, S, bestC, front_objs, back_objs);
+    if (C < bestC) {
+      bestC = C;
+      best_front_objs = std::vector<Geometry*>(*front_objs);
+      best_back_objs = std::vector<Geometry*>(*back_objs);
+    }
+    val = objs[i]->getBoundingBox().getMax()[1];
+    C = tryPlane(val, 1, objs, S, bestC, front_objs, back_objs);
+    if (C < bestC) {
+      bestC = C;
+      best_front_objs = std::vector<Geometry*>(*front_objs);
+      best_back_objs = std::vector<Geometry*>(*back_objs);
     }
     
-    // y_min for this object:
-    double y_line = objs[i]->getBoundingBox().getMin()[1];
-    if (y_line > bounds.getMin()[1] && y_line < bounds.getMax()[1]) {
-      double Sa = 0;
-      double Sb = 0;
-      int Na = 0;
-      int Nb = 0;
-      std::vector<Geometry*> temp_a_objs;
-      std::vector<Geometry*> temp_b_objs;
-      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
-        BoundingBox bb = objs[j]->getBoundingBox();
-        double cur_area = bb.area();
-        double cur_y_min = bb.getMin()[1];
-        double cur_y_max = bb.getMax()[1];
-        if (cur_y_min <= y_line) {
-          Sa += cur_area;
-          Na += 1;
-          temp_a_objs.push_back(objs[j]);
-        }
-        if (cur_y_max >= y_line) {
-          Sb += cur_area;
-          Nb += 1;
-          temp_b_objs.push_back(objs[j]);
-        }
-      }
-      double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
-      if (C < bestC) {
-        a_objs = temp_a_objs;
-        b_objs = temp_b_objs;
-        N = Vec3d(0, 1, 0);
-        d = Vec3d(0, y_line, 0);
-        Vec3d newMaxBounds = bounds.getMax();
-        newMaxBounds[1] = y_line;
-        Vec3d newMinBounds = bounds.getMin();
-        newMinBounds[1] = y_line;
-        back = BoundingBox(bounds.getMin(), newMaxBounds);
-        front = BoundingBox(newMinBounds, bounds.getMax());
-        bestC = C;
-      }
+    val = objs[i]->getBoundingBox().getMin()[2];
+    C = tryPlane(val, 2, objs, S, bestC, front_objs, back_objs);
+    if (C < bestC) {
+      bestC = C;
+      best_front_objs = std::vector<Geometry*>(*front_objs);
+      best_back_objs = std::vector<Geometry*>(*back_objs);
     }
-    
-    //y_max
-    y_line = objs[i]->getBoundingBox().getMax()[1];
-    if (y_line > bounds.getMin()[1] && y_line < bounds.getMax()[1]) {
-      double Sa = 0;
-      double Sb = 0;
-      int Na = 0;
-      int Nb = 0;
-      std::vector<Geometry*> temp_a_objs;
-      std::vector<Geometry*> temp_b_objs;
-      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
-        BoundingBox bb = objs[j]->getBoundingBox();
-        double cur_area = bb.area();
-        double cur_y_min = bb.getMin()[1];
-        double cur_y_max = bb.getMax()[1];
-        if (cur_y_min <= y_line) {
-          Sa += cur_area;
-          Na += 1;
-          temp_a_objs.push_back(objs[j]);
-        }
-        if (cur_y_max >= y_line) {
-          Sb += cur_area;
-          Nb += 1;
-          temp_b_objs.push_back(objs[j]);
-        }
-      }
-      double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
-      if (C < bestC) {
-        a_objs = temp_a_objs;
-        b_objs = temp_b_objs;
-        N = Vec3d(0, 1, 0);
-        d = Vec3d(0, y_line, 0);
-        Vec3d newMaxBounds = bounds.getMax();
-        newMaxBounds[1] = y_line;
-        Vec3d newMinBounds = bounds.getMin();
-        newMinBounds[1] = y_line;
-        back = BoundingBox(bounds.getMin(), newMaxBounds);
-        front = BoundingBox(newMinBounds, bounds.getMax());
-        bestC = C;
-      }
-    }
-
-    // z_min for this object:
-    double z_line = objs[i]->getBoundingBox().getMin()[2];
-    if (z_line > bounds.getMin()[2] && z_line < bounds.getMax()[2]) {
-      double Sa = 0;
-      double Sb = 0;
-      int Na = 0;
-      int Nb = 0;
-      std::vector<Geometry*> temp_a_objs;
-      std::vector<Geometry*> temp_b_objs;
-      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
-        BoundingBox bb = objs[j]->getBoundingBox();
-        double cur_area = bb.area();
-        double cur_z_min = bb.getMin()[2];
-        double cur_z_max = bb.getMax()[2];
-        if (cur_z_min <= z_line) {
-          Sa += cur_area;
-          Na += 1;
-          temp_a_objs.push_back(objs[j]);
-        }
-        if (cur_z_max >= z_line) {
-          Sb += cur_area;
-          Nb += 1;
-          temp_b_objs.push_back(objs[j]);
-        }
-      }
-      double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
-      if (C < bestC) {
-        a_objs = temp_a_objs;
-        b_objs = temp_b_objs;
-        N = Vec3d(0, 0, 1);
-        d = Vec3d(0, 0, z_line);
-        Vec3d newMaxBounds = bounds.getMax();
-        newMaxBounds[2] = z_line;
-        Vec3d newMinBounds = bounds.getMin();
-        newMinBounds[2] = z_line;
-        back = BoundingBox(bounds.getMin(), newMaxBounds);
-        front = BoundingBox(newMinBounds, bounds.getMax());
-        bestC = C;
-      }
-    }
-    
-    //z_max
-    z_line = objs[i]->getBoundingBox().getMax()[2];
-    if (z_line > bounds.getMin()[2] && z_line < bounds.getMax()[2]) {
-      double Sa = 0;
-      double Sb = 0;
-      int Na = 0;
-      int Nb = 0;
-      std::vector<Geometry*> temp_a_objs;
-      std::vector<Geometry*> temp_b_objs;
-      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
-        BoundingBox bb = objs[j]->getBoundingBox();
-        double cur_area = bb.area();
-        double cur_z_min = bb.getMin()[2];
-        double cur_z_max = bb.getMax()[2];
-        if (cur_z_min <= z_line) {
-          Sa += cur_area;
-          Na += 1;
-          temp_a_objs.push_back(objs[j]);
-        }
-        if (cur_z_max >= z_line) {
-          Sb += cur_area;
-          Nb += 1;
-          temp_b_objs.push_back(objs[j]);
-        }
-      }
-      double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
-      if (C < bestC) {
-        a_objs = temp_a_objs;
-        b_objs = temp_b_objs;
-        N = Vec3d(0, 0, 1);
-        d = Vec3d(0, 0, z_line);
-        Vec3d newMaxBounds = bounds.getMax();
-        newMaxBounds[2] = z_line;
-        Vec3d newMinBounds = bounds.getMin();
-        newMinBounds[2] = z_line;
-        back = BoundingBox(bounds.getMin(), newMaxBounds);
-        front = BoundingBox(newMinBounds, bounds.getMax());
-        bestC = C;
-      }
+    val = objs[i]->getBoundingBox().getMax()[2];
+    C = tryPlane(val, 2, objs, S, bestC, front_objs, back_objs);
+    if (C < bestC) {
+      bestC = C;
+      best_front_objs = std::vector<Geometry*>(*front_objs);
+      best_back_objs = std::vector<Geometry*>(*back_objs);
     }
   }
-  this->front = new kdNode(front);
-  this->back = new kdNode(back);
-  this->front->fill(b_objs, depth + 1);
-  this->back->fill(a_objs, depth + 1);
+  this->front = new kdNode(front_bb);
+  this->back = new kdNode(back_bb);
+  this->front->fill(best_front_objs, depth + 1);
+  this->back->fill(best_back_objs, depth + 1);
 }
 
