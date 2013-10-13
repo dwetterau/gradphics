@@ -215,6 +215,25 @@ protected:
 	Material* material;
 };
 
+class kdNode {
+  const static int objectLimit = 5;
+  const static int depthLimit = 10;
+  
+  public:
+    kdNode(const BoundingBox& bb);
+    kdNode() {}
+    Vec3d N;
+    Vec3d d;
+    kdNode* front;
+    kdNode* back;
+    std::vector<Geometry*> objects;
+    
+    bool leaf;
+    BoundingBox bounds;
+    void fill(std::vector<Geometry*> objs, int depth);
+  };
+
+
 class Scene {
 
 public:
@@ -234,7 +253,7 @@ public:
 		objects.push_back( obj );
 	}
 	void add( Light* light ) { lights.push_back( light ); }
-
+  void buildKdTree();
 	bool intersect( const ray& r, isect& i ) const;
 
 	std::vector<Light*>::const_iterator beginLights() const { return lights.begin(); }
@@ -267,6 +286,7 @@ private:
 	std::vector<Geometry*> boundedobjects;
 	std::vector<Light*> lights;
 	Camera camera;
+  kdNode root;
 
 	// This is the total amount of ambient light in the scene
 	// (used as the I_a in the Phong shading model)
@@ -285,27 +305,5 @@ public:
 	mutable std::vector< std::pair<ray, isect> > intersectCache;
 };
 
-class kdNode {
-  const static int objectLimit = 5;
-  const static int depthLimit = 10;
-  
-  public:
-    kdNode(int min_x, int max_x, int min_y, int max_y, int min_z, int max_z);
-
-    Vec3d N;
-    Vec3d d;
-    kdNode* front;
-    kdNode* back;
-    std::vector<Geometry*> objects;
-    
-    int xmin;
-    int xmax;
-    int ymin;
-    int ymax;
-    int zmin;
-    int zmax;
-
-    void fill(std::vector<Geometry*> objs, int depth);
-};
 
 #endif // __SCENE_H__

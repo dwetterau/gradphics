@@ -23,9 +23,9 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
 	// shading model, including the contributions of all the light sources.
     // You will need to call both distanceAttenuation() and shadowAttenuation()
     // somewhere in your code in order to compute shadows and light falloff.
-	if( debugMode )
-		std::cout << "Debugging Phong code..." << std::endl;
-
+	if( debugMode ) {
+		//std::cout << "Debugging Phong code..." << std::endl;
+  }
 	// When you're iterating through the lights,
 	// you'll want to use code that looks something
 	// like this:
