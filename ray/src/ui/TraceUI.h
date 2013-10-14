@@ -25,7 +25,8 @@ public:
 	TraceUI()
 		: m_nDepth(0), m_nSize(150), m_nAa(1), 
 		m_displayDebuggingInfo( false ),
-		raytracer( 0 )
+		m_accelerated( true ),
+    raytracer( 0 )
 	{ }
 
 	virtual int		run() = 0;
@@ -37,10 +38,15 @@ public:
 	virtual void		setRayTracer( RayTracer* r )
 		{ raytracer = r; }
 
+  virtual void setAccelerated(bool b) {
+    m_accelerated = b;
+  }
+
 	// accessors:
 	int		getSize() const { return m_nSize; }
 	int		getDepth() const { return m_nDepth; }
 	int		getAa() const { return m_nAa; }
+  bool  getAccelerated() const { return m_accelerated; }
 
 protected:
 	RayTracer*	raytracer;
@@ -48,6 +54,7 @@ protected:
 	int			m_nSize;				// Size of the traced image
 	int			m_nDepth;				// Max depth of recursion
   int     m_nAa;          // AA amount
+  bool    m_accelerated;
 
 	// Determines whether or not to show debugging information
 	// for individual rays.  Disabled by default for efficiency

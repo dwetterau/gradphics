@@ -126,6 +126,12 @@ void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 		pUI->m_debuggingWindow->hide();
 }
 
+void GraphicalUI::cb_acceleratedButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setAccelerated(((Fl_Check_Button*)o)->value() == 1);
+}
+
 void GraphicalUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -307,6 +313,14 @@ GraphicalUI::GraphicalUI() {
 		m_debuggingDisplayCheckButton->user_data((void*)(this));
 		m_debuggingDisplayCheckButton->callback(cb_debuggingDisplayCheckButton);
 		m_debuggingDisplayCheckButton->value(m_displayDebuggingInfo);
+
+		// set up debugging display checkbox
+    m_acceleratedButton = new Fl_Check_Button(0, 105, 180, 20, "Use KD Tree");
+		m_acceleratedButton->user_data((void*)(this));
+		m_acceleratedButton->callback(cb_acceleratedButton);
+		m_acceleratedButton->value(m_accelerated);
+
+
 
 		// set up "render" button
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");

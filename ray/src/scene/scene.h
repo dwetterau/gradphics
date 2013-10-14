@@ -216,10 +216,10 @@ protected:
 };
 
 class kdNode {
-  const static int objectLimit = 2;
+  const static int objectLimit = 5;
   const static int depthLimit = 10;
-  const static int kt = 2;
-  const static int ki = 160;
+  const static int kt = 1;
+  const static int ki = 80;
 
   public:
     kdNode(const BoundingBox& bb);

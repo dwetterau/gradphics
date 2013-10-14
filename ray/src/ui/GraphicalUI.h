@@ -39,6 +39,7 @@ public:
 	Fl_Slider*			m_aaSlider;
 
 	Fl_Check_Button*	m_debuggingDisplayCheckButton;
+	Fl_Check_Button*	m_acceleratedButton;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -71,6 +72,7 @@ private:
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
 	static void cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v);
+	static void cb_acceleratedButton(Fl_Widget* o, void* v);
 
 	static bool doneTrace;		// Flag that gets set when the trace is done
 	static bool stopTrace;		// Flag that gets set when the trace should be stopped

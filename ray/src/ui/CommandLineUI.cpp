@@ -42,6 +42,12 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 			case 'w':
 				m_nSize = atoi( optarg );
 				break;
+      case 'k':
+        m_accelerated = true;
+        break;
+      case 'n':
+        m_accelerated = false;
+        break;
 			default:
 			// Oops; unknown argument
 			std::cerr << "Invalid argument: '" << i << "'." << std::endl;
