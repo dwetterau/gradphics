@@ -49,12 +49,23 @@ Scene::~Scene() {
 }
 
 bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) const {
+  double tmin, tmax;
+	if (!root->bounds.intersect(r, tmin, tmax)) {
+    // Doesn't intersect empty space...
+    return false;
+  }
+  if (tmax < 0) {
+    return 0;
+  }
   if (root->leaf) {
     bool have_one = false;
 	  typedef vector<Geometry*>::const_iterator iter;
     for( iter j = root->objects.begin(); j != root->objects.end(); ++j ) {
 		  isect cur;
 		  if( (*j)->intersect( r, cur ) ) {
+        if (cur.t < tmin || cur.t > tmax) {
+          continue;
+        }
         if((cur.t >= 0) && (!have_one || (cur.t < i.t))) {
 				  i = cur;
 				  have_one = true;
@@ -63,13 +74,11 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
 	  }
 	  return have_one; 
   } else {
-    // See which side(s) to recurse down
-  	double tmin, tmax;
-	  if (!root->bounds.intersect(r, tmin, tmax) || tmax < 0) {
-      // Doesn't intersect empty space...
-      return false;
-    }
+    tmin = max(tmin, 0.0);
+    tmax = min(tmax, 1000.0);
+    // See which side(s) to recurse down	
     // compute t*
+    
     double d = root->d[0] + root->d[1] + root->d[2];
     d -= root->N * r.getPosition();
     double dot = root->N * r.getDirection();
@@ -77,59 +86,24 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
       dot = RAY_EPSILON;
     }
     double t = d / dot;
-    
+   
+    kdNode* front = root->front;
+    kdNode* back = root->back;
+
+    if (dot < 0) {
+     back = root->front;
+     front = root->back;
+    }
+
     if (t > tmax) {
-      if (dot > 0) {
-        return findFirstIntersection(r, i, root->back); 
-      } else {
-        return findFirstIntersection(r, i, root->front);
-      }
+      return findFirstIntersection(r, i, back); 
     } else if (t < tmin) {
-      if (dot > 0) {
-        return findFirstIntersection(r, i, root->front);
-      } else {
-        return findFirstIntersection(r, i, root->back);
-      }
+      return findFirstIntersection(r, i, front);
     } else if (t <= tmax && t >= tmin) {
       if (t < 0) {
-        if (dot > 0) {
-          return findFirstIntersection(r, i, root->front);
-        } else {
-          return findFirstIntersection(r, i, root->back);
-        }
+        return findFirstIntersection(r, i, front);
       }
-      /*
-      if (dot > 0) {
-        return findFirstIntersection(r, i, root->back) || findFirstIntersection(r, i, root->front);
-      } else {
-        return findFirstIntersection(r, i, root->front) || findFirstIntersection(r, i, root->back);
-      }
-      */
-      isect cur1, cur2;
-      bool inFirst, inSecond;
-      if (dot > 0) {
-        inFirst = findFirstIntersection(r, cur1, root->back);
-        inSecond = findFirstIntersection(r, cur2, root->front);
-      } else {
-        inFirst = findFirstIntersection(r, cur1, root->front);
-        inSecond = findFirstIntersection(r, cur2, root->back);
-      }
-      if (inFirst && inSecond) {
-        if (cur1.t < cur2.t) {
-          i = cur1;
-        } else {
-          i = cur2;
-        }
-        return true;
-      } else if (inFirst) {
-        i = cur1;
-        return true;
-      } else if (inSecond) {
-        i = cur2;
-        return true;
-      } else {
-        return false;
-      }
+      return findFirstIntersection(r, i, back) || findFirstIntersection(r, i, front);
     }
   }
   return false;
@@ -138,20 +112,19 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
 bool Scene::intersect( const ray& r, isect& i ) const {
-	bool have_one = false;
-	typedef vector<Geometry*>::const_iterator iter;
-  bool accelerated = traceUI->getAccelerated();
+	bool accelerated = traceUI->getAccelerated();
   if (accelerated) {
     if (findFirstIntersection(r, i, &root)) {
-      intersectCache.push_back( std::make_pair(r,i) );
+      //intersectCache.push_back( std::make_pair(r,i) );
       return true; 
     } else {
-      i.setT(1000.0);
-      intersectCache.push_back( std::make_pair(r,i) );
+      //i.setT(1000.0);
+      //intersectCache.push_back( std::make_pair(r,i) );
       return false;
     }
-
   } else {
+    bool have_one = false;
+	  typedef vector<Geometry*>::const_iterator iter;
     for( iter j = objects.begin(); j != objects.end(); ++j ) {
 		  isect cur;
 		  if( (*j)->intersect( r, cur ) ) {
@@ -190,7 +163,12 @@ kdNode::kdNode(const BoundingBox& bb) {
 
 double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs, 
     double S, double bestC, 
-    std::vector<Geometry*>* front_objs, std::vector<Geometry*>* back_objs) {
+    std::vector<Geometry*>* front_objs, 
+    std::vector<Geometry*>* back_objs,
+    Vec3d* d,
+    Vec3d* N,
+    BoundingBox* front_bb,
+    BoundingBox* back_bb) {
   
   if (val > bounds.getMin()[index] && val < bounds.getMax()[index]) {
     double Sa = 0;
@@ -215,21 +193,24 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
         temp_front_objs.push_back(objs[j]);
       }
     }
+    if (Na + Nb > 3.0 * objs.size() / 2.0) {
+      return 2000000000;
+    }
     double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
     if (C < bestC) {
       *front_objs = std::vector<Geometry*>(temp_front_objs);
       *back_objs = std::vector<Geometry*>(temp_back_objs);
-      this->N = Vec3d(0, 0, 0);
-      this->d = Vec3d(0, 0, 0);
-      this->N[index] = 1;
-      this->d[index] = val;
+      *N = Vec3d(0, 0, 0);
+      *d = Vec3d(0, 0, 0);
+      (*N)[index] = 1;
+      (*d)[index] = val;
 
       Vec3d newMaxBounds = bounds.getMax();
       newMaxBounds[index] = val;
       Vec3d newMinBounds = bounds.getMin();
       newMinBounds[index] = val;
-      this->back_bb = BoundingBox(bounds.getMin(), newMaxBounds);
-      this->front_bb = BoundingBox(newMinBounds, bounds.getMax());
+      *back_bb = BoundingBox(bounds.getMin(), newMaxBounds);
+      *front_bb = BoundingBox(newMinBounds, bounds.getMax());
     }
     return C;
   } else {
@@ -247,40 +228,61 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   this->leaf = false;
   // try splitting on all x values
   // first sort objects based off xMin
+  this ->front = NULL;
+  double totalS = 0;
+  for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
+    BoundingBox bb = objs[j]->getBoundingBox();
+    totalS += bb.area();
+  }
   double S = bounds.area(); 
   std::vector<Geometry*> best_front_objs;
   std::vector<Geometry*> best_back_objs;
-  double bestC = 2000000000;
-  BoundingBox front;
-  BoundingBox back;
+  double bestC = ki * totalS / S * objs.size();
 
   for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
     // bad n^2 algorithm for this
     std::vector<Geometry*>* front_objs = new std::vector<Geometry*>(); 
     std::vector<Geometry*>* back_objs = new std::vector<Geometry*>(); 
-   
+    Vec3d* cur_N = new Vec3d(0,0,0);
+    Vec3d* cur_d = new Vec3d(0,0,0);
+    BoundingBox* cur_back_bb  = new BoundingBox();
+    BoundingBox* cur_front_bb  = new BoundingBox();
+
     // xMin for this object:
     double val, C;
     for (int j = 0; j < 3; j++) {
       val = objs[j]->getBoundingBox().getMin()[j];
-      C= tryPlane(val, j, objs, S, bestC, front_objs, back_objs);
+      C= tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
       if (C < bestC) {
         bestC = C;
         best_front_objs = std::vector<Geometry*>(*front_objs);
         best_back_objs = std::vector<Geometry*>(*back_objs);
+        this->N = *cur_N;
+        this->d = *cur_d;
+        this->front = new kdNode(*cur_front_bb);
+        this->back = new kdNode(*cur_back_bb);
       }
       val = objs[j]->getBoundingBox().getMax()[j];
-      C = tryPlane(val, j, objs, S, bestC, front_objs, back_objs);
+      C = tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
       if (C < bestC) {
         bestC = C;
         best_front_objs = std::vector<Geometry*>(*front_objs);
         best_back_objs = std::vector<Geometry*>(*back_objs);
+        this->N = *cur_N;
+        this->d = *cur_d;
+        this->front = new kdNode(*cur_front_bb);
+        this->back = new kdNode(*cur_back_bb);
       }
     }
   }
-  this->front = new kdNode(front_bb);
-  this->back = new kdNode(back_bb);
-  this->front->fill(best_front_objs, depth + 1);
-  this->back->fill(best_back_objs, depth + 1);
+  if (!this->front) {
+    // This node should be a leaf, no good plane to split on
+    cout << "made special node with # " << objs.size() << endl;
+    this->objects = objs;
+    this->leaf = true;
+    return;
+  }
+  this->front->fill(std::vector<Geometry*>(best_front_objs), depth + 1);
+  this->back->fill(std::vector<Geometry*>(best_back_objs), depth + 1);
 }
 

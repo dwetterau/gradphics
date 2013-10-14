@@ -218,8 +218,8 @@ protected:
 class kdNode {
   const static int objectLimit = 5;
   const static int depthLimit = 10;
-  const static int kt = 1;
-  const static int ki = 80;
+  const static int kt = 2;
+  const static int ki = 160;
 
   public:
     kdNode(const BoundingBox& bb);
@@ -229,16 +229,20 @@ class kdNode {
     kdNode* front;
     kdNode* back;
     std::vector<Geometry*> objects;
-    BoundingBox back_bb;
-    BoundingBox front_bb;
     
     bool leaf;
     BoundingBox bounds;
     void fill(std::vector<Geometry*> objs, int depth);
     double tryPlane(double val, int index, std::vector<Geometry*> objs, 
-        double S, double C, std::vector<Geometry*>* front_objs, std::vector<Geometry*>* back_objs);
-  };
-
+        double S, 
+        double C, 
+        std::vector<Geometry*>* front_objs, 
+        std::vector<Geometry*>* back_objs,
+        Vec3d* d,
+        Vec3d* N,
+        BoundingBox* front_bb,
+        BoundingBox* back_bb);
+};
 
 class Scene {
 
