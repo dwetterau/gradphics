@@ -97,7 +97,14 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, d
       if (t < 0) {
         return findFirstIntersection(r, i, front, 0.0, tmax);
       }
-      return findFirstIntersection(r, i, back, tmin, t) || findFirstIntersection(r, i, front, t, tmax);
+      isect cur;
+      bool first = findFirstIntersection(r, cur, back, tmin, t);
+      if (!first) {
+        return findFirstIntersection(r, i, front, t, tmax);
+      } else {
+        i = cur;
+        return true;
+      }
     }
   }
   return false;
@@ -164,33 +171,36 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
     BoundingBox* front_bb,
     BoundingBox* back_bb) {
   
+  double Sa = 0;
+  double Sb = 0;
   if (val > bounds.getMin()[index] && val < bounds.getMax()[index]) {
-    double Sa = 0;
-    double Sb = 0;
-    int Na = 0;
-    int Nb = 0;
     std::vector<Geometry*> temp_front_objs = std::vector<Geometry*>();
     std::vector<Geometry*> temp_back_objs = std::vector<Geometry*>();
     for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
       BoundingBox bb = objs[j]->getBoundingBox();
-      double cur_area = bb.area();
       double cur_min = bb.getMin()[index];
       double cur_max = bb.getMax()[index];
       if (cur_min < val) {
-        Sa += cur_area;
-        Na += 1;
         temp_back_objs.push_back(objs[j]);
+        Sa += bb.area();
       }
       if (cur_max > val) {
-        Sb += cur_area;
-        Nb += 1;
         temp_front_objs.push_back(objs[j]);
+        Sb += bb.area();
       }
     }
-    if (Na + Nb > 3.0 * objs.size() / 2.0) {
-      return 2000000000;
-    }
-    double C = kt + ki * Na * (Sa / S) + ki * Nb * (Sb / S);
+ 
+    Vec3d newMaxBounds = bounds.getMax();
+    newMaxBounds[index] = val;
+    Vec3d newMinBounds = bounds.getMin();
+    newMinBounds[index] = val;
+    BoundingBox back = BoundingBox(bounds.getMin(), newMaxBounds);
+    BoundingBox front = BoundingBox(newMinBounds, bounds.getMax()); 
+    //double Sa = back.area();
+    //double Sb = front.area();
+      
+    double C = kt + ki * (temp_back_objs.size() * (Sa / S) + temp_front_objs.size() * (Sb / S));
+    //cout << C << " back: " << temp_back_objs.size() << " front: " << temp_front_objs.size() << endl;
     if (C < bestC) {
       *front_objs = std::vector<Geometry*>(temp_front_objs);
       *back_objs = std::vector<Geometry*>(temp_back_objs);
@@ -198,17 +208,12 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
       *d = Vec3d(0, 0, 0);
       (*N)[index] = 1;
       (*d)[index] = val;
-
-      Vec3d newMaxBounds = bounds.getMax();
-      newMaxBounds[index] = val;
-      Vec3d newMinBounds = bounds.getMin();
-      newMinBounds[index] = val;
-      *back_bb = BoundingBox(bounds.getMin(), newMaxBounds);
-      *front_bb = BoundingBox(newMinBounds, bounds.getMax());
+      *back_bb = back;
+      *front_bb = front;
     }
     return C;
   } else {
-    return 2000000000;
+    return 1e308;
   }
 }
 
@@ -228,10 +233,10 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
     BoundingBox bb = objs[j]->getBoundingBox();
     totalS += bb.area();
   }
-  double S = bounds.area(); 
+  double S = totalS; //bounds.area(); 
   std::vector<Geometry*> best_front_objs;
   std::vector<Geometry*> best_back_objs;
-  double bestC = ki * totalS / S * objs.size();
+  double bestC = 1e308;
 
   for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
     // bad n^2 algorithm for this
@@ -245,8 +250,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
     // xMin for this object:
     double val, C;
     for (int j = 0; j < 3; j++) {
-      val = objs[j]->getBoundingBox().getMin()[j];
-      C= tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
+      val = objs[i]->getBoundingBox().getMin()[j];
+      C = tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
       if (C < bestC) {
         bestC = C;
         best_front_objs = std::vector<Geometry*>(*front_objs);
@@ -256,7 +261,7 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
         this->front = new kdNode(*cur_front_bb);
         this->back = new kdNode(*cur_back_bb);
       }
-      val = objs[j]->getBoundingBox().getMax()[j];
+      val = objs[i]->getBoundingBox().getMax()[j];
       C = tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
       if (C < bestC) {
         bestC = C;
@@ -269,7 +274,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       }
     }
   }
-  if (!this->front) {
+  //cout << "split " << objs.size() << " nodes into " << best_front_objs.size() << " and " << best_back_objs.size() << endl;
+  if (best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
     // This node should be a leaf, no good plane to split on
     cout << "made special node with # " << objs.size() << endl;
     this->objects = objs;
