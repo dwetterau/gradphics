@@ -148,7 +148,10 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
       const Vec3d& aNorm = parent->normals[ids[0]];
       const Vec3d& bNorm = parent->normals[ids[1]];
       const Vec3d& cNorm = parent->normals[ids[2]];
-      i.setN(alpha * aNorm + beta * bNorm + gamma * cNorm);
+      Vec3d newNormal = alpha * aNorm;
+      newNormal += beta * bNorm;
+      newNormal += gamma * cNorm;
+      i.setN(newNormal);
     } else {
       n.normalize();
       i.setN(n);
