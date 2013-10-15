@@ -183,34 +183,47 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
   
   double Sa = 0;
   double Sb = 0;
+  int Na = 0;
+  int Nb = 0;
   if (val > bounds.getMin()[index] && val < bounds.getMax()[index]) {
-    std::vector<Geometry*> temp_front_objs = std::vector<Geometry*>();
-    std::vector<Geometry*> temp_back_objs = std::vector<Geometry*>();
     for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
       BoundingBox bb = objs[j]->getBoundingBox();
       double cur_min = bb.getMin()[index];
       double cur_max = bb.getMax()[index];
       if (cur_min < val + RAY_EPSILON) {
-        temp_back_objs.push_back(objs[j]);
+        Na += 1;
         Sa += bb.area();
       }
       if (cur_max > val - RAY_EPSILON) {
-        temp_front_objs.push_back(objs[j]);
+        Nb += 1;
         Sb += bb.area();
       }
     }
- 
-    Vec3d newMaxBounds = bounds.getMax();
-    newMaxBounds[index] = val;
-    Vec3d newMinBounds = bounds.getMin();
-    newMinBounds[index] = val;
-    BoundingBox back = BoundingBox(bounds.getMin(), newMaxBounds);
-    BoundingBox front = BoundingBox(newMinBounds, bounds.getMax()); 
-      
-    double C = kt + ki * (temp_back_objs.size() * (Sa / S) + temp_front_objs.size() * (Sb / S));
+    double C = kt + ki * (Na * (Sa / S) + Nb * (Sb / S));
     if (C < bestC) {
-      *front_objs = std::vector<Geometry*>(temp_front_objs);
-      *back_objs = std::vector<Geometry*>(temp_back_objs);
+      // Need to do the loop again to actually get the list of objects
+      std::vector<Geometry*> temp_front_objs = std::vector<Geometry*>();
+      std::vector<Geometry*> temp_back_objs = std::vector<Geometry*>();
+      for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
+        BoundingBox bb = objs[j]->getBoundingBox();
+        double cur_min = bb.getMin()[index];
+        double cur_max = bb.getMax()[index];
+        if (cur_min < val /*+ RAY_EPSILON*/) {
+          temp_back_objs.push_back(objs[j]);
+        }
+        if (cur_max > val /*- RAY_EPSILON*/) {
+          temp_front_objs.push_back(objs[j]);
+        }
+      } 
+      Vec3d newMaxBounds = bounds.getMax();
+      newMaxBounds[index] = val;
+      Vec3d newMinBounds = bounds.getMin();
+      newMinBounds[index] = val;
+      BoundingBox back = BoundingBox(bounds.getMin(), newMaxBounds);
+      BoundingBox front = BoundingBox(newMinBounds, bounds.getMax()); 
+      
+      *front_objs = temp_front_objs; //std::vector<Geometry*>(temp_front_objs);
+      *back_objs = temp_back_objs; //std::vector<Geometry*>(temp_back_objs);
       *N = Vec3d(0, 0, 0);
       *d = Vec3d(0, 0, 0);
       (*N)[index] = 1;
@@ -246,7 +259,8 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   double bestC = 1e308;
 
   for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
-    cout << "considering planes on object # " << i << " of # " << objs.size() << endl;
+    //if (i % (objs.size() / 100 + 1) == 0)
+    //  cout << "considering planes on object # " << i << " of # " << objs.size() << endl;
     // bad n^2 algorithm for this
     std::vector<Geometry*>* front_objs = new std::vector<Geometry*>(); 
     std::vector<Geometry*>* back_objs = new std::vector<Geometry*>(); 
@@ -282,7 +296,7 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       }
     }
   }
-  cout << bestC << ", " << best_front_objs.size() << ", " << best_back_objs.size() << endl;
+  //cout << bestC << ", " << best_front_objs.size() << ", " << best_back_objs.size() << endl;
   if (bestC == 1e308 || best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
     // This node should be a leaf, no good plane to split on
     cout << "made special node with # " << objs.size() << endl;
