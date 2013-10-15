@@ -50,11 +50,12 @@ Scene::~Scene() {
 
 bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, double tmin, double tmax) const {
   if (tmax < 0) {
-    return 0;
+    return false;
   }
   if (root->leaf) {
     bool have_one = false;
 	  typedef vector<Geometry*>::const_iterator iter;
+    //cout << "checking with " << root->objects.size() << " objects" <<  r.type() << endl;
     for( iter j = root->objects.begin(); j != root->objects.end(); ++j ) {
 		  isect cur;
 		  if( (*j)->intersect( r, cur ) ) {
@@ -67,9 +68,8 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, d
 			  }
 		  }
 	  }
-	  return have_one; 
+	  return have_one;
   } else {
-    tmin = max(tmin, 0.0);
     tmax = min(tmax, 1000.0);
     // See which side(s) to recurse down	
     // compute t*
@@ -95,7 +95,7 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, d
       return findFirstIntersection(r, i, front, tmin, tmax);
     } else if (t <= tmax && t >= tmin) {
       if (t < 0) {
-        return findFirstIntersection(r, i, front, 0.0, tmax);
+        return findFirstIntersection(r, i, front, t, tmax);
       }
       isect cur;
       bool first = findFirstIntersection(r, cur, back, tmin, t);
@@ -105,7 +105,7 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, d
         i = cur;
         return true;
       }
-    }
+    } 
   }
   return false;
 }
@@ -116,7 +116,9 @@ bool Scene::intersect( const ray& r, isect& i ) const {
 	bool accelerated = traceUI->getAccelerated();
   if (accelerated) {
   	double tmin, tmax;
-	  root.bounds.intersect(r, tmin, tmax);
+	  if (!root.bounds.intersect(r, tmin, tmax)) {
+      return false;
+    }
     if (findFirstIntersection(r, i, &root, tmin, tmax)) {
       intersectCache.push_back( std::make_pair(r,i) );
       return true; 
@@ -196,11 +198,8 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
     newMinBounds[index] = val;
     BoundingBox back = BoundingBox(bounds.getMin(), newMaxBounds);
     BoundingBox front = BoundingBox(newMinBounds, bounds.getMax()); 
-    //double Sa = back.area();
-    //double Sb = front.area();
       
     double C = kt + ki * (temp_back_objs.size() * (Sa / S) + temp_front_objs.size() * (Sb / S));
-    //cout << C << " back: " << temp_back_objs.size() << " front: " << temp_front_objs.size() << endl;
     if (C < bestC) {
       *front_objs = std::vector<Geometry*>(temp_front_objs);
       *back_objs = std::vector<Geometry*>(temp_back_objs);
@@ -274,7 +273,6 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       }
     }
   }
-  //cout << "split " << objs.size() << " nodes into " << best_front_objs.size() << " and " << best_back_objs.size() << endl;
   if (best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
     // This node should be a leaf, no good plane to split on
     cout << "made special node with # " << objs.size() << endl;

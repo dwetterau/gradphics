@@ -216,8 +216,8 @@ protected:
 };
 
 class kdNode {
-  const static int objectLimit = 10;
-  const static int depthLimit = 10;
+  const static int objectLimit = 5;
+  const static int depthLimit = 15;
   const static int kt = 1;
   const static int ki = 80;
 
