@@ -49,7 +49,7 @@ public:
     char *doubleCheck();
     
     void generateNormals();
-
+    void buildKdTree();
     bool hasBoundingBoxCapability() const { return true; }
       
     BoundingBox ComputeLocalBoundingBox()
@@ -72,6 +72,7 @@ protected:
 	void glDrawLocal(int quality, bool actualMaterials, bool actualTextures) const;
 	mutable int displayListWithMaterials;
 	mutable int displayListWithoutMaterials;
+  kdNode root;
 };
 
 class TrimeshFace : public MaterialSceneObject

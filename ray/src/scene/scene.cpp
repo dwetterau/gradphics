@@ -226,12 +226,13 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   this->leaf = false;
   // try splitting on all x values
   // first sort objects based off xMin
-  this ->front = NULL;
+  this->front = NULL;
   double totalS = 0;
   for (std::vector<Geometry*>::size_type j = 0; j < objs.size(); j++) {
     BoundingBox bb = objs[j]->getBoundingBox();
     totalS += bb.area();
   }
+  cout << totalS << " totalS" << endl;
   double S = totalS; //bounds.area(); 
   std::vector<Geometry*> best_front_objs;
   std::vector<Geometry*> best_back_objs;
@@ -273,10 +274,11 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       }
     }
   }
-  if (best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
+  if (bestC == 1e308 || best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
     // This node should be a leaf, no good plane to split on
     cout << "made special node with # " << objs.size() << endl;
     this->objects = objs;
+    cout << "finished this assignment" << endl;
     this->leaf = true;
     return;
   }

@@ -48,8 +48,19 @@ Trimesh::doubleCheck()
         return "Bad Trimesh: Wrong number of materials.";
     if( !normals.empty() && normals.size() != vertices.size() )
         return "Bad Trimesh: Wrong number of normals.";
-
+    buildKdTree();
     return 0;
+}
+
+void Trimesh::buildKdTree() {
+  root = kdNode(ComputeLocalBoundingBox());
+	std::vector<Geometry*> geoPointers;
+  typedef Faces::const_iterator iter;
+	for( iter j = faces.begin(); j != faces.end(); ++j ) {
+    geoPointers.push_back((*j));
+  }
+  root.fill(geoPointers, 0);
+  cout << "finished filling trimesh tree with " << faces.size() << " objects" << endl;
 }
 
 bool Trimesh::intersectLocal(const ray&r, isect&i) const
