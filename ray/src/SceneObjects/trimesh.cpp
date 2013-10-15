@@ -53,7 +53,15 @@ Trimesh::doubleCheck()
 }
 
 void Trimesh::buildKdTree() {
-  root = kdNode(ComputeLocalBoundingBox());
+  Vec3d min = ComputeLocalBoundingBox().getMin();
+  Vec3d max = ComputeLocalBoundingBox().getMax();
+  min[0] -= RAY_EPSILON;
+  min[1] -= RAY_EPSILON;
+  min[2] -= RAY_EPSILON;
+  max[0] += RAY_EPSILON;
+  max[1] += RAY_EPSILON;
+  max[2] += RAY_EPSILON;
+  root = kdNode(BoundingBox(min, max));
 	std::vector<Geometry*> geoPointers;
   typedef Faces::const_iterator iter;
 	for( iter j = faces.begin(); j != faces.end(); ++j ) {
@@ -69,19 +77,36 @@ bool Trimesh::intersectLocal(const ray&r, isect&i) const
 	double tmax = 0.0;
 	typedef Faces::const_iterator iter;
 	bool have_one = false;
-	for( iter j = faces.begin(); j != faces.end(); ++j ) {
-		isect cur;
-		if( (*j)->intersectLocal( r, cur ) )
-		{
-			if( !have_one || (cur.t < i.t) )
-			{
-				i = cur;
-				have_one = true;
-			}
-		}
-	}
-	if( !have_one ) i.setT(1000.0);
-	return have_one;
+  
+  // TODO: set this differently
+  bool accelerated = true;
+  if (accelerated && !root.leaf) {
+    double tmin, tmax;
+    if(!root.bounds.intersect(r, tmin, tmax)) {
+      i.setT(1000.0);
+      return false;
+    }
+    if (scene->findFirstIntersection(r, i, &root, tmin, tmax)) {
+      return true;
+    } else {
+      i.setT(1000.0);
+      return false;
+    }
+  } else {
+    for( iter j = faces.begin(); j != faces.end(); ++j ) {
+		  isect cur;
+		  if( (*j)->intersectLocal( r, cur ) )
+		  {
+			  if( !have_one || (cur.t < i.t) )
+			  {
+				  i = cur;
+				  have_one = true;
+			  }
+		  }
+	  }
+	  if( !have_one ) i.setT(1000.0);
+	  return have_one;
+  }
 }
 
 // Intersect ray r with the triangle abc.  If it hits returns true,

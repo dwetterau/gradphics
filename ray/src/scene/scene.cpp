@@ -155,7 +155,15 @@ TextureMap* Scene::getTexture( string name ) {
 }
 
 void Scene::buildKdTree() {
-  root = kdNode(bounds());
+  Vec3d min = bounds().getMin();
+  Vec3d max = bounds().getMax();
+  min[0] -= RAY_EPSILON;
+  min[1] -= RAY_EPSILON;
+  min[2] -= RAY_EPSILON;
+  max[0] += RAY_EPSILON;
+  max[1] += RAY_EPSILON;
+  max[2] += RAY_EPSILON;
+  root = kdNode(BoundingBox(min, max));
   root.fill(objects, 0);
   cout << "finished filling tree with " << objects.size() << " objects" << endl;
 }
@@ -182,11 +190,11 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
       BoundingBox bb = objs[j]->getBoundingBox();
       double cur_min = bb.getMin()[index];
       double cur_max = bb.getMax()[index];
-      if (cur_min < val) {
+      if (cur_min < val + RAY_EPSILON) {
         temp_back_objs.push_back(objs[j]);
         Sa += bb.area();
       }
-      if (cur_max > val) {
+      if (cur_max > val - RAY_EPSILON) {
         temp_front_objs.push_back(objs[j]);
         Sb += bb.area();
       }
@@ -232,13 +240,13 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
     BoundingBox bb = objs[j]->getBoundingBox();
     totalS += bb.area();
   }
-  cout << totalS << " totalS" << endl;
   double S = totalS; //bounds.area(); 
   std::vector<Geometry*> best_front_objs;
   std::vector<Geometry*> best_back_objs;
   double bestC = 1e308;
 
   for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
+    cout << "considering planes on object # " << i << " of # " << objs.size() << endl;
     // bad n^2 algorithm for this
     std::vector<Geometry*>* front_objs = new std::vector<Geometry*>(); 
     std::vector<Geometry*>* back_objs = new std::vector<Geometry*>(); 
@@ -250,7 +258,7 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
     // xMin for this object:
     double val, C;
     for (int j = 0; j < 3; j++) {
-      val = objs[i]->getBoundingBox().getMin()[j];
+      val = objs[i]->getBoundingBox().getMin()[j] - RAY_EPSILON;
       C = tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
       if (C < bestC) {
         bestC = C;
@@ -261,7 +269,7 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
         this->front = new kdNode(*cur_front_bb);
         this->back = new kdNode(*cur_back_bb);
       }
-      val = objs[i]->getBoundingBox().getMax()[j];
+      val = objs[i]->getBoundingBox().getMax()[j] + RAY_EPSILON;
       C = tryPlane(val, j, objs, S, bestC, front_objs, back_objs, cur_d, cur_N, cur_front_bb, cur_back_bb);
       if (C < bestC) {
         bestC = C;
@@ -274,6 +282,7 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       }
     }
   }
+  cout << bestC << ", " << best_front_objs.size() << ", " << best_back_objs.size() << endl;
   if (bestC == 1e308 || best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
     // This node should be a leaf, no good plane to split on
     cout << "made special node with # " << objs.size() << endl;
