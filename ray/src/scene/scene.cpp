@@ -48,12 +48,7 @@ Scene::~Scene() {
 	for( t = textureCache.begin(); t != textureCache.end(); t++ ) delete (*t).second;
 }
 
-bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) const {
-  double tmin, tmax;
-	if (!root->bounds.intersect(r, tmin, tmax)) {
-    // Doesn't intersect empty space...
-    return false;
-  }
+bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, double tmin, double tmax) const {
   if (tmax < 0) {
     return 0;
   }
@@ -94,16 +89,15 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
      back = root->front;
      front = root->back;
     }
-
     if (t > tmax) {
-      return findFirstIntersection(r, i, back); 
+      return findFirstIntersection(r, i, back, tmin, tmax); 
     } else if (t < tmin) {
-      return findFirstIntersection(r, i, front);
+      return findFirstIntersection(r, i, front, tmin, tmax);
     } else if (t <= tmax && t >= tmin) {
       if (t < 0) {
-        return findFirstIntersection(r, i, front);
+        return findFirstIntersection(r, i, front, 0.0, tmax);
       }
-      return findFirstIntersection(r, i, back) || findFirstIntersection(r, i, front);
+      return findFirstIntersection(r, i, back, tmin, t) || findFirstIntersection(r, i, front, t, tmax);
     }
   }
   return false;
@@ -114,12 +108,14 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root) c
 bool Scene::intersect( const ray& r, isect& i ) const {
 	bool accelerated = traceUI->getAccelerated();
   if (accelerated) {
-    if (findFirstIntersection(r, i, &root)) {
-      //intersectCache.push_back( std::make_pair(r,i) );
+  	double tmin, tmax;
+	  root.bounds.intersect(r, tmin, tmax);
+    if (findFirstIntersection(r, i, &root, tmin, tmax)) {
+      intersectCache.push_back( std::make_pair(r,i) );
       return true; 
     } else {
-      //i.setT(1000.0);
-      //intersectCache.push_back( std::make_pair(r,i) );
+      i.setT(1000.0);
+      intersectCache.push_back( std::make_pair(r,i) );
       return false;
     }
   } else {
@@ -140,8 +136,6 @@ bool Scene::intersect( const ray& r, isect& i ) const {
 	  return have_one;
   }
 }
-
-
 
 TextureMap* Scene::getTexture( string name ) {
 	tmap::const_iterator itr = textureCache.find( name );

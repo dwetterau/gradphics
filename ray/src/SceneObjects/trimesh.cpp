@@ -81,13 +81,17 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     const Vec3d& a = parent->vertices[ids[0]];
     const Vec3d& b = parent->vertices[ids[1]];
     const Vec3d& c = parent->vertices[ids[2]];
-    
     Vec3d n = (b - a) ^ (c - a);
     double area = n.length() / 2;
     n /= area * 2;
     double d = n * a;
     d -= n * r.getPosition();
-    double t = d / (n * r.getDirection());
+    double dot = n * r.getDirection();
+    if (dot == 0 || (dot != dot)) {
+      return false;
+    }
+    double t = d / dot;
+    
     if (t < RAY_EPSILON) {
       return false;
     }
