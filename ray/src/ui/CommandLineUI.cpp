@@ -29,15 +29,21 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 
 	progName=argv[0];
   m_accelerated = true;
-  objectLimit = 5;
+  objectLimit = 3;
   depthLimit = 15;
   m_cm = false;
   m_stoc = false;
   cutoff = 0.0;
-  while( (i = getopt( argc, argv, (char*)"tr:w:h:a:n:")) != EOF )
+  while( (i = getopt( argc, argv, (char*)"tr:w:h:a:n:d:l:")) != EOF )
 	{
 		switch( i )
 		{
+            case 'd':
+                depthLimit = atoi(optarg);
+                break;
+            case 'l':
+                objectLimit = atoi(optarg);
+                break;
 			case 'r':
 				m_nDepth = atoi( optarg );
 				break;

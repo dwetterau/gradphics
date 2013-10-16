@@ -185,7 +185,7 @@ void Scene::buildKdTree() {
   cout << "building object tree with depthLimit: " << traceUI->getDepthLimit() << 
       " and objectLimit: " << traceUI->getObjectLimit() << endl;
   root.fill(objects, 0);
-  cout << "finished object filling tree with " << objects.size() << " objects." << endl;
+  cout << "finished object tree with " << objects.size() << " objects." << endl;
 }
 
 kdNode::kdNode(const BoundingBox& bb) {
