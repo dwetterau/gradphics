@@ -652,6 +652,23 @@ void Parser::parseTrimesh(Scene* scene, TransformNode* transform, const Material
         _tokenizer.Read( SEMICOLON );
         break;
 
+      case POLYUVS:
+        _tokenizer.Read( POLYUVS );
+        _tokenizer.Read( EQUALS );
+        _tokenizer.Read( LPAREN );
+        if (RPAREN != _tokenizer.Peek()->kind()) {
+          tmesh->addUV( parseVec2d() );
+          for ( ;; ) {
+            const Token* nextToken = _tokenizer.Peek();
+            if( RPAREN == nextToken->kind() )
+              break;
+            _tokenizer.Read( COMMA );
+            tmesh->addUV( parseVec2d() );
+          }
+        }
+        _tokenizer.Read( RPAREN );
+        _tokenizer.Read( SEMICOLON );
+        break;
 
       case RBRACE:
       {
@@ -939,6 +956,19 @@ bool Parser::parseBoolean()
   }
   throw SyntaxErrorException( "Expected boolean", _tokenizer );
 }
+
+Vec2d Parser::parseVec2d()
+{
+  _tokenizer.Read( LPAREN );
+  auto_ptr<Token> value1( _tokenizer.Read( SCALAR ) );
+  _tokenizer.Read( COMMA );
+  auto_ptr<Token> value2( _tokenizer.Read( SCALAR ) );
+  _tokenizer.Read( RPAREN );
+
+  return Vec2d(value1->value(), 
+    value2->value()); 
+}
+
 
 Vec3d Parser::parseVec3d()
 {

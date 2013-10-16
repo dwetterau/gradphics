@@ -71,6 +71,7 @@ enum SYMBOL {
   POLYPOINTS, NORMALS,			// keywords affecting polygons
   MATERIALS, FACES,
   GENNORMALS,
+  POLYUVS,
 
   TRANSLATE, SCALE,			// Transforms
   ROTATE, TRANSFORM,

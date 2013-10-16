@@ -15,7 +15,10 @@ void Trimesh::addVertex( const Vec3d &v )
 {
     vertices.push_back( v );
 }
-
+void Trimesh::addUV( const Vec2d &v )
+{
+    uvs.push_back( v );
+}
 void Trimesh::addMaterial( Material *m )
 {
     materials.push_back( m );
@@ -154,6 +157,14 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     } else {
       n.normalize();
       i.setN(n);
+    }
+    if (parent->uvs.size()) {
+      const Vec2d& aNorm = parent->uvs[ids[0]];
+      const Vec2d& bNorm = parent->uvs[ids[1]];
+      const Vec2d& cNorm = parent->uvs[ids[2]];
+      Vec2d uv = Vec2d(aNorm[0]*alpha + bNorm[0]*beta + cNorm[0]*gamma,
+            aNorm[1]*alpha + bNorm[1]*beta + cNorm[1]*gamma);
+      i.setUVCoordinates(uv);
     }
     // material preference
     if (parent->materials.size()) {

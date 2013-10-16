@@ -17,11 +17,13 @@ class Trimesh : public MaterialSceneObject
     typedef std::vector<Vec3d> Vertices;
     typedef std::vector<TrimeshFace*> Faces;
     typedef std::vector<Material*> Materials;
+    typedef std::vector<Vec2d> UVs;
 
     Vertices vertices;
     Faces faces;
     Normals normals;
     Materials materials;
+    UVs uvs;
 	BoundingBox localBounds;
 
 public:
@@ -42,6 +44,7 @@ public:
     
     // must add vertices, normals, and materials IN ORDER
     void addVertex( const Vec3d & );
+    void addUV( const Vec2d & );
     void addMaterial( Material *m );
     void addNormal( const Vec3d & );
     bool addFace( int a, int b, int c );

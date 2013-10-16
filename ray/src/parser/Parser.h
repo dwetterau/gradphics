@@ -96,6 +96,7 @@ private:
     // and idents.
     double parseScalar();
     std::list<double> parseScalarList();
+    Vec2d parseVec2d();
     Vec3d parseVec3d();
     Vec4d parseVec4d();
     bool parseBoolean();
