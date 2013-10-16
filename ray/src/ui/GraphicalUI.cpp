@@ -203,6 +203,13 @@ void GraphicalUI::cb_znName(Fl_Widget* o, void* v) {
   }
 }
 
+void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {
+	GraphicalUI* pUI=((GraphicalUI*)(o->user_data()));
+  if (pUI->raytracer->sceneLoaded()) {
+    pUI->raytracer->reloadScene();
+  }
+}
+
 void GraphicalUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -454,6 +461,12 @@ GraphicalUI::GraphicalUI() {
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));
 		m_renderButton->callback(cb_render);
+
+    // set up "reload" button
+		m_reloadButton = new Fl_Button(200, 360, 130, 25, "&Update Scene");
+		m_reloadButton->user_data((void*)(this));
+		m_reloadButton->callback(cb_reload);
+
 
 		// set up "stop" button
 		m_stopButton = new Fl_Button(240, 55, 70, 25, "&Stop");

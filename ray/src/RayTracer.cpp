@@ -293,12 +293,16 @@ bool RayTracer::loadScene( char* fn )
 		return false;
 	}
 
+	if( ! sceneLoaded() ) { 
+    return false;
+  }
+  reloadScene();
+  return true;
+}
 
-	if( ! sceneLoaded() )
-		return false;
+void RayTracer::reloadScene() {
   scene->buildKdTree();
   scene->loadCubeMap();
-	return true;
 }
 
 void RayTracer::traceSetup( int w, int h )

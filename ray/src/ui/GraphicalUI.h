@@ -54,6 +54,7 @@ public:
 	Fl_Button*			m_loadYNButton;
 	Fl_Button*			m_loadZPButton;
 	Fl_Button*			m_loadZNButton;
+	Fl_Button*			m_reloadButton;
 
 	TraceGLWindow*		m_traceGlWindow;
 
@@ -83,6 +84,7 @@ private:
 	static void cb_objectLimitSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
+	static void cb_reload(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
 	static void cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v);
 	static void cb_acceleratedButton(Fl_Widget* o, void* v);
