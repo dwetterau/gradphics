@@ -148,6 +148,61 @@ void GraphicalUI::cb_stocButton(Fl_Widget* o, void* v)
   pUI->setStoc(((Fl_Check_Button*)o)->value() == 1);
 }
 
+void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setCubeMap(((Fl_Check_Button*)o)->value() == 1);
+}
+
+
+void GraphicalUI::cb_xpName(Fl_Widget* o, void* v) {
+  GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+	char* newfile = fl_file_chooser("Choose +X file", "*.{png,bmp}", NULL );
+	if (newfile != NULL) {
+    pUI->setXPName(newfile);
+  }
+}
+
+void GraphicalUI::cb_xnName(Fl_Widget* o, void* v) {
+  GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+	char* newfile = fl_file_chooser("Choose -X file", "*.{png,bmp}", NULL );
+	if (newfile != NULL) {
+    pUI->setXNName(newfile);
+  }
+}
+
+void GraphicalUI::cb_ypName(Fl_Widget* o, void* v) {
+  GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+	char* newfile = fl_file_chooser("Choose +Y file", "*.{png,bmp}", NULL );
+	if (newfile != NULL) {
+    pUI->setYPName(newfile);
+  }
+}
+
+void GraphicalUI::cb_ynName(Fl_Widget* o, void* v) {
+  GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+	char* newfile = fl_file_chooser("Choose -Y file", "*.{png,bmp}", NULL );
+	if (newfile != NULL) {
+    pUI->setYNName(newfile);
+  }
+}
+
+void GraphicalUI::cb_zpName(Fl_Widget* o, void* v) {
+  GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+	char* newfile = fl_file_chooser("Choose +Z file", "*.{png,bmp}", NULL );
+	if (newfile != NULL) {
+    pUI->setZPName(newfile);
+  }
+}
+
+void GraphicalUI::cb_znName(Fl_Widget* o, void* v) {
+  GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+	char* newfile = fl_file_chooser("Choose -Z file", "*.{png,bmp}", NULL );
+	if (newfile != NULL) {
+    pUI->setZNName(newfile);
+  }
+}
+
 void GraphicalUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -278,7 +333,7 @@ void GraphicalUI::stopTracing()
 GraphicalUI::GraphicalUI() {
 	// init.
 
-	m_mainWindow = new Fl_Window(100, 40, 350, 310, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 420, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -325,7 +380,7 @@ GraphicalUI::GraphicalUI() {
  
 
 		// set up debugging display checkbox
-        m_debuggingDisplayCheckButton = new Fl_Check_Button(5, 280, 180, 20, "Debugging display");
+        m_debuggingDisplayCheckButton = new Fl_Check_Button(5, 400, 180, 20, "Debugging display");
 		m_debuggingDisplayCheckButton->user_data((void*)(this));
 		m_debuggingDisplayCheckButton->callback(cb_debuggingDisplayCheckButton);
 		m_debuggingDisplayCheckButton->value(m_displayDebuggingInfo);
@@ -365,7 +420,37 @@ GraphicalUI::GraphicalUI() {
 		m_objectLimitSlider->align(FL_ALIGN_RIGHT);
 		m_objectLimitSlider->callback(cb_objectLimitSlides);
 
-		// set up "render" button
+    m_cmButton = new Fl_Check_Button(5, 210, 180, 20, "Render with cube map");
+		m_cmButton->user_data((void*)(this));
+		m_cmButton->callback(cb_cmButton);
+		m_cmButton->value(m_cm);
+   
+    // set up "XP file" button
+		m_loadXPButton = new Fl_Button(5, 235, 180, 25, "&select +x texture file");
+		m_loadXPButton->user_data((void*)(this));
+		m_loadXPButton->callback(cb_xpName);
+    // set up "XN file" button
+		m_loadXNButton = new Fl_Button(5, 260, 180, 25, "&select -x texture file");
+		m_loadXNButton->user_data((void*)(this));
+		m_loadXNButton->callback(cb_xnName);
+    // set up "YP file" button
+		m_loadYPButton = new Fl_Button(5, 285, 180, 25, "&select +y texture file");
+		m_loadYPButton->user_data((void*)(this));
+		m_loadYPButton->callback(cb_ypName);
+    // set up "YN file" button
+		m_loadYNButton = new Fl_Button(5, 310, 180, 25, "&select -y texture file");
+		m_loadYNButton->user_data((void*)(this));
+		m_loadYNButton->callback(cb_ynName);
+    // set up "ZP file" button
+		m_loadZPButton = new Fl_Button(5, 335, 180, 25, "&select +z texture file");
+		m_loadZPButton->user_data((void*)(this));
+		m_loadZPButton->callback(cb_zpName);
+	  // set up "ZN file" button
+		m_loadZNButton = new Fl_Button(5, 360, 180, 25, "&select -z texture file");
+		m_loadZNButton->user_data((void*)(this));
+		m_loadZNButton->callback(cb_znName);	
+    
+    // set up "render" button
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));
 		m_renderButton->callback(cb_render);

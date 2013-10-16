@@ -114,7 +114,7 @@ bool Scene::shouldAccelerate() const{
 }
 
 bool Scene::cubeMap() const {
-  return traceUI->getCubeMap() && xpMap;
+  return traceUI->getCubeMap() && xpMap && xnMap && ypMap && ynMap && zpMap && znMap;
 }
 
 // Get any intersection with an object.  Return information about the 
@@ -162,14 +162,13 @@ TextureMap* Scene::getTexture( string name ) {
 
 void Scene::loadCubeMap() {
   if (traceUI->getCubeMap()) {
-    cout << "loaded the cube map" << endl;
-    string textureName = "/home/david/Dropbox/384g/ray/scenes/textry.png";
-    xpMap = getTexture(textureName);
-    xnMap = getTexture(textureName);
-    ypMap = getTexture(textureName);
-    ynMap = getTexture(textureName);
-    zpMap = getTexture(textureName);
-    znMap = getTexture(textureName);
+    xpMap = getTexture(traceUI->getXPName());
+    xnMap = getTexture(traceUI->getXNName());
+    ypMap = getTexture(traceUI->getYPName());
+    ynMap = getTexture(traceUI->getYNName());
+    zpMap = getTexture(traceUI->getZPName());
+    znMap = getTexture(traceUI->getZNName());
+    cout << "loaded the cube map successfully!" << endl;
   }
 }
 

@@ -27,7 +27,7 @@ public:
 		m_displayDebuggingInfo( false ),
 		m_accelerated( true ),
     m_stoc( false ),
-    m_cm( true ),
+    m_cm( false ),
     objectLimit(5),
     depthLimit(15),
     raytracer(0)
@@ -57,6 +57,24 @@ public:
   virtual void setDepthLimit(int l) {
     depthLimit = l;
   }
+  virtual void setXPName(string s) {
+    xpName = s;
+  }
+  virtual void setXNName(string s) {
+    xnName = s;
+  }
+  virtual void setYPName(string s) {
+    ypName = s;
+  }
+  virtual void setYNName(string s) {
+    ynName = s;
+  }
+  virtual void setZPName(string s) {
+    zpName = s;
+  }
+  virtual void setZNName(string s) {
+    znName = s;
+  }
 	// accessors:
 	int		getSize() const { return m_nSize; }
 	int		getDepth() const { return m_nDepth; }
@@ -66,6 +84,12 @@ public:
   bool getCubeMap() const { return m_cm; }
   int getObjectLimit() const { return objectLimit; }
   int getDepthLimit() const { return depthLimit; }
+  string getXPName() const { return xpName; }
+  string getXNName() const { return xnName; }
+  string getYPName() const { return ypName; }
+  string getYNName() const { return ynName; }
+  string getZPName() const { return zpName; }
+  string getZNName() const { return znName; }
 
 protected:
 	RayTracer*	raytracer;
@@ -78,7 +102,12 @@ protected:
   bool    m_cm;
   int objectLimit;
   int depthLimit;
-  
+  string xpName;
+  string xnName;
+  string ypName;
+  string ynName;
+  string zpName;
+  string znName;
 
 	// Determines whether or not to show debugging information
 	// for individual rays.  Disabled by default for efficiency

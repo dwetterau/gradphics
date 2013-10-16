@@ -43,9 +43,17 @@ public:
 	Fl_Check_Button*	m_debuggingDisplayCheckButton;
 	Fl_Check_Button*	m_acceleratedButton;
 	Fl_Check_Button*	m_stocButton;
+	Fl_Check_Button*	m_cmButton;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
+
+	Fl_Button*			m_loadXPButton;
+	Fl_Button*			m_loadXNButton;
+	Fl_Button*			m_loadYPButton;
+	Fl_Button*			m_loadYNButton;
+	Fl_Button*			m_loadZPButton;
+	Fl_Button*			m_loadZNButton;
 
 	TraceGLWindow*		m_traceGlWindow;
 
@@ -79,8 +87,16 @@ private:
 	static void cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v);
 	static void cb_acceleratedButton(Fl_Widget* o, void* v);
 	static void cb_stocButton(Fl_Widget* o, void* v);
+	static void cb_cmButton(Fl_Widget* o, void* v);
 
-	static bool doneTrace;		// Flag that gets set when the trace is done
+	static void cb_xpName(Fl_Widget* o, void* v);
+	static void cb_xnName(Fl_Widget* o, void* v);
+	static void cb_ypName(Fl_Widget* o, void* v);
+	static void cb_ynName(Fl_Widget* o, void* v);
+	static void cb_zpName(Fl_Widget* o, void* v);
+	static void cb_znName(Fl_Widget* o, void* v);
+	
+  static bool doneTrace;		// Flag that gets set when the trace is done
 	static bool stopTrace;		// Flag that gets set when the trace should be stopped
 };
 
