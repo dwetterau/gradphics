@@ -68,7 +68,7 @@ void Trimesh::buildKdTree() {
     geoPointers.push_back((*j));
   }
   root.fill(geoPointers, 0);
-  cout << "finished filling trimesh tree with " << faces.size() << " objects" << endl;
+  cout << "finished filling trimesh tree with " << faces.size() << " faces" << endl;
 }
 
 bool Trimesh::intersectLocal(const ray&r, isect&i) const
@@ -78,7 +78,6 @@ bool Trimesh::intersectLocal(const ray&r, isect&i) const
 	typedef Faces::const_iterator iter;
 	bool have_one = false;
   
-  // TODO: set this differently
   bool accelerated = scene->shouldAccelerate();
   if (accelerated && !root.leaf) {
     double tmin, tmax;

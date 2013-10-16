@@ -29,7 +29,7 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 
 	progName=argv[0];
   m_accelerated = true;
-	while( (i = getopt( argc, argv, "tr:w:h:a:n:")) != EOF )
+	while( (i = getopt( argc, argv, (char*)"tr:w:h:a:n:")) != EOF )
 	{
 		switch( i )
 		{
