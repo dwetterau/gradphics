@@ -26,7 +26,9 @@ public:
 		: m_nDepth(0), m_nSize(150), m_nAa(1), 
 		m_displayDebuggingInfo( false ),
 		m_accelerated( true ),
-    raytracer( 0 )
+    m_stoc( false ),
+    m_cm( true ),
+    raytracer(0)
 	{ }
 
 	virtual int		run() = 0;
@@ -41,12 +43,20 @@ public:
   virtual void setAccelerated(bool b) {
     m_accelerated = b;
   }
+  virtual void setStoc(bool b) {
+    m_stoc = b;
+  }
+  virtual void setCubeMap(bool b) {
+    m_cm = b;
+  }
 
 	// accessors:
 	int		getSize() const { return m_nSize; }
 	int		getDepth() const { return m_nDepth; }
 	int		getAa() const { return m_nAa; }
   bool  getAccelerated() const { return m_accelerated; }
+  bool  getStoc() const { return m_stoc; }
+  bool getCubeMap() const { return m_cm; }
 
 protected:
 	RayTracer*	raytracer;
@@ -55,6 +65,9 @@ protected:
 	int			m_nDepth;				// Max depth of recursion
   int     m_nAa;          // AA amount
   bool    m_accelerated;
+  bool    m_stoc;
+  bool    m_cm;
+
 
 	// Determines whether or not to show debugging information
 	// for individual rays.  Disabled by default for efficiency

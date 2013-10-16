@@ -254,7 +254,21 @@ public:
 
 	TransformRoot transformRoot;
 
-	Scene() : transformRoot(), objects(), lights() {}
+  TextureMap* xpMap;
+  TextureMap* xnMap;
+  TextureMap* ypMap;
+  TextureMap* ynMap;
+  TextureMap* zpMap;
+  TextureMap* znMap;
+
+	Scene() : transformRoot(), objects(), lights() {
+    xpMap = 0;
+    xnMap = 0;
+    ypMap = 0;
+    ynMap = 0;
+    zpMap = 0;
+    znMap = 0;
+  }
 	virtual ~Scene();
 
 	void add( Geometry* obj ) {
@@ -264,9 +278,14 @@ public:
 	}
 	void add( Light* light ) { lights.push_back( light ); }
   void buildKdTree();
-	bool findFirstIntersection( const ray& r, isect& i, const kdNode* root, double tmin, double tmax) const;
+	void loadCubeMap();
+  
+  bool findFirstIntersection( const ray& r, isect& i, const kdNode* root, double tmin, double tmax) const;
   bool intersect( const ray& r, isect& i ) const;
   bool shouldAccelerate() const;
+  bool cubeMap() const;
+
+
 	std::vector<Light*>::const_iterator beginLights() const { return lights.begin(); }
 	std::vector<Light*>::const_iterator endLights() const { return lights.end(); }
 

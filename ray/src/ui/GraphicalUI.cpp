@@ -89,7 +89,7 @@ void GraphicalUI::cb_exit2(Fl_Widget* o, void* v)
 
 void GraphicalUI::cb_about(Fl_Menu_* o, void* v) 
 {
-	fl_message("RayTracer Project, FLTK version for CS384g Fall 2005.");
+	fl_message("RayTracer Project, FLTK version for CS384g Fall 2013.");
 }
 
 void GraphicalUI::cb_sizeSlides(Fl_Widget* o, void* v)
@@ -130,6 +130,12 @@ void GraphicalUI::cb_acceleratedButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
   pUI->setAccelerated(((Fl_Check_Button*)o)->value() == 1);
+}
+
+void GraphicalUI::cb_stocButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setStoc(((Fl_Check_Button*)o)->value() == 1);
 }
 
 void GraphicalUI::cb_render(Fl_Widget* o, void* v)
@@ -309,13 +315,19 @@ GraphicalUI::GraphicalUI() {
  
 
 		// set up debugging display checkbox
-        m_debuggingDisplayCheckButton = new Fl_Check_Button(0, 280, 180, 20, "Debugging display");
+        m_debuggingDisplayCheckButton = new Fl_Check_Button(5, 280, 180, 20, "Debugging display");
 		m_debuggingDisplayCheckButton->user_data((void*)(this));
 		m_debuggingDisplayCheckButton->callback(cb_debuggingDisplayCheckButton);
 		m_debuggingDisplayCheckButton->value(m_displayDebuggingInfo);
 
-		// set up debugging display checkbox
-    m_acceleratedButton = new Fl_Check_Button(0, 105, 180, 20, "Use KD Tree");
+		// set up kd tree checkbox
+    m_stocButton = new Fl_Check_Button(5, 105, 180, 20, "Stochastic AA (uses same n x n total)");
+		m_stocButton->user_data((void*)(this));
+		m_stocButton->callback(cb_stocButton);
+		m_stocButton->value(m_stoc);
+    
+    // set up kd tree checkbox
+    m_acceleratedButton = new Fl_Check_Button(5, 130, 180, 20, "Use KD Tree");
 		m_acceleratedButton->user_data((void*)(this));
 		m_acceleratedButton->callback(cb_acceleratedButton);
 		m_acceleratedButton->value(m_accelerated);

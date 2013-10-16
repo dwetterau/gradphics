@@ -113,6 +113,10 @@ bool Scene::shouldAccelerate() const{
   return traceUI->getAccelerated();
 }
 
+bool Scene::cubeMap() const {
+  return traceUI->getCubeMap() && xpMap;
+}
+
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
 bool Scene::intersect( const ray& r, isect& i ) const {
@@ -154,6 +158,19 @@ TextureMap* Scene::getTexture( string name ) {
 		textureCache[ name ] = new TextureMap( name );
 		return textureCache[ name ];
 	} else return (*itr).second;
+}
+
+void Scene::loadCubeMap() {
+  if (traceUI->getCubeMap()) {
+    cout << "loaded the cube map" << endl;
+    string textureName = "/home/david/Dropbox/384g/ray/scenes/textry.png";
+    xpMap = getTexture(textureName);
+    xnMap = getTexture(textureName);
+    ypMap = getTexture(textureName);
+    ynMap = getTexture(textureName);
+    zpMap = getTexture(textureName);
+    znMap = getTexture(textureName);
+  }
 }
 
 void Scene::buildKdTree() {
@@ -210,10 +227,10 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
         BoundingBox bb = objs[j]->getBoundingBox();
         double cur_min = bb.getMin()[index];
         double cur_max = bb.getMax()[index];
-        if (cur_min < val /*+ RAY_EPSILON*/) {
+        if (cur_min < val) {
           temp_back_objs.push_back(objs[j]);
         }
-        if (cur_max > val /*- RAY_EPSILON*/) {
+        if (cur_max > val) {
           temp_front_objs.push_back(objs[j]);
         }
       } 

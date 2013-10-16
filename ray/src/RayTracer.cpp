@@ -91,7 +91,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     Vec3d St = (ni / nt) * Si;
     Vec3d Ct = pow(1 - St*St, 0.5) * (-N);
     Vec3d T = St + Ct;
-		Vec3d local = m.shade(scene, r, i);
+    Vec3d local = m.shade(scene, r, i);
    
     Vec3d kr = m.kr(i);
     Vec3d kt = m.kt(i);
@@ -102,7 +102,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     } else {
       ref = Vec3d(0,0,0);
     }
-    if (kt[0] > 0 || kt[1] > 0 || kt[2] > 0) {
+    if (T[0] == T[0] && (kt[0] > 0 || kt[1] > 0 || kt[2] > 0)) {
       tra = traceRay(ray(Pt, T, ray::REFRACTION), thresh, depth + 1);
 	  } else {
       tra = Vec3d(0,0,0);
@@ -129,9 +129,101 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
 		// is just black.
-
-		return Vec3d( 0.0, 0.0, 0.0 );
-	}
+    if (scene->cubeMap()) {
+      double u, v;
+      Vec3d xp = Vec3d(1,0,0);
+      Vec3d xn = Vec3d(-1,0,0);
+      Vec3d yp = Vec3d(0,1,0);
+      Vec3d yn = Vec3d(0,-1,0);
+      Vec3d zp = Vec3d(0,0,1);
+      Vec3d zn = Vec3d(0,0,-1);
+      double sqrt2 = pow(2, .5);
+      //double best = 1 / sqrt2 + .1;
+      Vec3d ray = r.getDirection();
+      int map = 0;
+      double biggest = 0;
+      if (abs(ray[0]) > biggest) {
+        biggest = abs(ray[0]);
+        if (ray[0] > 0) {
+          map = 0;
+        } else {
+          map = 1;
+        }
+      }
+      if (abs(ray[1]) > biggest) {
+        biggest = abs(ray[1]);
+        if (ray[1] > 0) {
+          map = 2;
+        } else {
+          map = 3;
+        }
+      }
+      if (abs(ray[2]) > biggest) {
+        biggest = abs(ray[2]);
+        if (ray[2] > 0) {
+          map = 4;
+        } else {
+          map = 5;
+        }
+      }
+      switch(map) {
+        case 0:
+          u = ray * zp;
+          v = ray * yp;
+          break;
+        case 1:
+          u = ray * zn;
+          v = ray * yp;
+          break;
+        case 2:
+          u = ray * xp;
+          v = ray * zp;
+          break;
+        case 3:
+          u = ray * xp;
+          v = ray * zn;
+          break;
+        case 4:
+          u = ray * xn;
+          v = ray * yp;
+          break;
+        case 5:
+          u = ray * xp;
+          v = ray * yp;
+          break;
+        default:
+          cout << "unknown map?" << endl;
+          break;
+      }
+      u = (sqrt2 * u + 1.0) / 2.0;
+      v = (sqrt2 * v + 1.0) / 2.0;
+      switch(map) {
+        case 0:
+          return scene->xpMap->getMappedValue(Vec2d(u, v));
+          break;
+        case 1:
+          return scene->xnMap->getMappedValue(Vec2d(u, v));
+          break;
+        case 2:
+          return scene->ypMap->getMappedValue(Vec2d(u, v));
+          break;
+        case 3:
+          return scene->ynMap->getMappedValue(Vec2d(u, v));
+          break;
+        case 4:
+          return scene->zpMap->getMappedValue(Vec2d(u, v));
+          break;
+        case 5:
+          return scene->znMap->getMappedValue(Vec2d(u, v));
+          break;
+        default:
+          cout << "unknow map??" << endl;
+          break;
+      }
+    } else {
+		  return Vec3d( 0.0, 0.0, 0.0 );
+	  }
+  }
 }
 
 RayTracer::RayTracer()
@@ -205,7 +297,7 @@ bool RayTracer::loadScene( char* fn )
 	if( ! sceneLoaded() )
 		return false;
   scene->buildKdTree();
-
+  scene->loadCubeMap();
 	return true;
 }
 
@@ -234,16 +326,29 @@ void RayTracer::tracePixel( int i, int j )
 		return;
   double div = aa * aa;
 
-  for (int r = 0; r < aa; r++) {
-    for (int c = 0; c < aa; c++) {
-      double x = double(i + r/aa)/double(buffer_width);
-	    double y = double(j + c/aa)/double(buffer_height);
-  
-	    Vec3d tempCol = trace(x, y);
+  if (traceUI->getStoc()) {
+    for (int r = 0; r < aa * aa; r++) {
+      double x = double(i + double(rand())/double(RAND_MAX)) / double(buffer_width);
+      double y = double(j + double(rand())/double(RAND_MAX)) / double(buffer_width);
+    
+      Vec3d tempCol = trace(x, y);
 
       col[0] += tempCol[0] / div;
       col[1] += tempCol[1] / div;
       col[2] += tempCol[2] / div;
+    }
+  } else {
+    for (int r = 0; r < aa; r++) {
+      for (int c = 0; c < aa; c++) {
+        double x = double(i + r/aa)/double(buffer_width);
+	      double y = double(j + c/aa)/double(buffer_height);
+  
+	      Vec3d tempCol = trace(x, y);
+
+        col[0] += tempCol[0] / div;
+        col[1] += tempCol[1] / div;
+        col[2] += tempCol[2] / div;
+      }
     }
   }
   unsigned char *pixel = buffer + ( i + j * buffer_width ) * 3;
