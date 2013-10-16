@@ -183,8 +183,10 @@ void Scene::buildKdTree() {
   max[1] += RAY_EPSILON;
   max[2] += RAY_EPSILON;
   root = kdNode(BoundingBox(min, max));
+  cout << "building object tree with depthLimit: " << traceUI->getDepthLimit() << 
+      " and objectLimit: " << traceUI->getObjectLimit() << endl;
   root.fill(objects, 0);
-  cout << "finished filling tree with " << objects.size() << " objects" << endl;
+  cout << "finished object filling tree with " << objects.size() << " objects." << endl;
 }
 
 kdNode::kdNode(const BoundingBox& bb) {
@@ -257,7 +259,7 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
 }
 
 void kdNode::fill(std::vector<Geometry*> objs, int depth) {
-  if (depth >= depthLimit || objs.size() <= objectLimit) {
+  if (depth >= traceUI->getDepthLimit() || objs.size() <= traceUI->getObjectLimit()) {
     this->objects = objs;
     this->leaf = true;
     return;

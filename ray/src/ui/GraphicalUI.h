@@ -37,6 +37,8 @@ public:
 	Fl_Slider*			m_sizeSlider;
 	Fl_Slider*			m_depthSlider;
 	Fl_Slider*			m_aaSlider;
+	Fl_Slider*			m_depthLimitSlider;
+	Fl_Slider*			m_objectLimitSlider;
 
 	Fl_Check_Button*	m_debuggingDisplayCheckButton;
 	Fl_Check_Button*	m_acceleratedButton;
@@ -69,6 +71,8 @@ private:
 	static void cb_sizeSlides(Fl_Widget* o, void* v);
 	static void cb_depthSlides(Fl_Widget* o, void* v);
 	static void cb_aaSlides(Fl_Widget* o, void* v);
+	static void cb_depthLimitSlides(Fl_Widget* o, void* v);
+	static void cb_objectLimitSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

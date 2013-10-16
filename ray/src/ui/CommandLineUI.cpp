@@ -29,7 +29,11 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 
 	progName=argv[0];
   m_accelerated = true;
-	while( (i = getopt( argc, argv, (char*)"tr:w:h:a:n:")) != EOF )
+  objectLimit = 5;
+  depthLimit = 15;
+  m_cm = false;
+  m_stoc = false;
+  while( (i = getopt( argc, argv, (char*)"tr:w:h:a:n:")) != EOF )
 	{
 		switch( i )
 		{

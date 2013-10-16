@@ -28,6 +28,8 @@ public:
 		m_accelerated( true ),
     m_stoc( false ),
     m_cm( true ),
+    objectLimit(5),
+    depthLimit(15),
     raytracer(0)
 	{ }
 
@@ -49,7 +51,12 @@ public:
   virtual void setCubeMap(bool b) {
     m_cm = b;
   }
-
+  virtual void setObjectLimit(int l) {
+    objectLimit = l;
+  }
+  virtual void setDepthLimit(int l) {
+    depthLimit = l;
+  }
 	// accessors:
 	int		getSize() const { return m_nSize; }
 	int		getDepth() const { return m_nDepth; }
@@ -57,6 +64,8 @@ public:
   bool  getAccelerated() const { return m_accelerated; }
   bool  getStoc() const { return m_stoc; }
   bool getCubeMap() const { return m_cm; }
+  int getObjectLimit() const { return objectLimit; }
+  int getDepthLimit() const { return depthLimit; }
 
 protected:
 	RayTracer*	raytracer;
@@ -67,7 +76,9 @@ protected:
   bool    m_accelerated;
   bool    m_stoc;
   bool    m_cm;
-
+  int objectLimit;
+  int depthLimit;
+  
 
 	// Determines whether or not to show debugging information
 	// for individual rays.  Disabled by default for efficiency

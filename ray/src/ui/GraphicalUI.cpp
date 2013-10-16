@@ -116,6 +116,16 @@ void GraphicalUI::cb_aaSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nAa=int( ((Fl_Slider *)o)->value() ) ;
 }
 
+void GraphicalUI::cb_depthLimitSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->depthLimit=int( ((Fl_Slider *)o)->value() ) ;
+}
+
+void GraphicalUI::cb_objectLimitSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->objectLimit=int( ((Fl_Slider *)o)->value() ) ;
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
@@ -320,7 +330,6 @@ GraphicalUI::GraphicalUI() {
 		m_debuggingDisplayCheckButton->callback(cb_debuggingDisplayCheckButton);
 		m_debuggingDisplayCheckButton->value(m_displayDebuggingInfo);
 
-		// set up kd tree checkbox
     m_stocButton = new Fl_Check_Button(5, 105, 180, 20, "Stochastic AA (uses same n x n total)");
 		m_stocButton->user_data((void*)(this));
 		m_stocButton->callback(cb_stocButton);
@@ -332,7 +341,29 @@ GraphicalUI::GraphicalUI() {
 		m_acceleratedButton->callback(cb_acceleratedButton);
 		m_acceleratedButton->value(m_accelerated);
 
+   	m_depthLimitSlider = new Fl_Value_Slider(10, 155, 180, 20, "Tree depth limit");
+		m_depthLimitSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_depthLimitSlider->type(FL_HOR_NICE_SLIDER);
+        m_depthLimitSlider->labelfont(FL_COURIER);
+        m_depthLimitSlider->labelsize(12);
+		m_depthLimitSlider->minimum(1);
+		m_depthLimitSlider->maximum(50);
+		m_depthLimitSlider->step(1);
+		m_depthLimitSlider->value(depthLimit);
+		m_depthLimitSlider->align(FL_ALIGN_RIGHT);
+		m_depthLimitSlider->callback(cb_depthLimitSlides);
 
+   	m_objectLimitSlider = new Fl_Value_Slider(10, 180, 180, 20, "Tree leaf size limit");
+		m_objectLimitSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_objectLimitSlider->type(FL_HOR_NICE_SLIDER);
+        m_objectLimitSlider->labelfont(FL_COURIER);
+        m_objectLimitSlider->labelsize(12);
+		m_objectLimitSlider->minimum(1);
+		m_objectLimitSlider->maximum(50);
+		m_objectLimitSlider->step(1);
+		m_objectLimitSlider->value(objectLimit);
+		m_objectLimitSlider->align(FL_ALIGN_RIGHT);
+		m_objectLimitSlider->callback(cb_objectLimitSlides);
 
 		// set up "render" button
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
