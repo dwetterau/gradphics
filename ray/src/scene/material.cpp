@@ -122,7 +122,17 @@ Vec3d TextureMap::getMappedValue( const Vec2d& coord ) const
     // [0, 1] x [0, 1] in 2-space to bitmap coordinates,
     // and use these to perform bilinear interpolation
     // of the values.
-    return getPixelAt((int)(coord[0] * width), (int)(coord[1] * height));
+    double left = (int)(coord[0] * width);
+    double bot = (int)(coord[1] * height);
+    
+    Vec3d botLeft = getPixelAt(left, bot);
+    Vec3d botRight = getPixelAt(left + 1, bot);
+    Vec3d topLeft = getPixelAt(left, bot + 1);
+    Vec3d topRight = getPixelAt(left + 1, bot + 1);
+    return ((1 - coord[0]) * (1 - coord[1])) * topLeft + 
+      (coord[0] * (1 - coord[1])) * topRight +
+      ((1 - coord[0]) * coord[1]) * botLeft +
+      (coord[0] * coord[1]) * botRight;
 }
 
 
@@ -133,10 +143,16 @@ Vec3d TextureMap::getPixelAt( int x, int y ) const
     if (0 == data)
       return Vec3d(1.0, 1.0, 1.0);
 
-    if( x >= width )
-       x = width - 1;
+    if( x >= width ) {
+      x = width - 1;
+    } else if (x < 0) {
+      x = 0;
+    }
     if( y >= height )
-       y = height - 1;
+      y = height - 1;
+    else if (y < 0) {
+      y = 0;
+    } 
 
     // Find the position in the big data array...
     int pos = (y * width + x) * 3;

@@ -79,7 +79,7 @@ bool Trimesh::intersectLocal(const ray&r, isect&i) const
 	bool have_one = false;
   
   // TODO: set this differently
-  bool accelerated = true;
+  bool accelerated = scene->shouldAccelerate();
   if (accelerated && !root.leaf) {
     double tmin, tmax;
     if(!root.bounds.intersect(r, tmin, tmax)) {

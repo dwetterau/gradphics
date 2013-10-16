@@ -92,11 +92,21 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     Vec3d Ct = pow(1 - St*St, 0.5) * (-N);
     Vec3d T = St + Ct;
 		Vec3d local = m.shade(scene, r, i);
-    Vec3d ref = traceRay(ray(Pr, R, ray::REFLECTION), thresh, depth + 1);
-    Vec3d tra = traceRay(ray(Pt, T, ray::REFRACTION), thresh, depth + 1);
-	  
+   
     Vec3d kr = m.kr(i);
     Vec3d kt = m.kt(i);
+    Vec3d ref, tra;
+
+    if (kr[0] > 0 || kr[1] > 0 || kr[2] > 0) {
+      ref = traceRay(ray(Pr, R, ray::REFLECTION), thresh, depth + 1);
+    } else {
+      ref = Vec3d(0,0,0);
+    }
+    if (kt[0] > 0 || kt[1] > 0 || kt[2] > 0) {
+      tra = traceRay(ray(Pt, T, ray::REFRACTION), thresh, depth + 1);
+	  } else {
+      tra = Vec3d(0,0,0);
+    }
 
     ref[0] *= kr[0];
     ref[1] *= kr[1];

@@ -266,7 +266,7 @@ public:
   void buildKdTree();
 	bool findFirstIntersection( const ray& r, isect& i, const kdNode* root, double tmin, double tmax) const;
   bool intersect( const ray& r, isect& i ) const;
-
+  bool shouldAccelerate() const;
 	std::vector<Light*>::const_iterator beginLights() const { return lights.begin(); }
 	std::vector<Light*>::const_iterator endLights() const { return lights.end(); }
 

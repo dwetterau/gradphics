@@ -28,8 +28,8 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 	int i;
 
 	progName=argv[0];
-
-	while( (i = getopt( argc, argv, "tr:w:h:")) != EOF )
+  m_accelerated = true;
+	while( (i = getopt( argc, argv, "tr:w:h:a:n:")) != EOF )
 	{
 		switch( i )
 		{
@@ -42,9 +42,6 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
 			case 'w':
 				m_nSize = atoi( optarg );
 				break;
-      case 'k':
-        m_accelerated = true;
-        break;
       case 'n':
         m_accelerated = false;
         break;
@@ -116,4 +113,6 @@ void CommandLineUI::usage()
 	std::cerr << "usage: " << progName << " [options] [input.ray output.bmp]" << std::endl;
 	std::cerr << "  -r <#>      set recursion level (default " << m_nDepth << ")" << std::endl; 
 	std::cerr << "  -w <#>      set output image width (default " << m_nSize << ")" << std::endl;
+	std::cerr << "  -a <#>      set aa for the output image (default 1 x 1)" << std::endl;
+	std::cerr << "  -n          don't use any Kd trees" << std::endl;
 }

@@ -55,7 +55,6 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, d
   if (root->leaf) {
     bool have_one = false;
 	  typedef vector<Geometry*>::const_iterator iter;
-    //cout << "checking with " << root->objects.size() << " objects" <<  r.type() << endl;
     for( iter j = root->objects.begin(); j != root->objects.end(); ++j ) {
 		  isect cur;
 		  if( (*j)->intersect( r, cur ) ) {
@@ -110,11 +109,14 @@ bool Scene::findFirstIntersection( const ray& r, isect& i, const kdNode* root, d
   return false;
 }
 
+bool Scene::shouldAccelerate() const{
+  return traceUI->getAccelerated();
+}
+
 // Get any intersection with an object.  Return information about the 
 // intersection through the reference parameter.
 bool Scene::intersect( const ray& r, isect& i ) const {
-	bool accelerated = traceUI->getAccelerated();
-  if (accelerated) {
+  if (shouldAccelerate()) {
   	double tmin, tmax;
 	  if (!root.bounds.intersect(r, tmin, tmax)) {
       return false;
@@ -239,7 +241,6 @@ double kdNode::tryPlane(double val, int index, std::vector<Geometry*> objs,
 
 void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   if (depth >= depthLimit || objs.size() <= objectLimit) {
-    cout << "made node with # " << objs.size() << endl;
     this->objects = objs;
     this->leaf = true;
     return;
@@ -259,8 +260,6 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
   double bestC = 1e308;
 
   for (std::vector<Geometry*>::size_type i = 0; i < objs.size(); i++) {
-    //if (i % (objs.size() / 100 + 1) == 0)
-    //  cout << "considering planes on object # " << i << " of # " << objs.size() << endl;
     // bad n^2 algorithm for this
     std::vector<Geometry*>* front_objs = new std::vector<Geometry*>(); 
     std::vector<Geometry*>* back_objs = new std::vector<Geometry*>(); 
@@ -296,12 +295,9 @@ void kdNode::fill(std::vector<Geometry*> objs, int depth) {
       }
     }
   }
-  //cout << bestC << ", " << best_front_objs.size() << ", " << best_back_objs.size() << endl;
   if (bestC == 1e308 || best_front_objs.size() + best_back_objs.size() > 1.5 * objs.size()) {
     // This node should be a leaf, no good plane to split on
-    cout << "made special node with # " << objs.size() << endl;
     this->objects = objs;
-    cout << "finished this assignment" << endl;
     this->leaf = true;
     return;
   }
