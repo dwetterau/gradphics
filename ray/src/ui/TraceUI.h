@@ -30,7 +30,8 @@ public:
     m_cm( false ),
     objectLimit(5),
     depthLimit(15),
-    raytracer(0)
+    raytracer(0),
+    cutoff(0.0)
 	{ }
 
 	virtual int		run() = 0;
@@ -41,7 +42,9 @@ public:
 	// setters
 	virtual void		setRayTracer( RayTracer* r )
 		{ raytracer = r; }
-
+  virtual void setCutoff(double c) {
+    cutoff = c;
+  }
   virtual void setAccelerated(bool b) {
     m_accelerated = b;
   }
@@ -90,7 +93,7 @@ public:
   string getYNName() const { return ynName; }
   string getZPName() const { return zpName; }
   string getZNName() const { return znName; }
-
+  double getCutoff() const { return cutoff; }
 protected:
 	RayTracer*	raytracer;
 
@@ -108,6 +111,7 @@ protected:
   string ynName;
   string zpName;
   string znName;
+  double cutoff;
 
 	// Determines whether or not to show debugging information
 	// for individual rays.  Disabled by default for efficiency

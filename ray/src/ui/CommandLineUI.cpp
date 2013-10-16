@@ -33,6 +33,7 @@ CommandLineUI::CommandLineUI( int argc, char** argv )
   depthLimit = 15;
   m_cm = false;
   m_stoc = false;
+  cutoff = 0.0;
   while( (i = getopt( argc, argv, (char*)"tr:w:h:a:n:")) != EOF )
 	{
 		switch( i )

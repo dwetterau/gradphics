@@ -38,7 +38,8 @@ Vec3d RayTracer::trace( double x, double y )
     ray r( Vec3d(0,0,0), Vec3d(0,0,0), ray::VISIBILITY );
 
     scene->getCamera().rayThrough( x,y,r );
-	Vec3d ret = traceRay( r, Vec3d(1.0,1.0,1.0), 0 );
+    double cutoff = traceUI->getCutoff();
+	Vec3d ret = traceRay( r, Vec3d(cutoff,cutoff,cutoff), 0 );
 	ret.clamp();
 	return ret;
 }
@@ -93,17 +94,21 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     Vec3d T = St + Ct;
     Vec3d local = m.shade(scene, r, i);
    
+    if (local[0] < thresh[0] && local[1] < thresh[1] && local[2] < thresh[2]) {
+        return local;
+    }   
+
     Vec3d kr = m.kr(i);
     Vec3d kt = m.kt(i);
     Vec3d ref, tra;
 
     if (kr[0] > 0 || kr[1] > 0 || kr[2] > 0) {
-      ref = traceRay(ray(Pr, R, ray::REFLECTION), thresh, depth + 1);
+      ref = traceRay(ray(Pr, R, ray::REFLECTION), Vec3d(kr[0] * thresh[0], kr[1] * thresh[1], kr[2] * thresh[2]), depth + 1);
     } else {
       ref = Vec3d(0,0,0);
     }
     if (T[0] == T[0] && (kt[0] > 0 || kt[1] > 0 || kt[2] > 0)) {
-      tra = traceRay(ray(Pt, T, ray::REFRACTION), thresh, depth + 1);
+      tra = traceRay(ray(Pt, T, ray::REFRACTION), Vec3d(kt[0] * thresh[0], kt[1] * thresh[1], kt[2] * thresh[2]), depth + 1);
 	  } else {
       tra = Vec3d(0,0,0);
     }

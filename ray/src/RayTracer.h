@@ -21,11 +21,10 @@ public:
 	double aspectRatio();
 	void traceSetup( int w, int h );
 	void tracePixel( int i, int j );
-  void reloadScene();
-	bool loadScene( char* fn );
-
+    void reloadScene();
+    bool loadScene( char* fn );
+    
 	bool sceneLoaded() { return scene != 0; }
-
     void setReady( bool ready )
       { m_bBufferReady = ready; }
     bool isReady() const

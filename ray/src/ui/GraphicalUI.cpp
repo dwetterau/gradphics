@@ -116,6 +116,11 @@ void GraphicalUI::cb_aaSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_nAa=int( ((Fl_Slider *)o)->value() ) ;
 }
 
+void GraphicalUI::cb_cutoffSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->cutoff=double( ((Fl_Slider *)o)->value() ) ;
+}
+
 void GraphicalUI::cb_depthLimitSlides(Fl_Widget* o, void* v)
 {
 	((GraphicalUI*)(o->user_data()))->depthLimit=int( ((Fl_Slider *)o)->value() ) ;
@@ -340,7 +345,7 @@ void GraphicalUI::stopTracing()
 GraphicalUI::GraphicalUI() {
 	// init.
 
-	m_mainWindow = new Fl_Window(100, 40, 350, 420, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 430, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -387,7 +392,7 @@ GraphicalUI::GraphicalUI() {
  
 
 		// set up debugging display checkbox
-        m_debuggingDisplayCheckButton = new Fl_Check_Button(5, 400, 180, 20, "Debugging display");
+        m_debuggingDisplayCheckButton = new Fl_Check_Button(5, 410, 180, 20, "Debugging display");
 		m_debuggingDisplayCheckButton->user_data((void*)(this));
 		m_debuggingDisplayCheckButton->callback(cb_debuggingDisplayCheckButton);
 		m_debuggingDisplayCheckButton->value(m_displayDebuggingInfo);
@@ -466,6 +471,20 @@ GraphicalUI::GraphicalUI() {
 		m_reloadButton = new Fl_Button(200, 360, 130, 25, "&Update Scene");
 		m_reloadButton->user_data((void*)(this));
 		m_reloadButton->callback(cb_reload);
+
+   	m_cutoffSlider = new Fl_Value_Slider(10, 385, 180, 20, "Adaptive Threshold");
+		m_cutoffSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_cutoffSlider->type(FL_HOR_NICE_SLIDER);
+        m_cutoffSlider->labelfont(FL_COURIER);
+        m_cutoffSlider->labelsize(12);
+		m_cutoffSlider->minimum(0.0);
+		m_cutoffSlider->maximum(1.0);
+		m_cutoffSlider->step(.001);
+		m_cutoffSlider->value(cutoff);
+		m_cutoffSlider->align(FL_ALIGN_RIGHT);
+		m_cutoffSlider->callback(cb_cutoffSlides);
+
+
 
 
 		// set up "stop" button
