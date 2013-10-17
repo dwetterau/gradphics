@@ -17,21 +17,22 @@ void main()
   normalMapTexCoord = vec2(0);  // XXX fix me
   float R = torusInfo.x;
   float r = torusInfo.y;
-  float theta = parametric.x;
-  float phi = parametric.y;
+  float M_PI = 3.141592653589793;
+  float theta = parametric.x*2*M_PI;
+  float phi = parametric.y*2*M_PI;
 
-  vec4 xyz = Vec4((R + r*cos(phi))*cos(theta),
+  vec3 xyz = vec3((R + r*cos(phi))*cos(theta),
                   (R + r*cos(phi))*sin(theta),
-                  r*sin(phi),
-                  1
-                 );
-  gl_Position = gl_ModelViewProjectionMatrix * xyz;  // XXX fix me
+                  r*sin(phi)
+                  );
+  gl_Position = gl_ModelViewProjectionMatrix * vec4(xyz, 1);  // XXX fix me
+
   
   //eyeDirection = vec3(0);  // XXX fix me
-  eyeDirection = normalize(eyePosition - gl_Position);
+  eyeDirection = normalize(eyePosition - xyz);
 
   //lightDirection = vec3(0);  // XXX fix me
-  lightDirection = normalize(lightPosition - gl_Position);
+  lightDirection = normalize(lightPosition - xyz);
  
   halfAngle = vec3(0);  // XXX fix me
   c0 = vec3(0);  // XXX fix me
