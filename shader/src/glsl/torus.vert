@@ -18,8 +18,8 @@ void main()
   float R = torusInfo.x;
   float r = torusInfo.y;
   float M_PI = 3.141592653589793;
-  float theta = parametric.x*2*M_PI;
-  float phi = parametric.y*2*M_PI;
+  float theta = parametric.x * 2.0 * M_PI;
+  float phi = parametric.y * 2.0 * M_PI;
 
   vec3 xyz = vec3((R + r*cos(phi))*cos(theta),
                   (R + r*cos(phi))*sin(theta),

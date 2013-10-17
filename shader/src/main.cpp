@@ -101,7 +101,6 @@ void initGraphics()
 {
     trackball(curquat, 0.0, 0.0, 0.0, 0.0);
 
-#ifdef __APPLE__
     // Seems to be needed on Apple platforms using Intel
 	// integrated graphics but not elsewhere
     // If you're getting unexpected seg faults on Apple,
@@ -110,7 +109,6 @@ void initGraphics()
 	// uses Intel integrated graphics, try enabling this
 	// for your machine
     glEnableClientState(GL_COLOR_ARRAY);
-#endif
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);  // avoid GL's dumb default of 4
