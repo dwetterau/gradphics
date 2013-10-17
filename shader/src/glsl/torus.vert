@@ -14,7 +14,7 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  normalMapTexCoord = vec2(0);  // XXX fix me
+  
   float R = torusInfo.x;
   float r = torusInfo.y;
   float M_PI = 3.141592653589793;
@@ -27,6 +27,9 @@ void main()
                   );
   gl_Position = gl_ModelViewProjectionMatrix * vec4(xyz, 1);  // XXX fix me
 
+  normalMapTexCoord = vec2(6.0 * parametric.x, 2.0 * parametric.y);  // XXX fix me
+  
+  
   
   //eyeDirection = vec3(0);  // XXX fix me
   eyeDirection = normalize(eyePosition - xyz);
