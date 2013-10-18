@@ -108,7 +108,7 @@ void initGraphics()
 	// If you're not seeing the mesh on a Windows box that
 	// uses Intel integrated graphics, try enabling this
 	// for your machine
-    glEnableClientState(GL_COLOR_ARRAY);
+    //glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);  // avoid GL's dumb default of 4
