@@ -29,15 +29,25 @@ void main()
 
   normalMapTexCoord = vec2(6.0 * parametric.x, 2.0 * parametric.y);  // XXX fix me
   
-  
-  
   //eyeDirection = vec3(0);  // XXX fix me
   eyeDirection = normalize(eyePosition - xyz);
 
   //lightDirection = vec3(0);  // XXX fix me
-  lightDirection = normalize(lightPosition - xyz);
+  lightDirection = lightPosition - xyz;
+  // put in surface coordinates
+
  
-  halfAngle = vec3(0);  // XXX fix me
+  halfAngle = normalize((lightDirection + eyeDirection)/2);  // XXX fix me
+
+  vec3 du = vec3(-(R + r*cos(phi))*sin(theta), (R + r*cos(phi))*cos(theta), 0); // theta
+  vec3 dv = vec3(-r*sin(phi)*cos(theta), -r*sin(phi)*sin(theta), r*cos(phi));   // phi
+  du = normalize(du);
+  dv = normalize(dv);
+  vec3 normal = cross(du,dv);
+  vec3 binormal = cross(normal, du);
+  mat3 M = mat3(du, binormal, normal);
+  lightDirection = lightDirection*M;
+
   c0 = vec3(0);  // XXX fix me
   c1 = vec3(0);  // XXX fix me
   c2 = vec3(0);  // XXX fix me

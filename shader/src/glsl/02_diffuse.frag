@@ -19,5 +19,7 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  //gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  vec3 ld = normalize(lightDirection);
+  gl_FragColor = LMd*ld.z;
 }
