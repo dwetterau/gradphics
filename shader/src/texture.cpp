@@ -161,8 +161,20 @@ PackedNormal::PackedNormal(float3 normal)
 
 float3 NormalMap::computeNormal(int i, int j, float scale)
 {
-    float3 normal = float3(0,0,1);  // XXX fix me
-    return normal;
+    int min_i = (i - 1 < 0) ? width - 1 : i - 1;
+    int min_j = (j - 1 < 0) ? height - 1 : j - 1;
+    int max_i = (i + 1) % width;
+    int max_j = (j + 1) % height;
+    float3 dx = image[max_i*width + j] - image[min_i*width + j];
+    float3 dy = image[i*width + max_j] - image[i*width + min_j];
+
+    float3 normal = float3();
+    normal[0] = (dx[1] * dy[2]) - (dx[2] * dy[1]);
+    normal[1] = (dx[2] * dy[0]) - (dx[0] * dy[2]);
+    normal[2] = ((dx[0] * dy[1]) - (dx[1] * dy[0])) * scale;
+    //normalize(normal);
+    //std::cout << normal << std::endl;
+    return (normal);
 }
 
 bool NormalMap::load(float scale)
