@@ -19,5 +19,6 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  float contribution = max(0.0, pow(halfAngle.z, shininess));
+  gl_FragColor = LMs * contribution;
 }
