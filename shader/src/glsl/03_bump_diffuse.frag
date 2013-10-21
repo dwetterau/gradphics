@@ -21,11 +21,11 @@ void main()
 {
   // gl_FragColor = vec4(1,0,0,1);  // XXX fix me
   vec3 ld = normalize(lightDirection);
-  vec3 N = texture(normalMap, normalMapTexCoord).rgb;
+  vec3 N = texture2D(normalMap, normalMapTexCoord).rgb;
   N = (N - vec3(0.5, 0.5, 0.5)) * 2.0;
-  N = normalize(N);
-  //float contribution = max(0.0, ld * N);
-  float contribution = max(0.0, ld.z * N.z);
+  //N = normalize(N);
+  float contribution = max(0.0, dot(ld, N));
+  //float contribution = max(0.0, ld.z * N.z);
   gl_FragColor = contribution * LMd;
 
 }
