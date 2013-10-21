@@ -165,16 +165,21 @@ float3 NormalMap::computeNormal(int i, int j, float scale)
     int min_j = (j - 1 < 0) ? height - 1 : j - 1;
     int max_i = (i + 1) % width;
     int max_j = (j + 1) % height;
-    float3 dx = image[max_i*width + j] - image[min_i*width + j];
-    float3 dy = image[i*width + max_j] - image[i*width + min_j];
+    float3 dxz = image[max_i*width + j] - image[min_i*width + j];
+    float3 dyz = image[i*width + max_j] - image[i*width + min_j];
+    float3 dx = float3(2.0, 0.0, dxz.x);
+    float3 dy = float3(0.0, 2.0, dyz.x);
 
-    float3 normal = float3();
-    normal[0] = (dx[1] * dy[2]) - (dx[2] * dy[1]);
-    normal[1] = (dx[2] * dy[0]) - (dx[0] * dy[2]);
-    normal[2] = ((dx[0] * dy[1]) - (dx[1] * dy[0])) * scale;
-    //normalize(normal);
-    //std::cout << normal << std::endl;
-    return (normal);
+    float3 normal = float3(dxz.x,dyz.y,2.0 * scale);
+    normal = normalize(normal);
+
+    /*float3 normal = float3(
+        (dx.y * dy.z) - (dx.z * dy.y),
+        (dx.z * dy.x) - (dx.x * dy.z),
+        ((dx.x * dy.y) - (dx.y * dy.x))*scale);// + float3(0.0,0.0,1.0);
+    normal = normalize(normal);*/
+    normal = (normal + float3(1.0, 1.0, 1.0)) / 2.0;
+    return normal;
 }
 
 bool NormalMap::load(float scale)
