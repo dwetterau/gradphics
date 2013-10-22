@@ -161,21 +161,22 @@ PackedNormal::PackedNormal(float3 normal)
 
 float3 NormalMap::computeNormal(int i, int j, float scale)
 {
-    int min_i = (i - 1 < 0) ? width - 1 : i - 1;
-    int min_j = (j - 1 < 0) ? height - 1 : j - 1;
-    int max_i = (i + 1) % width;
-    int max_j = (j + 1) % height;
-    float3 dxz = image[max_i*width + j] - image[min_i*width + j];
-    float3 dyz = image[i*width + max_j] - image[i*width + min_j];
-    float3 dx = float3(2.0, 0.0, dxz.x * scale / 2.0);
-    float3 dy = float3(0.0, 2.0, dyz.x * scale / 2.0);
-
+    int min_i = (i - 1 < 0) ? height - 1 : i - 1;
+    int min_j = (j - 1 < 0) ? width - 1 : j - 1;
+    int max_i = (i + 1) % height;
+    int max_j = (j + 1) % width;
+    float dxz = (image[max_i*width + j] - image[min_i*width + j])/255.0;
+    float dyz = (image[i*width + max_j] - image[i*width + min_j])/255.0;
+    
+    float3 dx = float3(2.0, 0.0, dxz * -scale / 2.0);
+    float3 dy = float3(0.0, 2.0, dyz * -scale / 2.0);
+    
+    
     float3 normal = float3(
         (dx.y * dy.z) - (dx.z * dy.y),
         (dx.z * dy.x) - (dx.x * dy.z),
         ((dx.x * dy.y) - (dx.y * dy.x)));
     normal = normalize(normal);
-    normal = (normal + float3(1.0, 1.0, 1.0)) / 2.0;
     return normal;
 }
 
