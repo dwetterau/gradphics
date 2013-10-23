@@ -50,8 +50,8 @@ void main()
   vec3 e = normalize(eyeDirection);
   halfAngle = (l + e) / length(l + e);
 
-  c0 = vec3(0);  // XXX fix me
-  c1 = vec3(0);  // XXX fix me
-  c2 = vec3(0);  // XXX fix me
+  c0 = du;  // XXX fix me
+  c1 = binormal;  // XXX fix me
+  c2 = normal;  // XXX fix me
 }
 
