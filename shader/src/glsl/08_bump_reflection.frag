@@ -26,15 +26,5 @@ void main()
   vec3 reflectDir = reflect(-e, N);
   mat3 toObject = mat3(c0, c1, c2);
   vec3 worldDir = objectToWorld * toObject * reflectDir;
-  vec4 reflectedColor = textureCube(envmap, worldDir);
-
-  // bumpy-diffuse
-  vec3 ld = normalize(lightDirection);
-  float diff_contribution = max(0.0, dot(ld, N));
-  vec4 diffuseContrib = diff_contribution * LMd;
-
-  float spec_contribution = max(0.0, pow(dot(halfAngle, N), shininess));
-  vec4 specularContrib = LMs * spec_contribution;
-
-  gl_FragColor = .5 * (diffuseContrib + LMa) + .5 * specularContrib + .6 * reflectedColor;
+  gl_FragColor = textureCube(envmap, worldDir);
 }
