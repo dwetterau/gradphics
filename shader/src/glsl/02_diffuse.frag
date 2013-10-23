@@ -22,5 +22,5 @@ void main()
   //gl_FragColor = vec4(1,0,0,1);  // XXX fix me
   vec3 ld = normalize(lightDirection);
   float contribution = max(0.0, ld.z);
-  gl_FragColor = LMd*contribution;
+  gl_FragColor = LMd*contribution + LMa;
 }
