@@ -23,9 +23,7 @@ void main()
   vec3 ld = normalize(lightDirection);
   vec3 N = texture2D(normalMap, normalMapTexCoord).rgb;
   N = (N - vec3(0.5, 0.5, 0.5)) * 2.0;
-  //N = normalize(N);
   float contribution = max(0.0, dot(ld, N));
-  //float contribution = max(0.0, ld.z * N.z);
   gl_FragColor = contribution * LMd;
 
 }
