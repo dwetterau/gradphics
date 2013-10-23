@@ -168,8 +168,8 @@ float3 NormalMap::computeNormal(int i, int j, float scale)
     float dxz = (image[max_i*width + j] - image[min_i*width + j])/255.0;
     float dyz = (image[i*width + max_j] - image[i*width + min_j])/255.0;
     
-    float3 dx = float3(2.0, 0.0, dxz * -scale / 2.0);
-    float3 dy = float3(0.0, 2.0, dyz * -scale / 2.0);
+    float3 dx = float3(1.0, 0.0, dxz * -scale);
+    float3 dy = float3(0.0, 1.0, dyz * -scale);
     
     
     float3 normal = float3(
