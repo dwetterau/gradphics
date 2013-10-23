@@ -19,5 +19,23 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  // bumpy-diffuse
+  vec3 ld = normalize(lightDirection);
+  vec3 N = texture2D(normalMap, normalMapTexCoord).rgb;
+  N = (N - vec3(0.5, 0.5, 0.5)) * 2.0;
+  float diff_contribution = max(0.0, dot(ld, N));
+  vec4 diffuseContrib = diff_contribution * LMd;
+
+  // decal
+  vec4 decalContrib = diff_contribution * texture2D(decal, normalMapTexCoord).rgba;
+  decalContrib = vec4(decalContrib.r*LMd.r,
+                      decalContrib.g*LMd.g,
+                      decalContrib.b*LMd.b,
+                      decalContrib.a*LMd.a);
+
+  // specular
+  float spec_contribution = max(0.0, pow(dot(halfAngle, N), shininess));
+  vec4 specularContrib = LMs * spec_contribution;
+
+  gl_FragColor = decalContrib + specularContrib + LMa;
 }
