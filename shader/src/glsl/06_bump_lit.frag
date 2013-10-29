@@ -27,7 +27,7 @@ void main()
   vec4 diffuseContrib = diff_contribution * LMd;
 
   // decal
-  vec4 decalContrib = diff_contribution * texture2D(decal, normalMapTexCoord).rgba;
+  vec4 decalContrib = diff_contribution * texture2D(decal, vec2(-normalMapTexCoord.x, normalMapTexCoord.y)).rgba;
   decalContrib = vec4(decalContrib.r*LMd.r,
                       decalContrib.g*LMd.g,
                       decalContrib.b*LMd.b,
