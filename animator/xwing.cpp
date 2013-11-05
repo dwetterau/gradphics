@@ -25,49 +25,50 @@ using namespace std;
 #define MAX_VEL 200
 #define MIN_STEP 0.1
 
-
-
-
-
 // This is a list of the controls for the RobotArm
 // We'll use these constants to access the values 
 // of the controls from the user interface.
-enum RobotArmControls
+enum XWingControls
 { 
-    BASE_ROTATION=0, LOWER_TILT, UPPER_TILT, CLAW_ROTATION,
-        BASE_LENGTH, LOWER_LENGTH, UPPER_LENGTH, PARTICLE_COUNT, NUMCONTROLS, 
+    WING_ANGLE=0, BODY_HEIGHT, BODY_ROTATION, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, 
+    LOWER_LANDING_GEAR_ANGLE, GUN_LENGTH, R2_ROTATION, PARTICLE_COUNT, NUMCONTROLS
 };
 
 void ground(float h);
-void base(float h);
-void rotation_base(float h);
-void lower_arm(float h);
-void upper_arm(float h);
-void claw(float h);
+void body(float h, float r);
+void left_lower_wing(float h);
+void left_upper_wing(float h);
+void right_lower_wing(float h);
+void right_upper_wing(float h);
+void engine();
+void gun(float h);
+void r2(float h);
+void cockpit(float h);
+void landingGear(float l, float rot);
+void landingSled(float h);
 void y_box(float h);
 Mat4f glGetMatrix(GLenum pname);
 Vec3f getWorldPoint(Mat4f matCamXforms);
 
 // To make a RobotArm, we inherit off of ModelerView
-class RobotArm : public ModelerView 
+class XWing : public ModelerView 
 {
 public:
-    RobotArm(int x, int y, int w, int h, char *label) 
+    XWing(int x, int y, int w, int h, char *label) 
         : ModelerView(x,y,w,h,label) {}
     virtual void draw();
 };
 
 // We need to make a creator function, mostly because of
 // nasty API stuff that we'd rather stay away from.
-ModelerView* createRobotArm(int x, int y, int w, int h, char *label)
+ModelerView* createXWing(int x, int y, int w, int h, char *label)
 { 
-    return new RobotArm(x,y,w,h,label); 
+    return new XWing(x,y,w,h,label); 
 }
 
 // We'll be getting the instance of the application a lot; 
 // might as well have it as a macro.
 #define VAL(x) (ModelerApplication::Instance()->GetControlValue(x))
-
 
 // Utility function.  Use glGetMatrix(GL_MODELVIEW_MATRIX) to retrieve
 //  the current ModelView matrix.
@@ -76,60 +77,56 @@ Mat4f glGetMatrix(GLenum pname)
     GLfloat m[16];
     glGetFloatv(pname, m);
     Mat4f matCam(m[0],  m[1],  m[2],  m[3],
-                            m[4],  m[5],  m[6],  m[7],
-                            m[8],  m[9],  m[10], m[11],
-                            m[12], m[13], m[14], m[15] );
+                 m[4],  m[5],  m[6],  m[7],
+                 m[8],  m[9],  m[10], m[11],
+                 m[12], m[13], m[14], m[15]);
 
     // because the matrix GL returns is column major...
     return matCam.transpose();
 }
 
-
-
-
-
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out RobotArm
-void RobotArm::draw()
+void XWing::draw()
 {
 	/* pick up the slider values */
 
-	float theta = VAL( BASE_ROTATION );
-	float phi = VAL( LOWER_TILT );
-	float psi = VAL( UPPER_TILT );
-	float cr = VAL( CLAW_ROTATION );
-	float h1 = VAL( BASE_LENGTH );
-	float h2 = VAL( LOWER_LENGTH );
-	float h3 = VAL( UPPER_LENGTH );
+  float body_height = VAL(BODY_HEIGHT);
+  float body_rot = VAL(BODY_ROTATION);
+  float wing_angle = VAL(WING_ANGLE);
+  float cock_angle = VAL(COCKPIT_ANGLE);
+  float landing_angle = VAL(LANDING_GEAR_ANGLE);
+  float landing_length = VAL(LANDING_GEAR_LENGTH);
+  float sled_angle = VAL(LOWER_LANDING_GEAR_ANGLE);
+  float gun_length = VAL(GUN_LENGTH);
+  float r2_rot = VAL(R2_ROTATION);
 	float pc = VAL( PARTICLE_COUNT );
 
-    // This call takes care of a lot of the nasty projection 
-    // matrix stuff
-    ModelerView::draw();
+  // This call takes care of a lot of the nasty projection 
+  // matrix stuff
+  ModelerView::draw();
 
-    // Save the camera transform that was applied by
-    // ModelerView::draw() above.
-    // While we're at it, save an inverted copy of this matrix.  We'll
-    // need it later.
-    Mat4f matCam = glGetMatrix( GL_MODELVIEW_MATRIX );
-    //Mat4f matCamInverse = matCam.inverse();
-
-
+  // Save the camera transform that was applied by
+  // ModelerView::draw() above.
+  // While we're at it, save an inverted copy of this matrix.  We'll
+  // need it later.
+  Mat4f matCam = glGetMatrix( GL_MODELVIEW_MATRIX );
+  //Mat4f matCamInverse = matCam.inverse();
 
 	static GLfloat lmodel_ambient[] = {0.4,0.4,0.4,1.0};
 
 	// define the model
 
 	ground(-0.2);
+	body(body_height, body_rot);
 
-	base(0.8);
-
+/*
     glTranslatef( 0.0, 0.8, 0.0 );			// move to the top of the base
     glRotatef( theta, 0.0, 1.0, 0.0 );		// turn the whole assembly around the y-axis. 
-	rotation_base(h1);						// draw the rotation base
+	  rotation_base(h1);						// draw the rotation base
 
     glTranslatef( 0.0, h1, 0.0 );			// move to the top of the base
-	glPushMatrix();
+	  glPushMatrix();
 			glTranslatef( 0.5, h1, 0.6 );	
 	glPopMatrix();
     glRotatef( phi, 0.0, 0.0, 1.0 );		// rotate around the z-axis for the lower arm
@@ -143,7 +140,7 @@ void RobotArm::draw()
 	glTranslatef( 0.0, h3, 0.0 );
 	glRotatef( cr, 0.0, 0.0, 1.0 );
 	claw(1.0);
-
+*/
 
 
 
@@ -162,28 +159,75 @@ void ground(float h)
 	glEnable(GL_LIGHTING);
 }
 
-void base(float h) {
-	setDiffuseColor( 0.25, 0.25, 0.25 );
-	setAmbientColor( 0.25, 0.25, 0.25 );
+#define BACK_LENGTH 3.0
+#define TOTAL_LENGTH 10.0
+#define BIG_HEX_SIZE 3.0
+#define SMALL_HEX_SIZE 1.5
+
+
+void body(float h, float r) {
+	double f_a [] = {BIG_HEX_SIZE / 2 - (SMALL_HEX_SIZE / 6), 0.0, -TOTAL_LENGTH};
+  double f_b [] = {BIG_HEX_SIZE / 2 - (SMALL_HEX_SIZE / 2), SMALL_HEX_SIZE / 2, -TOTAL_LENGTH};
+	double f_c [] = {BIG_HEX_SIZE / 2 - (SMALL_HEX_SIZE / 6), SMALL_HEX_SIZE, -TOTAL_LENGTH};
+	double f_d [] = {BIG_HEX_SIZE / 2 + (SMALL_HEX_SIZE / 6), SMALL_HEX_SIZE, -TOTAL_LENGTH};
+  double f_e [] = {BIG_HEX_SIZE / 2 + (SMALL_HEX_SIZE / 2), SMALL_HEX_SIZE / 2, -TOTAL_LENGTH};
+  double f_f [] = {BIG_HEX_SIZE / 2 + (SMALL_HEX_SIZE / 6), 0.0, -TOTAL_LENGTH};
+  double f_m [] = {BIG_HEX_SIZE / 2, SMALL_HEX_SIZE / 2, -TOTAL_LENGTH - 0.5};
+
+  double b_a [] = {BIG_HEX_SIZE / 3, 0.0, 0.0};
+  double b_b [] = {0, BIG_HEX_SIZE / 2, 0.0};
+	double b_c [] = {BIG_HEX_SIZE / 3, BIG_HEX_SIZE, 0.0};
+	double b_d [] = {2 * BIG_HEX_SIZE / 3, BIG_HEX_SIZE, 0.0};
+  double b_e [] = {BIG_HEX_SIZE, BIG_HEX_SIZE / 2, 0.0};
+  double b_f [] = {2 * BIG_HEX_SIZE / 3, 0.0, 0.0};
+  double b_m [] = {BIG_HEX_SIZE / 2, BIG_HEX_SIZE / 2, 0.0};
+
+  setDiffuseColor( 0.50, 0.50, 0.50 );
+	setAmbientColor( 0.50, 0.50, 0.50 );
 	glPushMatrix();
+    glTranslate(0.0, h, 0.0);
 		glPushMatrix();
-			glTranslatef(1.0, h / 2.0, 0.75);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(1.0, h / 2.0, -1.0);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-1.0, h / 2.0, 0.75);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(-1.0, h / 2.0, -1.0);
-			drawCylinder(0.25, h / 2.0, h / 2.0);
-		glPopMatrix();
+      // front cone
+      drawTriangle(f_f[0], f_f[1], f_f[2],
+                   f_m[0], f_m[1], f_m[2],
+                   f_a[0], f_a[1], f_a[2]);
+      drawTriangle(f_a[0], f_a[1], f_a[2],
+                   f_m[0], f_m[1], f_m[2],
+                   f_b[0], f_b[1], f_b[2]);
+		  drawTriangle(f_b[0], f_b[1], f_b[2],
+                   f_m[0], f_m[1], f_m[2],
+                   f_c[0], f_c[1], f_c[2]);
+      drawTriangle(f_c[0], f_c[1], f_c[2],
+                   f_m[0], f_m[1], f_m[2],
+                   f_d[0], f_d[1], f_d[2]);
+      drawTriangle(f_d[0], f_d[1], f_d[2],
+                   f_m[0], f_m[1], f_m[2],
+                   f_e[0], f_e[1], f_e[2]);
+      drawTriangle(f_e[0], f_e[1], f_e[2],
+                   f_m[0], f_m[1], f_m[2],
+                   f_f[0], f_f[1], f_f[2]);
+      // back plane
+      drawTriangle(b_f[0], b_f[1], b_f[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_a[0], b_a[1], b_a[2]);
+      drawTriangle(b_a[0], b_a[1], b_a[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_b[0], b_b[1], b_b[2]);
+		  drawTriangle(b_b[0], b_b[1], b_b[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_c[0], b_c[1], b_c[2]);
+      drawTriangle(b_c[0], b_c[1], b_c[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_d[0], b_d[1], b_d[2]);
+      drawTriangle(b_d[0], b_d[1], b_d[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_e[0], b_e[1], b_e[2]);
+      drawTriangle(b_e[0], b_e[1], b_e[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_f[0], b_f[1], b_f[2]);
+
+    glPopMatrix();
 	glScalef(4.0f, h, 4.0f);
-	y_box(1.0f);
 	glPopMatrix();
 }
 
@@ -309,10 +353,10 @@ int main()
 {
     ModelerControl controls[NUMCONTROLS ];
 
-	controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
+	  controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
     controls[LOWER_TILT] = ModelerControl("lower arm tilt (phi)", 15.0, 95.0, 0.1, 55.0 );
     controls[UPPER_TILT] = ModelerControl("upper arm tilt (psi)", 0.0, 135.0, 0.1, 30.0 );
-	controls[CLAW_ROTATION] = ModelerControl("claw rotation (cr)", -30.0, 180.0, 0.1, 0.0 );
+	  controls[CLAW_ROTATION] = ModelerControl("claw rotation (cr)", -30.0, 180.0, 0.1, 0.0 );
     controls[BASE_LENGTH] = ModelerControl("base height (h1)", 0.5, 10.0, 0.1, 0.8 );
     controls[LOWER_LENGTH] = ModelerControl("lower arm length (h2)", 1, 10.0, 0.1, 3.0 );
     controls[UPPER_LENGTH] = ModelerControl("upper arm length (h3)", 1, 10.0, 0.1, 2.5 );
