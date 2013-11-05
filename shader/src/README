@@ -1,0 +1,11 @@
+We did all of the bells and whistles on the assignment.
+
+Bumpy Diffuse: We used the cross product of the two vectors (1, 0, dx) and (0, 1, dy) where dx and dy were calculated using the bump map image. we then multiplied the result's z component by scale before normalizing it.
+
+Bumped and Lit: for this we decided we wanted the decal contribution to be shaded so we multiplied this contribution by the diffuse contribution and combined the result with the specular and ambient contributions.
+
+Environment Reflections: We reflected the eye direction vector over the normal in surface space and converted it back to world space to sample the environment map.
+
+Bumpy Environment Reflections: We did the same thing as the previous one but this time reflected over the perturbed normal.
+
+Everything: We combined the contributions as described in the assignment. A strange artifact of this was that the reflection color appears even when that side is in shadow from the direct lighting.
