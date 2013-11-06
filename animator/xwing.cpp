@@ -91,6 +91,7 @@ Mat4f glGetMatrix(GLenum pname)
 #define WING_WIDTH .2
 #define WING_LENGTH 6.0
 #define COCKPIT_SIZE 1.0
+#define CYLINDER_R .5
 
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out RobotArm
@@ -134,24 +135,40 @@ void XWing::draw()
       glTranslatef(1 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2, 0.0);
       glRotatef(wing_angle, 0, 0, -1.0);
       right_wing();
+      glPushMatrix();
+        glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
+        engine();
+      glPopMatrix();
     glPopMatrix();
     // right lower wing
 	  glPushMatrix();
       glTranslatef(1 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2 - WING_WIDTH, 0.0);
       glRotatef(wing_angle, 0, 0, 1.0);
       right_wing();
+      glPushMatrix();
+        glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
+        engine();
+      glPopMatrix();
     glPopMatrix();
     // left upper wing
-   glPushMatrix();
+    glPushMatrix();
       glTranslatef(2 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2, 0.0);
       glRotatef(wing_angle, 0, 0, 1.0);
       left_wing();
+      glPushMatrix();
+        glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
+        engine();
+      glPopMatrix();
     glPopMatrix();
     // left lower wing
 	  glPushMatrix();
       glTranslatef(2 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2 - WING_WIDTH, 0.0);
       glRotatef(wing_angle, 0, 0, -1.0);
       left_wing();
+      glPushMatrix();
+        glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
+        engine();
+      glPopMatrix();
     glPopMatrix();
     glPushMatrix();
       glTranslatef(BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE, -BACK_LENGTH);
@@ -187,6 +204,14 @@ void right_wing() {
 	setAmbientColor( 0.50, 0.50, 0.50 );
 	glPushMatrix();
     drawBox(-WING_LENGTH, WING_WIDTH, -BACK_LENGTH);
+  glPopMatrix();
+}
+
+void engine() {
+  setDiffuseColor(.35, .35, .35);
+  setAmbientColor(.35, .35, .35);
+  glPushMatrix();
+    drawCylinder(1.0 + BACK_LENGTH + CYLINDER_R, CYLINDER_R, CYLINDER_R);
   glPopMatrix();
 }
 
@@ -237,7 +262,7 @@ void body() {
 	double f_d [] = {BIG_HEX_SIZE / 2 + (SMALL_HEX_SIZE / 6), SMALL_HEX_SIZE, -TOTAL_LENGTH};
   double f_e [] = {BIG_HEX_SIZE / 2 + (SMALL_HEX_SIZE / 2), SMALL_HEX_SIZE / 2, -TOTAL_LENGTH};
   double f_f [] = {BIG_HEX_SIZE / 2 + (SMALL_HEX_SIZE / 6), 0.0, -TOTAL_LENGTH};
-  double f_m [] = {BIG_HEX_SIZE / 2, SMALL_HEX_SIZE / 2, -TOTAL_LENGTH - 0.5};
+  double f_m [] = {BIG_HEX_SIZE / 2, SMALL_HEX_SIZE / 2, -TOTAL_LENGTH - 1.0};
 
   double b_a [] = {BIG_HEX_SIZE / 3, 0.0, 0.0};
   double b_b [] = {0, BIG_HEX_SIZE / 2, 0.0};
