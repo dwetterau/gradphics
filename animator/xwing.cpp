@@ -185,7 +185,8 @@ void body(float h, float r) {
   setDiffuseColor( 0.50, 0.50, 0.50 );
 	setAmbientColor( 0.50, 0.50, 0.50 );
 	glPushMatrix();
-    glTranslate(0.0, h, 0.0);
+    glTranslatef(0.0, h, 0.0);
+    glRotatef(r, 0.0, 1.0, 0.0);
 		glPushMatrix();
       // front cone
       drawTriangle(f_f[0], f_f[1], f_f[2],
@@ -207,30 +208,152 @@ void body(float h, float r) {
                    f_m[0], f_m[1], f_m[2],
                    f_f[0], f_f[1], f_f[2]);
       // back plane
-      drawTriangle(b_f[0], b_f[1], b_f[2],
-                   b_m[0], b_m[1], b_m[2],
-                   b_a[0], b_a[1], b_a[2]);
       drawTriangle(b_a[0], b_a[1], b_a[2],
                    b_m[0], b_m[1], b_m[2],
+                   b_f[0], b_f[1], b_f[2]);
+      drawTriangle(b_b[0], b_b[1], b_b[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_a[0], b_a[1], b_a[2]);
+		  drawTriangle(b_c[0], b_c[1], b_c[2],
+                   b_m[0], b_m[1], b_m[2],
                    b_b[0], b_b[1], b_b[2]);
-		  drawTriangle(b_b[0], b_b[1], b_b[2],
-                   b_m[0], b_m[1], b_m[2],
-                   b_c[0], b_c[1], b_c[2]);
-      drawTriangle(b_c[0], b_c[1], b_c[2],
-                   b_m[0], b_m[1], b_m[2],
-                   b_d[0], b_d[1], b_d[2]);
       drawTriangle(b_d[0], b_d[1], b_d[2],
                    b_m[0], b_m[1], b_m[2],
-                   b_e[0], b_e[1], b_e[2]);
+                   b_c[0], b_c[1], b_c[2]);
       drawTriangle(b_e[0], b_e[1], b_e[2],
                    b_m[0], b_m[1], b_m[2],
-                   b_f[0], b_f[1], b_f[2]);
+                   b_d[0], b_d[1], b_d[2]);
+      drawTriangle(b_f[0], b_f[1], b_f[2],
+                   b_m[0], b_m[1], b_m[2],
+                   b_e[0], b_e[1], b_e[2]);
+      // front cone to mid hex
+      drawTriangle(f_a[0], f_a[1], f_a[2],
+                   f_b[0], f_b[1], f_b[2],
+                   f_a[0], f_a[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_b[0], f_b[1], f_b[2],
+                   f_b[0], f_b[1], -1.0 - BACK_LENGTH,
+                   f_a[0], f_a[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_b[0], f_b[1], f_b[2],
+                   f_c[0], f_c[1], f_c[2],
+                   f_b[0], f_b[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_c[0], f_c[1], f_c[2],
+                   f_c[0], f_c[1], -1.0 - BACK_LENGTH,
+                   f_b[0], f_b[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_c[0], f_c[1], f_c[2],
+                   f_d[0], f_d[1], f_d[2],
+                   f_c[0], f_c[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_d[0], f_d[1], f_d[2],
+                   f_d[0], f_d[1], -1.0 - BACK_LENGTH,
+                   f_c[0], f_c[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_d[0], f_d[1], f_d[2],
+                   f_e[0], f_e[1], f_e[2],
+                   f_d[0], f_d[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_e[0], f_e[1], f_e[2],
+                   f_e[0], f_e[1], -1.0 - BACK_LENGTH,
+                   f_d[0], f_d[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_e[0], f_e[1], f_e[2],
+                   f_f[0], f_f[1], f_f[2],
+                   f_e[0], f_e[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_f[0], f_f[1], f_f[2],
+                   f_f[0], f_f[1], -1.0 - BACK_LENGTH,
+                   f_e[0], f_e[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_f[0], f_f[1], f_f[2],
+                   f_a[0], f_a[1], f_a[2],
+                   f_f[0], f_f[1], -1.0 - BACK_LENGTH);
+      drawTriangle(f_a[0], f_a[1], f_a[2],
+                   f_a[0], f_a[1], -1.0 - BACK_LENGTH,
+                   f_f[0], f_f[1], -1.0 - BACK_LENGTH);
+      // mid hex transition
+      drawTriangle(f_a[0], f_a[1], -1.0 - BACK_LENGTH,
+                   f_b[0], f_b[1], -1.0 - BACK_LENGTH,
+                   b_a[0], b_a[1], -BACK_LENGTH);
+      drawTriangle(f_b[0], f_b[1], -1.0 - BACK_LENGTH,
+                   b_b[0], b_b[1], -BACK_LENGTH,
+                   b_a[0], b_a[1], -BACK_LENGTH);
+    
+      drawTriangle(f_b[0], f_b[1], -1.0 - BACK_LENGTH,
+                   f_c[0], f_c[1], -1.0 - BACK_LENGTH,
+                   b_b[0], b_b[1], -BACK_LENGTH);
+      drawTriangle(f_c[0], f_c[1], -1.0 - BACK_LENGTH,
+                   b_c[0], b_c[1], -BACK_LENGTH,
+                   b_b[0], b_b[1], -BACK_LENGTH);
+    
+      drawTriangle(f_c[0], f_c[1], -1.0 - BACK_LENGTH,
+                   f_d[0], f_d[1], -1.0 - BACK_LENGTH,
+                   b_c[0], b_c[1], -BACK_LENGTH);
+      drawTriangle(f_d[0], f_d[1], -1.0 - BACK_LENGTH,
+                   b_d[0], b_d[1], -BACK_LENGTH,
+                   b_c[0], b_c[1], -BACK_LENGTH);
+    
+      drawTriangle(f_d[0], f_d[1], -1.0 - BACK_LENGTH,
+                   f_e[0], f_b[1], -1.0 - BACK_LENGTH,
+                   b_d[0], b_d[1], -BACK_LENGTH);
+      drawTriangle(f_e[0], f_b[1], -1.0 - BACK_LENGTH,
+                   b_e[0], b_b[1], -BACK_LENGTH,
+                   b_d[0], b_d[1], -BACK_LENGTH);
+ 
+      drawTriangle(f_e[0], f_e[1], -1.0 - BACK_LENGTH,
+                   f_f[0], f_f[1], -1.0 - BACK_LENGTH,
+                   b_e[0], b_e[1], -BACK_LENGTH);
+      drawTriangle(f_f[0], f_f[1], -1.0 - BACK_LENGTH,
+                   b_f[0], b_f[1], -BACK_LENGTH,
+                   b_e[0], b_e[1], -BACK_LENGTH);
+       
+      drawTriangle(f_f[0], f_f[1], -1.0 - BACK_LENGTH,
+                   f_a[0], f_a[1], -1.0 - BACK_LENGTH,
+                   b_f[0], b_f[1], -BACK_LENGTH);
+      drawTriangle(f_a[0], f_a[1], -1.0 - BACK_LENGTH,
+                   b_a[0], b_a[1], -BACK_LENGTH,
+                   b_f[0], b_f[1], -BACK_LENGTH);
 
+      // to back hex
+      drawTriangle(b_a[0], b_a[1], -BACK_LENGTH,
+                   b_b[0], b_b[1], -BACK_LENGTH,
+                   b_a[0], b_a[1], 0.0);
+      drawTriangle(b_b[0], b_b[1], -BACK_LENGTH,
+                   b_b[0], b_b[1], 0.0,
+                   b_a[0], b_a[1], 0.0);
+      
+      drawTriangle(b_b[0], b_b[1], -BACK_LENGTH,
+                   b_c[0], b_c[1], -BACK_LENGTH,
+                   b_b[0], b_b[1], 0.0);
+      drawTriangle(b_c[0], b_c[1], -BACK_LENGTH,
+                   b_c[0], b_c[1], 0.0,
+                   b_b[0], b_b[1], 0.0);
+    
+      drawTriangle(b_c[0], b_c[1], -BACK_LENGTH,
+                   b_d[0], b_d[1], -BACK_LENGTH,
+                   b_c[0], b_c[1], 0.0);
+      drawTriangle(b_d[0], b_d[1], -BACK_LENGTH,
+                   b_d[0], b_d[1], 0.0,
+                   b_c[0], b_c[1], 0.0);
+ 
+      drawTriangle(b_d[0], b_d[1], -BACK_LENGTH,
+                   b_e[0], b_e[1], -BACK_LENGTH,
+                   b_d[0], b_d[1], 0.0);
+      drawTriangle(b_e[0], b_e[1], -BACK_LENGTH,
+                   b_e[0], b_e[1], 0.0,
+                   b_d[0], b_d[1], 0.0);
+       
+      drawTriangle(b_e[0], b_e[1], -BACK_LENGTH,
+                   b_f[0], b_f[1], -BACK_LENGTH,
+                   b_e[0], b_e[1], 0.0);
+      drawTriangle(b_f[0], b_f[1], -BACK_LENGTH,
+                   b_f[0], b_f[1], 0.0,
+                   b_e[0], b_e[1], 0.0);
+    
+      drawTriangle(b_f[0], b_f[1], -BACK_LENGTH,
+                   b_a[0], b_a[1], -BACK_LENGTH,
+                   b_f[0], b_f[1], 0.0);
+      drawTriangle(b_a[0], b_a[1], -BACK_LENGTH,
+                   b_a[0], b_a[1], 0.0,
+                   b_f[0], b_f[1], 0.0);
+    
     glPopMatrix();
-	glScalef(4.0f, h, 4.0f);
+	//glScalef(4.0f, h, 4.0f);
 	glPopMatrix();
 }
-
+/*
 void rotation_base(float h) {
 	setDiffuseColor( 0.85, 0.75, 0.25 );
 	setAmbientColor( 0.95, 0.75, 0.25 );
@@ -305,7 +428,7 @@ void claw(float h) {
 
 	glEnd();
 }
-
+*/
 void y_box(float h) {
 
 	glBegin( GL_QUADS );
@@ -353,13 +476,15 @@ int main()
 {
     ModelerControl controls[NUMCONTROLS ];
 
-	  controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
-    controls[LOWER_TILT] = ModelerControl("lower arm tilt (phi)", 15.0, 95.0, 0.1, 55.0 );
-    controls[UPPER_TILT] = ModelerControl("upper arm tilt (psi)", 0.0, 135.0, 0.1, 30.0 );
-	  controls[CLAW_ROTATION] = ModelerControl("claw rotation (cr)", -30.0, 180.0, 0.1, 0.0 );
-    controls[BASE_LENGTH] = ModelerControl("base height (h1)", 0.5, 10.0, 0.1, 0.8 );
-    controls[LOWER_LENGTH] = ModelerControl("lower arm length (h2)", 1, 10.0, 0.1, 3.0 );
-    controls[UPPER_LENGTH] = ModelerControl("upper arm length (h3)", 1, 10.0, 0.1, 2.5 );
+	  controls[WING_ANGLE] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
+    controls[BODY_HEIGHT] = ModelerControl("lower arm tilt (phi)", 15.0, 95.0, 0.1, 55.0 );
+    controls[BODY_ROTATION] = ModelerControl("upper arm tilt (psi)", 0.0, 135.0, 0.1, 30.0 );
+	  controls[COCKPIT_ANGLE] = ModelerControl("claw rotation (cr)", -30.0, 180.0, 0.1, 0.0 );
+    controls[LANDING_GEAR_ANGLE] = ModelerControl("base height (h1)", 0.5, 10.0, 0.1, 0.8 );
+    controls[LANDING_GEAR_LENGTH] = ModelerControl("lower arm length (h2)", 1, 10.0, 0.1, 3.0 );
+    controls[LOWER_LANDING_GEAR_ANGLE] = ModelerControl("upper arm length (h3)", 1, 10.0, 0.1, 2.5 );
+    controls[GUN_LENGTH] = ModelerControl("upper arm length (h3)", 1, 10.0, 0.1, 2.5 );
+    controls[R2_ROTATION] = ModelerControl("upper arm length (h3)", 1, 10.0, 0.1, 2.5 );
     controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
     
 
