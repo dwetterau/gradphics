@@ -40,10 +40,11 @@ void left_wing();
 void right_wing();
 void engine();
 void gun(float h);
+void gunBase();
 void r2(float h);
 void cockpit();
-void landingGear(float l, float rot);
-void landingSled(float h);
+void landingGear(float l);
+void landingSled();
 void y_box(float h);
 Mat4f glGetMatrix(GLenum pname);
 Vec3f getWorldPoint(Mat4f matCamXforms);
@@ -92,6 +93,10 @@ Mat4f glGetMatrix(GLenum pname)
 #define WING_LENGTH 6.0
 #define COCKPIT_SIZE 1.0
 #define CYLINDER_R .5
+#define GUN_BASE_R .3
+#define GUN_BARREL_R .1
+#define GEAR_W .4
+#define GEAR_T .2
 
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out RobotArm
@@ -105,7 +110,6 @@ void XWing::draw()
   float cock_angle = VAL(COCKPIT_ANGLE);
   float landing_angle = VAL(LANDING_GEAR_ANGLE);
   float landing_length = VAL(LANDING_GEAR_LENGTH);
-  float sled_angle = VAL(LOWER_LANDING_GEAR_ANGLE);
   float gun_length = VAL(GUN_LENGTH);
   float r2_rot = VAL(R2_ROTATION);
 	float pc = VAL( PARTICLE_COUNT );
@@ -139,6 +143,14 @@ void XWing::draw()
         glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
       glPopMatrix();
+      glPushMatrix();
+        glTranslatef(-(WING_LENGTH - GUN_BASE_R), WING_WIDTH + GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        gun(gun_length);
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
+          gunBase();
+        glPopMatrix();
+      glPopMatrix();
     glPopMatrix();
     // right lower wing
 	  glPushMatrix();
@@ -148,6 +160,14 @@ void XWing::draw()
       glPushMatrix();
         glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
+      glPopMatrix();
+      glPushMatrix();
+        glTranslatef(-(WING_LENGTH - GUN_BASE_R), -GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        gun(gun_length);
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
+          gunBase();
+        glPopMatrix();
       glPopMatrix();
     glPopMatrix();
     // left upper wing
@@ -159,6 +179,14 @@ void XWing::draw()
         glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
       glPopMatrix();
+      glPushMatrix();
+        glTranslatef((WING_LENGTH - GUN_BASE_R), WING_WIDTH + GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        gun(gun_length);
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
+          gunBase();
+        glPopMatrix();
+      glPopMatrix();
     glPopMatrix();
     // left lower wing
 	  glPushMatrix();
@@ -169,15 +197,90 @@ void XWing::draw()
         glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
       glPopMatrix();
+      glPushMatrix();
+        glTranslatef((WING_LENGTH - GUN_BASE_R), -GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        gun(gun_length);
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
+          gunBase();
+        glPopMatrix();
+      glPopMatrix();
     glPopMatrix();
     glPushMatrix();
       glTranslatef(BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE, -BACK_LENGTH);
       glRotatef(cock_angle, 1.0, 0, 0);
       cockpit();
     glPopMatrix();
+    glPushMatrix();
+      glTranslatef(BIG_HEX_SIZE / 2 - GEAR_W / 2, 0.0, -TOTAL_LENGTH + 2.0);
+      glRotatef(landing_angle, -1.0, 0, 0);
+      landingGear(landing_length);
+      glPushMatrix();
+        glTranslatef(0.0, 0.0, -landing_length);
+        glRotatef(landing_angle, 1.0, 0, 0);
+        landingSled();
+      glPopMatrix();
+    glPopMatrix();
+    glPushMatrix();
+      glTranslatef(BIG_HEX_SIZE / 3, 0.0, -0.5);
+      glRotatef(landing_angle, -1.0, 0, 0);
+      landingGear(landing_length);
+      glPushMatrix();
+        glTranslatef(0.0, 0.0, -landing_length);
+        glRotatef(landing_angle, 1.0, 0, 0);
+        landingSled();
+      glPopMatrix();
+    glPopMatrix();
+    glPushMatrix();
+      glTranslatef(2 * BIG_HEX_SIZE / 3.0 - GEAR_W, 0.0, -.5);
+      glRotatef(landing_angle, -1.0, 0, 0);
+      landingGear(landing_length);
+      glPushMatrix();
+        glTranslatef(0.0, 0.0, -landing_length);
+        glRotatef(landing_angle, 1.0, 0, 0);
+        landingSled();
+      glPopMatrix();
+    glPopMatrix();
+
   glPopMatrix();
   
 	endDraw();
+}
+
+void landingGear(float length) {
+  setDiffuseColor( 0.50, 0.50, 0.50 );
+	setAmbientColor( 0.50, 0.50, 0.50 );
+  glPushMatrix();
+    drawBox(GEAR_W, GEAR_T, -length);
+  glPopMatrix();
+}
+
+void landingSled() {
+  setDiffuseColor( 0.50, 0.50, 0.50 );
+	setAmbientColor( 0.50, 0.50, 0.50 );
+  glPushMatrix();
+    drawBox(GEAR_W, GEAR_T, -GEAR_W * 2);
+  glPopMatrix();
+}
+
+void gun(float gun_length) {
+  setDiffuseColor( 0.50, 0.50, 0.50 );
+	setAmbientColor( 0.50, 0.50, 0.50 );
+  glPushMatrix();
+    drawCylinder(GUN_BASE_R * 2.0, GUN_BARREL_R / 2.0, 3.0 * GUN_BARREL_R / 5.0);
+    glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0);
+    drawCylinder(GUN_BARREL_R, GUN_BASE_R, GUN_BARREL_R);
+    glTranslatef(0.0, 0.0, GUN_BARREL_R);
+    drawCylinder(gun_length, GUN_BARREL_R, GUN_BARREL_R);
+  glPopMatrix();
+}
+
+void gunBase() {
+    drawCylinder(GUN_BARREL_R, GUN_BARREL_R, GUN_BASE_R);
+    glTranslatef(0.0, 0.0, GUN_BARREL_R);
+    drawCylinder(BACK_LENGTH - GUN_BARREL_R, GUN_BASE_R, GUN_BASE_R);
+    glTranslatef(0.0, 0.0, BACK_LENGTH - GUN_BARREL_R);
+    drawCylinder(GUN_BARREL_R, GUN_BASE_R, GUN_BARREL_R); 
 }
 
 void ground(float h) 
@@ -319,24 +422,38 @@ void body() {
   drawTriangle(f_b[0], f_b[1], f_b[2],
                f_b[0], f_b[1], -1.0 - BACK_LENGTH,
                f_a[0], f_a[1], -1.0 - BACK_LENGTH);
+  
+  
+  setDiffuseColor( 0.80, 0.20, 0.20 );
+	setAmbientColor( 0.80, 0.20, 0.20 );
   drawTriangle(f_b[0], f_b[1], f_b[2],
                f_c[0], f_c[1], f_c[2],
                f_b[0], f_b[1], -1.0 - BACK_LENGTH);
   drawTriangle(f_c[0], f_c[1], f_c[2],
                f_c[0], f_c[1], -1.0 - BACK_LENGTH,
                f_b[0], f_b[1], -1.0 - BACK_LENGTH);
-  drawTriangle(f_c[0], f_c[1], f_c[2],
-               f_d[0], f_d[1], f_d[2],
-               f_c[0], f_c[1], -1.0 - BACK_LENGTH);
-  drawTriangle(f_d[0], f_d[1], f_d[2],
-               f_d[0], f_d[1], -1.0 - BACK_LENGTH,
-               f_c[0], f_c[1], -1.0 - BACK_LENGTH);
+  
   drawTriangle(f_d[0], f_d[1], f_d[2],
                f_e[0], f_e[1], f_e[2],
                f_d[0], f_d[1], -1.0 - BACK_LENGTH);
   drawTriangle(f_e[0], f_e[1], f_e[2],
                f_e[0], f_e[1], -1.0 - BACK_LENGTH,
                f_d[0], f_d[1], -1.0 - BACK_LENGTH);
+  setDiffuseColor( 0.80, 0.80, 0.80 );
+	setAmbientColor( 0.80, 0.80, 0.80 );
+
+
+
+  drawTriangle(f_c[0], f_c[1], f_c[2],
+               f_d[0], f_d[1], f_d[2],
+               f_c[0], f_c[1], -1.0 - BACK_LENGTH);
+  drawTriangle(f_d[0], f_d[1], f_d[2],
+               f_d[0], f_d[1], -1.0 - BACK_LENGTH,
+               f_c[0], f_c[1], -1.0 - BACK_LENGTH);
+
+  setDiffuseColor( 0.50, 0.50, 0.50 );
+	setAmbientColor( 0.50, 0.50, 0.50 );
+
   drawTriangle(f_e[0], f_e[1], f_e[2],
                f_f[0], f_f[1], f_f[2],
                f_e[0], f_e[1], -1.0 - BACK_LENGTH);
@@ -484,14 +601,13 @@ int main()
 {
     ModelerControl controls[NUMCONTROLS ];
 // min max step default
-    controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 100.0, 0.1, 2.0 );
+    controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 100.0, 0.1, 1.0 );
     controls[BODY_ROTATION] = ModelerControl("body rotation (body_rot)", -180.0, 180.0, 0.1, 0.0 );
 	  controls[WING_ANGLE] = ModelerControl("wing angle (wing_angle)", 0.0, 30.0, 0.1, 0.0 );
 	  controls[COCKPIT_ANGLE] = ModelerControl("cockpit angle (cock_angle)", 0.0, 90.0, 0.1, 0.0 );
-    controls[LANDING_GEAR_ANGLE] = ModelerControl("landing gear angle (landing_angle)", 0.5, 10.0, 0.1, 0.8 );
-    controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", 1, 10.0, 0.1, 3.0 );
-    controls[LOWER_LANDING_GEAR_ANGLE] = ModelerControl("lower landing gear angle (sled_length)", 1, 10.0, 0.1, 2.5 );
-    controls[GUN_LENGTH] = ModelerControl("gun length (gun_length)", 1, 10.0, 0.1, 2.5 );
+    controls[LANDING_GEAR_ANGLE] = ModelerControl("landing gear angle (landing_angle)", 0.0, 90.0, 0.1, 0.0 );
+    controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", .1, 1.5, 0.01, 1.0 );
+    controls[GUN_LENGTH] = ModelerControl("gun length (gun_length)", 0.0, 5.0, 0.1, 5.0 );
     controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", 1, 10.0, 0.1, 2.5 );
     controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
 
