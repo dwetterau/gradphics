@@ -140,11 +140,11 @@ void XWing::draw()
 
 	ground(-0.2);
   glPushMatrix();
-    glTranslatef(0.0, -body_height, 0.0);
+    glTranslatef(0.0, body_height + BIG_HEX_SIZE / 2, 0.0); 
     glRotatef(yaw, 0.0, 1.0, 0.0);
     glRotatef(pitch, 1.0, 0.0, 0.0);
     glRotatef(roll, 0.0, 0.0, 1.0);
-    glTranslatef(-BIG_HEX_SIZE / 2, 2.0 * body_height, TOTAL_LENGTH / 2 - body_mov);
+    glTranslatef(-BIG_HEX_SIZE / 2, -BIG_HEX_SIZE / 2, TOTAL_LENGTH / 2 - body_mov);
     body();
     // right upper wing
 	  glPushMatrix();
