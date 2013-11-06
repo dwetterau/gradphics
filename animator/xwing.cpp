@@ -41,7 +41,9 @@ void right_wing();
 void engine();
 void gun(float h);
 void gunBase();
-void r2(float h);
+void r2();
+void r2_eye();
+void r2_top();
 void cockpit();
 void landingGear(float l);
 void landingSled();
@@ -97,6 +99,9 @@ Mat4f glGetMatrix(GLenum pname)
 #define GUN_BARREL_R .1
 #define GEAR_W .4
 #define GEAR_T .2
+#define R2_SIZE .4
+#define R2_TOP .3
+#define EYE_WIDTH .4
 
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out RobotArm
@@ -241,10 +246,47 @@ void XWing::draw()
         landingSled();
       glPopMatrix();
     glPopMatrix();
-
+    glPushMatrix();
+        glTranslatef(BIG_HEX_SIZE / 2, BIG_HEX_SIZE, -2 * BACK_LENGTH / 3 );
+        glRotatef(r2_rot, 0, 1.0, 0);
+        r2();
+        glPushMatrix();
+          glTranslatef(0.0, 0.5*R2_SIZE,-R2_SIZE/10.0 -1.73205080757 / 2*R2_SIZE);
+          glScalef(1.5, 1.5, 1.5);
+          r2_eye();
+        glPopMatrix();
+        glPushMatrix();
+          glRotatef(90.0, -1.0, 0.0, 0.0);
+          r2_top();
+        glPopMatrix();
+    glPopMatrix();
   glPopMatrix();
   
 	endDraw();
+}
+
+void r2_top() {
+  setDiffuseColor( 0.10, 0.10, 0.70 );
+  setAmbientColor( 0.10, 0.10, 0.70 );
+  glPushMatrix();
+    drawCylinder(R2_SIZE, R2_TOP, R2_TOP*0.3);
+  glPopMatrix();
+}
+
+void r2_eye() {
+  setDiffuseColor( 0.10, 0.10, 0.10 );
+  setAmbientColor( 0.10, 0.10, 0.10 );
+  glPushMatrix();
+    drawCylinder(EYE_WIDTH, R2_SIZE/10.0, R2_SIZE/10.0);
+  glPopMatrix();
+}
+
+void r2() {
+  setDiffuseColor( 0.80, 0.80, 0.80 );
+	setAmbientColor( 0.80, 0.80, 0.80 );
+  glPushMatrix();
+    drawSphere(R2_SIZE);
+  glPopMatrix();
 }
 
 void landingGear(float length) {
@@ -608,7 +650,7 @@ int main()
     controls[LANDING_GEAR_ANGLE] = ModelerControl("landing gear angle (landing_angle)", 0.0, 90.0, 0.1, 0.0 );
     controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", .1, 1.5, 0.01, 1.0 );
     controls[GUN_LENGTH] = ModelerControl("gun length (gun_length)", 0.0, 5.0, 0.1, 5.0 );
-    controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", 1, 10.0, 0.1, 2.5 );
+    controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", -180.0, 180.0, 0.1, 0.0 );
     controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
 
 	// You should create a ParticleSystem object ps here and then
