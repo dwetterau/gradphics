@@ -30,8 +30,7 @@ using namespace std;
 // of the controls from the user interface.
 enum XWingControls
 { 
-    WING_ANGLE=0, BODY_HEIGHT, BODY_ROTATION, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, 
-    LOWER_LANDING_GEAR_ANGLE, GUN_LENGTH, R2_ROTATION, PARTICLE_COUNT, NUMCONTROLS
+    WING_ANGLE=0, BODY_HEIGHT, BODY_MOVEMENT, YAW, PITCH, ROLL, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, GUN_LENGTH, R2_ROTATION, PARTICLE_COUNT, NUMCONTROLS
 };
 
 void ground(float h);
@@ -110,7 +109,12 @@ void XWing::draw()
 	/* pick up the slider values */
 
   float body_height = VAL(BODY_HEIGHT);
-  float body_rot = VAL(BODY_ROTATION);
+  float body_mov = VAL(BODY_MOVEMENT);
+  float yaw = VAL(YAW);
+  float pitch = VAL(PITCH);
+  float roll = VAL(ROLL);
+
+
   float wing_angle = VAL(WING_ANGLE);
   float cock_angle = VAL(COCKPIT_ANGLE);
   float landing_angle = VAL(LANDING_GEAR_ANGLE);
@@ -136,8 +140,11 @@ void XWing::draw()
 
 	ground(-0.2);
   glPushMatrix();
-    glRotatef(body_rot, 0.0, 1.0, 0.0);
-    glTranslatef(-BIG_HEX_SIZE / 2, body_height, TOTAL_LENGTH / 2);
+    glTranslatef(0.0, -body_height, 0.0);
+    glRotatef(yaw, 0.0, 1.0, 0.0);
+    glRotatef(pitch, 1.0, 0.0, 0.0);
+    glRotatef(roll, 0.0, 0.0, 1.0);
+    glTranslatef(-BIG_HEX_SIZE / 2, 2.0 * body_height, TOTAL_LENGTH / 2 - body_mov);
     body();
     // right upper wing
 	  glPushMatrix();
@@ -644,8 +651,12 @@ int main()
     ModelerControl controls[NUMCONTROLS ];
 // min max step default
     controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 100.0, 0.1, 1.0 );
-    controls[BODY_ROTATION] = ModelerControl("body rotation (body_rot)", -180.0, 180.0, 0.1, 0.0 );
-	  controls[WING_ANGLE] = ModelerControl("wing angle (wing_angle)", 0.0, 30.0, 0.1, 0.0 );
+    controls[BODY_MOVEMENT] = ModelerControl("body movement (body_mov)", 0.0, 100.0, 0.1, 0.0 );
+    controls[YAW] = ModelerControl("yaw (yaw)", -180.0, 180.0, 0.1, 0.0 );
+    controls[PITCH] = ModelerControl("pitch (pitch)", -180.0, 180.0, 0.1, 0.0 );
+    controls[ROLL] = ModelerControl("roll (roll)", -180.0, 180.0, 0.1, 0.0 );
+    
+    controls[WING_ANGLE] = ModelerControl("wing angle (wing_angle)", 0.0, 30.0, 0.1, 0.0 );
 	  controls[COCKPIT_ANGLE] = ModelerControl("cockpit angle (cock_angle)", 0.0, 90.0, 0.1, 0.0 );
     controls[LANDING_GEAR_ANGLE] = ModelerControl("landing gear angle (landing_angle)", 0.0, 90.0, 0.1, 0.0 );
     controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", .1, 1.5, 0.01, 1.0 );
