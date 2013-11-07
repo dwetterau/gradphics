@@ -39,6 +39,9 @@ animator:  $(OURS.O)
 old_animator: $(ALL.O)
 	$(CC) $(CFLAGS) -o $@ $(ALL.O) $(INCLUDE) $(LIBDIR) $(LIBS)
 
+run:
+	make && ./animator
+
 clean:  
 	rm -f $(ALL.O)
 

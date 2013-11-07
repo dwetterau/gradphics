@@ -2,6 +2,7 @@
 #include <string>
 #include <cfloat>
 #include <cstdio>
+#include <cstring>
 
 using namespace std;
 
