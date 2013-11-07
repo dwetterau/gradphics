@@ -17,10 +17,35 @@
 #define __PARTICLE_SYSTEM_H__
 
 #include "vec.h"
+#include <vector>
+#include <map>
+
+class Particle {
+  public:  
+    Vec3d p;
+    Vec3d v;
+    Vec3d f;
+    
+    double rad;
+    double m;
+    double lifespan;
+
+    Particle(Vec3d _p, Vec3d _v, Vec3d _f, double r, double mass, double l) : p(_p), v(_v), f(_f),      rad(r), m(mass), lifespan(l) {
+    }
+
+    void move(float dt, Vec3d new_force) {
+        p = p + v * dt;
+        v = v + f * (dt / m);
+        f = new_force;
+    }
+};
+
 
 class ParticleSystem {
 
 public:
+    std::map<float, int> time_to_index;
+    std::vector<std::vector<Particle> > particles;
 
 	/** Constructor **/
 	ParticleSystem();

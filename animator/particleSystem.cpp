@@ -17,7 +17,8 @@ static float prevT;
 
 ParticleSystem::ParticleSystem() 
 {
-	// TODO
+  particles = vector<vector<Particle> >();
+  time_to_index = map<float, int>();
 }
 
 
@@ -109,7 +110,3 @@ void ParticleSystem::clearBaked()
 {
 	// TODO
 }
-
-
-
-
