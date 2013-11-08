@@ -17,6 +17,7 @@
 #define __PARTICLE_SYSTEM_H__
 
 #include "vec.h"
+#include "mat.h"
 #include <vector>
 #include <map>
 
@@ -25,19 +26,46 @@ class Particle {
     Vec3d p;
     Vec3d v;
     Vec3d f;
+    Vec3d c;
     
     double rad;
     double m;
     double lifespan;
 
-    Particle(Vec3d _p, Vec3d _v, Vec3d _f, double r, double mass, double l) : p(_p), v(_v), f(_f),      rad(r), m(mass), lifespan(l) {
+    Particle(Vec3d _p, Vec3d _v, Vec3d _f, Vec3d _c, double r, double mass, double l) : p(_p), v(_v), f(_f), c(_c), rad(r), m(mass), lifespan(l) {
     }
 
-    void move(float dt, Vec3d new_force) {
+    void update(float dt) {
+      lifespan -= dt;
+      move(dt);
+    }
+    
+    void move(float dt) {
         p = p + v * dt;
         v = v + f * (dt / m);
-        f = new_force;
     }
+};
+
+class Force {
+  public: 
+    std::vector<Vec3d> global_vectors;
+    std::vector<Vec3d> local_vectors;
+   
+    Force(std::vector<Vec3d> vecs) : global_vectors(vecs) {
+
+    }
+
+    void updateVectors(Mat4d mat) {
+      local_vectors = std::vector<Vec3d>();
+      for (int i = 0; i < global_vectors.size(); i++) {
+        Vec3d v = global_vectors[i];
+        local_vectors.push_back(mat * v);
+      }
+    }
+
+    void apply(Particle& p) {
+    
+    };
 };
 
 
@@ -46,6 +74,10 @@ class ParticleSystem {
 public:
   std::map<float, int> time_to_index;
   std::vector<std::vector<Particle> > particles;
+  std::vector<Force> forces;
+  Mat4d glMat; 
+
+  virtual void applyForces(std::vector<Particle>& p);
 
 	/** Constructor **/
 	ParticleSystem();
@@ -60,7 +92,7 @@ public:
 
 	// This fxn should save the configuration of all particles
 	// at current time t.
-	virtual void bakeParticles(float t);
+	virtual void bakeParticles(float t, std::vector<Particle> idgaf);
 
 	// This function should compute forces acting on all particles
 	// and update their state (pos and vel) appropriately.
@@ -77,6 +109,9 @@ public:
 
 	// This function should stop the simulation
 	virtual void stopSimulation(float t);
+
+  // subclasses should fill the initial positions / velocities of the points
+  virtual std::vector<Particle> initialFill() = 0;
 
 	// This function should clear out your data structure
 	// of baked particles (without leaking memory).
