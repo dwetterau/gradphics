@@ -667,6 +667,8 @@ int main()
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)
 	// to hook it up to the animator interface.
+    ParticleSystem *ps = new ParticleSystem();
+    ModelerApplication::Instance()->SetParticleSystem(ps);
 
     ModelerApplication::Instance()->Init(&createXWing, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();

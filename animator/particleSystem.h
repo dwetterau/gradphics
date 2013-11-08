@@ -44,8 +44,8 @@ class Particle {
 class ParticleSystem {
 
 public:
-    std::map<float, int> time_to_index;
-    std::vector<std::vector<Particle> > particles;
+  std::map<float, int> time_to_index;
+  std::vector<std::vector<Particle> > particles;
 
 	/** Constructor **/
 	ParticleSystem();

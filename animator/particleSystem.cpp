@@ -69,7 +69,8 @@ void ParticleSystem::stopSimulation(float t)
 /** Reset the simulation */
 void ParticleSystem::resetSimulation(float t)
 {
-	// TODO
+  clearBaked();
+  // TODO anything else?
 
 	// These values are used by the UI
 	simulate = false;
@@ -81,6 +82,9 @@ void ParticleSystem::resetSimulation(float t)
 void ParticleSystem::computeForcesAndUpdateParticles(float t)
 {
 	// TODO
+  //bakePake(t)
+  //map[t] <- update
+  cout << "t: " << t << endl;
 
 	// Debugging info
 	if( t - prevT > .04 )
@@ -93,20 +97,20 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 void ParticleSystem::drawParticles(float t)
 {
 	// TODO
+
 }
-
-
-
 
 /** Adds the current configuration of particles to
   * your data structure for storing baked particles **/
 void ParticleSystem::bakeParticles(float t) 
 {
 	// TODO
+
 }
 
 /** Clears out your data structure of baked particles */
 void ParticleSystem::clearBaked()
 {
-	// TODO
+  time_to_index.clear();
+  particles.clear();
 }
