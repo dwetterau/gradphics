@@ -10,7 +10,7 @@
 #include "modelerapp.h"
 #include "modelerdraw.h"
 #include "particleSystem.h"
-
+#include "engineParticleSystem.h"
 
 
 #include "mat.h"
@@ -106,6 +106,7 @@ Mat4f glGetMatrix(GLenum pname)
 // method of ModelerView to draw out RobotArm
 void XWing::draw()
 {
+
 	/* pick up the slider values */
 
   float body_height = VAL(BODY_HEIGHT);
@@ -122,6 +123,13 @@ void XWing::draw()
   float gun_length = VAL(GUN_LENGTH);
   float r2_rot = VAL(R2_ROTATION);
 	float pc = VAL( PARTICLE_COUNT );
+  ModelerApplication::Instance()->GetParticleSystem()->setPc(pc);
+  //TODO : set the mat right
+  ModelerApplication::Instance()->GetParticleSystem()->glMat = Mat4d(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0);
 
   // This call takes care of a lot of the nasty projection 
   // matrix stuff
@@ -667,7 +675,8 @@ int main()
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)
 	// to hook it up to the animator interface.
-    ParticleSystem *ps = new ParticleSystem();
+    ParticleSystem *ps = new EngineSystem();
+    ps->setPc(5.0);
     ModelerApplication::Instance()->SetParticleSystem(ps);
 
     ModelerApplication::Instance()->Init(&createXWing, controls, NUMCONTROLS);

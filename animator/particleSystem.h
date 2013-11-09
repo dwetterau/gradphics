@@ -50,10 +50,6 @@ class Force {
   public: 
     std::vector<Vec3d> global_vectors;
     std::vector<Vec3d> local_vectors;
-   
-    Force(std::vector<Vec3d> vecs) : global_vectors(vecs) {
-
-    }
 
     void updateVectors(Mat4d mat) {
       local_vectors = std::vector<Vec3d>();
@@ -64,7 +60,9 @@ class Force {
     }
 
     void apply(Particle& p) {
-    
+      for (int i = 0; i < local_vectors.size(); i++) {
+        p.f += local_vectors[i];
+      }
     };
 };
 
@@ -72,10 +70,11 @@ class Force {
 class ParticleSystem {
 
 public:
-  std::map<float, int> time_to_index;
+  std::map<int, int> time_to_index;
   std::vector<std::vector<Particle> > particles;
   std::vector<Force> forces;
   Mat4d glMat; 
+  int pc;
 
   virtual void applyForces(std::vector<Particle>& p);
 
@@ -125,7 +124,12 @@ public:
 	bool isSimulate() { return simulate; }
 	bool isDirty() { return dirty; }
 	void setDirty(bool d) { dirty = d; }
-
+  int getPc() {
+    return pc;
+  }
+  void setPc(float p) {
+    pc = int(roundf(p) + .000001);
+  }
 
 protected:
 	

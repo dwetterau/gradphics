@@ -9,6 +9,7 @@
 #include <cmath>
 
 #define DELTA 100
+#define IDELTA 0.01
 
 using namespace std;
 
@@ -21,7 +22,7 @@ static float prevT;
 ParticleSystem::ParticleSystem() 
 {
   particles = vector<vector<Particle> >();
-  time_to_index = map<float, int>();
+  time_to_index = map<int, int>();
   forces = vector<Force>();
 }
 
@@ -48,7 +49,6 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::startSimulation(float t)
 {
 	// TODO
-  t = roundf(t * DELTA) / DELTA;
   resetSimulation(t);
   prevT = t;
 	// These values are used by the UI ...
@@ -78,7 +78,8 @@ void ParticleSystem::stopSimulation(float t)
 void ParticleSystem::resetSimulation(float t)
 {
   clearBaked();
-  particles.push_back(initialFill());
+  vector<Particle> newParts = initialFill();
+  particles.push_back(newParts);
 	time_to_index[t] = 0;
   // These values are used by the UI
 	simulate = false;
@@ -88,24 +89,41 @@ void ParticleSystem::resetSimulation(float t)
 /** Compute forces and update particles **/
 void ParticleSystem::computeForcesAndUpdateParticles(float t)
 {
-  t = roundf(t * DELTA) / DELTA;
+  if (particles.size() == 0) {
+    return;
+  }
   if (t != prevT) {
     vector<Particle> newParticles = initialFill();
-    for (int i = 0; i < particles[particles.size() - 1].size(); i++) {
-      Particle p = particles[particles.size() - 1][i];
-      p.update(t - prevT);
+    // determine the right thing to grab
+    if (time_to_index.find(int(t * DELTA)) == time_to_index.end()) {
+      // not in here, we need to find the prevT to use
+      int max = -1;
+      for(map<int, int>::iterator iter = time_to_index.begin(); iter != time_to_index.end(); ++iter) {
+        if (iter->first > max && iter->first < t) {
+          max = iter->first;
+        }
+      }
+      if (max < int((t - IDELTA) * DELTA)) {
+        computeForcesAndUpdateParticles(t - IDELTA);
+      }
+    } else {
+      return;
+    }
+    int prevIndex = int((t - IDELTA) * DELTA);
+    cout << "This t=" << t << " Looking at entry: " << time_to_index[prevIndex] << endl;
+    int index = time_to_index[prevIndex];
+    for (int i = 0; i < particles[index].size(); i++) {
+      Particle p = particles[index][i];
+      p.update(IDELTA);
       if (p.lifespan > 0) {
         newParticles.push_back(p);
       }
     }
     applyForces(newParticles);
     bakeParticles(t, newParticles);
+    cout << "We did it! " << t << endl;
+    prevT = t;
   }
-
-	// Debugging info
-	if( t - prevT > .04 )
-		printf("(!!) Dropped Frame %lf (!!)\n", t-prevT);
-	prevT = t;
 }
 
 void ParticleSystem::applyForces(vector<Particle>& p) {
@@ -124,8 +142,10 @@ void ParticleSystem::applyForces(vector<Particle>& p) {
 /** Render particles */
 void ParticleSystem::drawParticles(float t)
 {
-  t = roundf(t * DELTA) / DELTA;
-  int i = time_to_index[t];
+  if (particles.size() == 0) {
+    return;
+  }
+  int i = time_to_index[int(t * DELTA)];
   vector<Particle> curPs = particles[i];
   for (int j = 0; j < curPs.size(); j++) {
     Particle p = curPs[j];
@@ -143,7 +163,7 @@ void ParticleSystem::drawParticles(float t)
 void ParticleSystem::bakeParticles(float t, vector<Particle> newbs) 
 {
   int i = particles.size();
-  time_to_index[t] == i;
+  time_to_index[int(t * DELTA)] = i;
   particles.push_back(newbs);
 }
 
