@@ -10,6 +10,8 @@
 #include <FL/glu.h>
 #include <cstdio>
 
+using namespace std;
+
 static const int	kMouseRotationButton			= FL_LEFT_MOUSE;
 static const int	kMouseTranslationButton			= FL_MIDDLE_MOUSE;
 static const int	kMouseZoomButton				= FL_RIGHT_MOUSE;
@@ -119,11 +121,14 @@ void ModelerView::draw()
     glLightfv( GL_LIGHT1, GL_DIFFUSE, lightDiffuse1 );
 
 	// If particle system exists, draw it
-	ParticleSystem *ps = ModelerApplication::Instance()->GetParticleSystem();
-	if (ps != NULL) {
-		ps->computeForcesAndUpdateParticles(t);
-		ps->drawParticles(t);
-	}
+	vector<ParticleSystem*> *pss = ModelerApplication::Instance()->GetParticleSystems();
+  for (vector<ParticleSystem*>::iterator iter = pss->begin(); iter != pss->end(); ++iter) {
+    ParticleSystem* ps = *iter;
+	  if (ps != NULL) {
+	  	ps->computeForcesAndUpdateParticles(t);
+	  	ps->drawParticles(t);
+	  }
+  }
 }
 
 

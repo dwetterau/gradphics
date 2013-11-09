@@ -513,11 +513,15 @@ void ModelerUI::cb_stepForw(Fl_Button* o, void* v)
 
 inline void ModelerUI::cb_clearSim_i(Fl_Button* o, void* v)
 {
-	ParticleSystem* ps = ModelerApplication::Instance()->GetParticleSystem();
-	if (ps) {
-		ps->clearBaked();
-		m_pwndIndicatorWnd->rangeMarkerEnabled(false);
-		m_pwndIndicatorWnd->redraw();
+	vector<ParticleSystem*> *pss = ModelerApplication::Instance()->GetParticleSystems();
+  for (vector<ParticleSystem*>::iterator iter = pss->begin();
+       iter != pss->end(); ++iter) {
+    ParticleSystem* ps = *iter;
+	  if (ps) {
+		  ps->clearBaked();
+		  m_pwndIndicatorWnd->rangeMarkerEnabled(false);
+		  m_pwndIndicatorWnd->redraw();
+    }
 	}
 }
 
@@ -664,16 +668,20 @@ void ModelerUI::currTime(float fTime)
 	if (simulate()) {
 		// update indicator window for particle simulation range
 
-		ParticleSystem *ps = ModelerApplication::Instance()->GetParticleSystem();
+		vector<ParticleSystem*> *pss = ModelerApplication::Instance()->GetParticleSystems();
 
-		if (ps != NULL) {
-			float bakeStartTime = ModelerApplication::Instance()->GetParticleSystem()->getBakeStartTime();
-			float bakeEndTime = ModelerApplication::Instance()->GetParticleSystem()->getBakeEndTime();
-			if (bakeEndTime < 0.0f)
-				bakeEndTime = fTime;
-			indicatorRangeMarkerRange(bakeStartTime, bakeEndTime);
+    for (vector<ParticleSystem*>::iterator iter = pss->begin();
+         iter != pss->end(); ++iter) {
+      ParticleSystem* ps = *iter;
+		  if (ps != NULL) {
+		  	float bakeStartTime = ps->getBakeStartTime();
+		  	float bakeEndTime = ps->getBakeEndTime();
+		  	if (bakeEndTime < 0.0f)
+		  		bakeEndTime = fTime;
+		  	indicatorRangeMarkerRange(bakeStartTime, bakeEndTime);
 
-		}
+		  }
+    }
 	}
 }
 

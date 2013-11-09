@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+using namespace std;
+
 // CLASS ModelerControl METHODS
 
 ModelerControl::ModelerControl() : m_minimum(0.0f), m_maximum(1.0f), m_stepsize(0.1f), m_value(0.0f)
@@ -145,16 +147,6 @@ void ModelerApplication::SetControlValue(int controlNumber, double value)
     m_ui->controlValue(controlNumber, value);
 }
 
-ParticleSystem *ModelerApplication::GetParticleSystem()
-{
-	return ps;
-}
-
-void ModelerApplication::SetParticleSystem(ParticleSystem *s)
-{
-	ps = s;
-}
-
 float ModelerApplication::GetTime()
 {
 	return m_ui->currTime();
@@ -180,35 +172,39 @@ void ModelerApplication::ValueChangedCallback()
 	float endTime = m_ui->endTime();
 	float playEndTime = m_ui->playEndTime();
 
-	ParticleSystem *ps = m_app->GetParticleSystem();
-	
-	if (ps != NULL) {
-		bool simulating = ps->isSimulate();
+  vector<ParticleSystem*> *pss = m_app->GetParticleSystems();
 
-		// stop simulation if we're at endTime
-		double TIME_EPSILON = 0.05;
-		if (simulating && (currTime >= (playEndTime - TIME_EPSILON))) {
-			ps->stopSimulation(currTime); 
-		} 
+  for (vector<ParticleSystem*>::iterator iter = pss->begin();
+       iter != pss->end(); ++iter) {
+    ParticleSystem* ps = *iter;
+	  if (ps != NULL) {
+	  	bool simulating = ps->isSimulate();
 
-		// check to see if we're simulating still
-		simulating = ps->isSimulate();
-		if (simulating != m_ui->simulate()) {
-			// if the psystem is dirty,
-			// we need to sync to it
-			if (ps->isDirty()) {
-				m_ui->simulate(simulating == true);
-			}
-			// otherwise, we sync the psystem
-			// to the ui
-			else if (m_ui->simulate()) {
-				ps->startSimulation(currTime);
-			} else {
-				ps->stopSimulation(currTime);
-			}
-		}
-		ps->setDirty(false);
-	}
+	  	// stop simulation if we're at endTime
+	  	double TIME_EPSILON = 0.05;
+	  	if (simulating && (currTime >= (playEndTime - TIME_EPSILON))) {
+    	  ps->stopSimulation(currTime);
+	  	} 
+
+	  	// check to see if we're simulating still
+      simulating = ps->isSimulate();
+	  	  if (simulating != m_ui->simulate()) {
+	  		  // if the psystem is dirty,
+	  		  // we need to sync to it
+	  		  if (ps->isDirty()) {
+	  		  	m_ui->simulate(simulating == true);
+	  		  }
+	  		  // otherwise, we sync the psystem
+	  		  // to the ui
+	  		  else if (m_ui->simulate()) {
+	  		  	ps->startSimulation(currTime);
+	  		  } else {
+	  		  	ps->stopSimulation(currTime);
+	  		  }
+        }
+	  	ps->setDirty(false);
+      }
+	  }
 
 	// update camera position
 	m_ui->m_pwndModelerView->m_camera->update(currTime);

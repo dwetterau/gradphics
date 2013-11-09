@@ -6,6 +6,7 @@
 #define MODELERAPP_H
 
 #include "modelerview.h"
+#include <vector>
 
 struct ModelerControl
 {
@@ -55,9 +56,9 @@ public:
     double GetControlValue(int controlNumber);
     void   SetControlValue(int controlNumber, double value);
 
-	// Get and set particle system
-	ParticleSystem *GetParticleSystem();
-	void SetParticleSystem(ParticleSystem *s);
+  // Get/put particle system
+	std::vector<ParticleSystem*>* GetParticleSystems() { return pss; }
+	void PutParticleSystem(ParticleSystem *s) { pss->push_back(s); }
 
 	// Return the current time
 	float GetTime();
@@ -70,7 +71,7 @@ public:
 
 private:
 	// Private for singleton
-	ModelerApplication() : m_numControls(-1) { ps = 0; }
+	ModelerApplication() : m_numControls(-1) { pss = new std::vector<ParticleSystem*>(); }
 	ModelerApplication(const ModelerApplication&) {}
 	ModelerApplication& operator=(const ModelerApplication&) {}
 	
@@ -88,6 +89,11 @@ private:
 
 	// Particle System variables
 	ParticleSystem *ps;
+
+  // Multiple particle systems
+  std::vector<ParticleSystem*> *pss;
+
+  
 };
 
 #endif

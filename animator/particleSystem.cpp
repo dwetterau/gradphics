@@ -110,7 +110,6 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
       return;
     }
     int prevIndex = int((t - IDELTA) * DELTA);
-    cout << "This t=" << t << " Looking at entry: " << time_to_index[prevIndex] << endl;
     int index = time_to_index[prevIndex];
     for (int i = 0; i < particles[index].size(); i++) {
       Particle p = particles[index][i];
@@ -121,7 +120,6 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
     }
     applyForces(newParticles);
     bakeParticles(t, newParticles);
-    cout << "We did it! " << t << endl;
     prevT = t;
   }
 }

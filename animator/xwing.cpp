@@ -106,7 +106,7 @@ Mat4f glGetMatrix(GLenum pname)
 // method of ModelerView to draw out RobotArm
 void XWing::draw()
 {
-
+  int pss_index = 0;
 	/* pick up the slider values */
 
   float body_height = VAL(BODY_HEIGHT);
@@ -123,13 +123,12 @@ void XWing::draw()
   float gun_length = VAL(GUN_LENGTH);
   float r2_rot = VAL(R2_ROTATION);
 	float pc = VAL( PARTICLE_COUNT );
-  ModelerApplication::Instance()->GetParticleSystem()->setPc(pc);
+  vector<ParticleSystem*> *pss = ModelerApplication::Instance()->GetParticleSystems();
+  for (vector<ParticleSystem*>::iterator iter = pss->begin(); iter != pss->end(); ++iter) {
+    ParticleSystem* ps = *iter;
+    ps->setPc(pc);
+  }
   //TODO : set the mat right
-  ModelerApplication::Instance()->GetParticleSystem()->glMat = Mat4d(
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 1.0);
 
   // This call takes care of a lot of the nasty projection 
   // matrix stuff
@@ -162,6 +161,10 @@ void XWing::draw()
       glPushMatrix();
         glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
+          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
       glPopMatrix();
       glPushMatrix();
         glTranslatef(-(WING_LENGTH - GUN_BASE_R), WING_WIDTH + GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
@@ -180,6 +183,10 @@ void XWing::draw()
       glPushMatrix();
         glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
+          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
       glPopMatrix();
       glPushMatrix();
         glTranslatef(-(WING_LENGTH - GUN_BASE_R), -GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
@@ -198,6 +205,10 @@ void XWing::draw()
       glPushMatrix();
         glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
+          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
       glPopMatrix();
       glPushMatrix();
         glTranslatef((WING_LENGTH - GUN_BASE_R), WING_WIDTH + GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
@@ -216,6 +227,10 @@ void XWing::draw()
       glPushMatrix();
         glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
+        glPushMatrix();
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
+          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
       glPopMatrix();
       glPushMatrix();
         glTranslatef((WING_LENGTH - GUN_BASE_R), -GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
@@ -677,7 +692,16 @@ int main()
 	// to hook it up to the animator interface.
     ParticleSystem *ps = new EngineSystem();
     ps->setPc(5.0);
-    ModelerApplication::Instance()->SetParticleSystem(ps);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new EngineSystem();
+    ps->setPc(5.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new EngineSystem();
+    ps->setPc(5.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new EngineSystem();
+    ps->setPc(5.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
 
     ModelerApplication::Instance()->Init(&createXWing, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
