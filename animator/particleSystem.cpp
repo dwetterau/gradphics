@@ -13,7 +13,6 @@
 
 using namespace std;
 
-static float prevT;
 
 /***************
  * Constructors
@@ -52,7 +51,7 @@ void ParticleSystem::startSimulation(float t)
   resetSimulation(t);
   prevT = t;
 	// These values are used by the UI ...
-	// negative bake_end_time indicates that simulation
+	// negativebake_end_time indicates that simulation
 	// is still progressing, and allows the
 	// indicator window above the time slider
 	// to correctly show the "baked" region
@@ -125,10 +124,6 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 }
 
 void ParticleSystem::applyForces(vector<Particle>& p) {
-  for (int i = 0; i < forces.size(); i++) {
-    forces[i].updateVectors(glMat);
-  }
-  
   for (int i = 0; i < p.size(); i++) {
     p[i].f = Vec3d(0,0,0);
     for (int j = 0; j < forces.size(); j++) {

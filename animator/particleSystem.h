@@ -48,30 +48,20 @@ class Particle {
 
 class Force {
   public: 
-    std::vector<Vec3d> global_vectors;
-    std::vector<Vec3d> local_vectors;
-
-    void updateVectors(Mat4f mat) {
-      local_vectors = std::vector<Vec3d>();
-      for (int i = 0; i < global_vectors.size(); i++) {
-        Vec3d gv = global_vectors[i];
-        Vec4f v = Vec4f(gv[0], gv[1], gv[2], 0.0);
-        Vec4f mult = v*mat;
-        local_vectors.push_back(Vec3d(mult[0], mult[1], mult[2]));
-      }
-    }
+    std::vector<Vec3d> vectors;
 
     void apply(Particle& p) {
-      for (int i = 0; i < local_vectors.size(); i++) {
-        p.f += local_vectors[i];
+      for (int i = 0; i < vectors.size(); i++) {
+        p.f += vectors[i];
       }
-    };
+    }
 };
 
 
 class ParticleSystem {
 
 public:
+  float prevT;
   std::map<int, int> time_to_index;
   std::vector<std::vector<Particle> > particles;
   std::vector<Force> forces;

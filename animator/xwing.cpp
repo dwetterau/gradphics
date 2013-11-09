@@ -139,7 +139,7 @@ void XWing::draw()
   // While we're at it, save an inverted copy of this matrix.  We'll
   // need it later.
   Mat4f matCam = glGetMatrix( GL_MODELVIEW_MATRIX );
-  //Mat4f matCamInverse = matCam.inverse();
+  Mat4f matCamInverse = matCam.inverse();
 
 	static GLfloat lmodel_ambient[] = {0.4,0.4,0.4,1.0};
 
@@ -162,8 +162,8 @@ void XWing::draw()
         glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
         glPushMatrix();
-          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
-          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R + 1.0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
         glPopMatrix();
       glPopMatrix();
       glPushMatrix();
@@ -184,8 +184,8 @@ void XWing::draw()
         glTranslatef(-BIG_HEX_SIZE / 3.0 - CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
         glPushMatrix();
-          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
-          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R + 1.0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
         glPopMatrix();
       glPopMatrix();
       glPushMatrix();
@@ -206,8 +206,8 @@ void XWing::draw()
         glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, WING_WIDTH + CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
         glPushMatrix();
-          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
-          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R + 1.0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
         glPopMatrix();
       glPopMatrix();
       glPushMatrix();
@@ -228,8 +228,8 @@ void XWing::draw()
         glTranslatef(BIG_HEX_SIZE / 3.0 + CYLINDER_R, -CYLINDER_R, -BACK_LENGTH - CYLINDER_R);
         engine();
         glPushMatrix();
-          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R);
-          (*pss)[pss_index++]->glMat = glGetMatrix(GL_MODELVIEW_MATRIX);
+          glTranslatef(0.0, 0.0, BACK_LENGTH + CYLINDER_R + 1.0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
         glPopMatrix();
       glPopMatrix();
       glPushMatrix();
@@ -691,16 +691,17 @@ int main()
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)
 	// to hook it up to the animator interface.
     ParticleSystem *ps = new EngineSystem();
-    ps->setPc(5.0);
+    ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
     ps = new EngineSystem();
-    ps->setPc(5.0);
+    ps->setPc(1.0);
+    cout << ps->getPc() << endl;
     ModelerApplication::Instance()->PutParticleSystem(ps);
     ps = new EngineSystem();
-    ps->setPc(5.0);
+    ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
     ps = new EngineSystem();
-    ps->setPc(5.0);
+    ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
 
     ModelerApplication::Instance()->Init(&createXWing, controls, NUMCONTROLS);
