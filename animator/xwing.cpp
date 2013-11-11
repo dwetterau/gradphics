@@ -30,7 +30,7 @@ using namespace std;
 // of the controls from the user interface.
 enum XWingControls
 { 
-    WING_ANGLE=0, BODY_HEIGHT, BODY_MOVEMENT, YAW, PITCH, ROLL, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, GUN_LENGTH, R2_ROTATION, PARTICLE_COUNT, NUMCONTROLS
+    WING_ANGLE=0, BODY_HEIGHT, BODY_MOVEMENT, YAW, PITCH, ROLL, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, GUN_LENGTH, R2_ROTATION, ENGINE_PARTICLE_COUNT, GUN_PARTICLE_COUNT, NUMCONTROLS
 };
 
 void ground(float h);
@@ -122,11 +122,14 @@ void XWing::draw()
   float landing_length = VAL(LANDING_GEAR_LENGTH);
   float gun_length = VAL(GUN_LENGTH);
   float r2_rot = VAL(R2_ROTATION);
-	float pc = VAL( PARTICLE_COUNT );
+	float eng_pc = VAL( ENGINE_PARTICLE_COUNT );
+	float gun_pc = VAL( GUN_PARTICLE_COUNT );
   vector<ParticleSystem*> *pss = ModelerApplication::Instance()->GetParticleSystems();
   for (vector<ParticleSystem*>::iterator iter = pss->begin(); iter != pss->end(); ++iter) {
-    ParticleSystem* ps = *iter;
-    ps->setPc(pc);
+    ParticleSystem* ps = *(iter++);
+    ps->setPc(eng_pc);
+    ps = *iter;
+    ps->setPc(gun_pc);
   }
   //TODO : set the mat right
 
@@ -705,7 +708,8 @@ int main()
     controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", .1, 1.5, 0.01, 1.0 );
     controls[GUN_LENGTH] = ModelerControl("gun length (gun_length)", 0.0, 5.0, 0.1, 5.0 );
     controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", -180.0, 180.0, 0.1, 0.0 );
-    controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
+    controls[ENGINE_PARTICLE_COUNT] = ModelerControl("engine particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
+    controls[GUN_PARTICLE_COUNT] = ModelerControl("gun particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
 
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)
