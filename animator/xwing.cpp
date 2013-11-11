@@ -685,7 +685,7 @@ int main()
     controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", .1, 1.5, 0.01, 1.0 );
     controls[GUN_LENGTH] = ModelerControl("gun length (gun_length)", 0.0, 5.0, 0.1, 5.0 );
     controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", -180.0, 180.0, 0.1, 0.0 );
-    controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 5.0, 0.1, 5.0 );
+    controls[PARTICLE_COUNT] = ModelerControl("particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
 
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)

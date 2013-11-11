@@ -6,14 +6,15 @@
 #define HVAR VAR / 2
 #define R 0.03
 #define M 10.0
-#define L .2
+#define L 1.0
 #define V 5.0
+#define G 10.0
 
 using namespace std;
 
 EngineSystem::EngineSystem() {
   prevT = 0.0;
-  Force f = Gravity(M);
+  Force f = Gravity(M, G);
   forces = vector<Force>();
   forces.push_back(f);
 }
@@ -27,7 +28,8 @@ vector<Particle> EngineSystem::initialFill() {
   vector<Particle> toReturn = vector<Particle>();
   Vec3d f = Vec3d(0,0,0);
   Vec3d c = Vec3d(1,0,0);
-  for (int i = 0; i < getPc(); i++) {
+  int numToDraw = getPc() < 1.0 ? (((float)rand()/(float)RAND_MAX) <= getPc() ? 1 : 0) : int(getPc() + .05);
+  for (int i = 0; i < numToDraw; i++) {
     float dvx = VAR * ((float)rand()/(float)RAND_MAX) - HVAR;
     float dvy = VAR * ((float)rand()/(float)RAND_MAX) - HVAR; 
     float dvz = VAR * ((float)rand()/(float)RAND_MAX) - HVAR; 

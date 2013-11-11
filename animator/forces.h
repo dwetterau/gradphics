@@ -6,9 +6,10 @@
 class Gravity : public Force {
   public:
     float m; 
-    Gravity(float _m) : m(_m) {
+    float g;
+    Gravity(float _m, float _g) : m(_m), g(_g) {
       vectors = std::vector<Vec3d>();
-      vectors.push_back(Vec3d(0, -.5 * m, 0));
+      vectors.push_back(Vec3d(0, -g * m, 0));
     }
 };
 
