@@ -147,15 +147,7 @@ void ParticleSystem::drawParticles(float t)
   }
   int i = time_to_index[int(t * DELTA)];
   vector<Particle> curPs = particles[i];
-  for (int j = 0; j < curPs.size(); j++) {
-    Particle p = curPs[j];
-    setDiffuseColor(p.c[0], p.c[1], p.c[2]);
-    setAmbientColor(p.c[0], p.c[1], p.c[2]);
-    glPushMatrix();
-    glTranslatef(p.p[0], p.p[1], p.p[2]);
-    drawSphere(p.rad);
-    glPopMatrix();
-  }
+  drawParts(curPs);
 }
 
 /** Adds the current configuration of particles to

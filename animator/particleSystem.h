@@ -79,7 +79,8 @@ public:
 	/** Simulation fxns **/
 	// This fxn should render all particles in the system,
 	// at current time t.
-	virtual void drawParticles(float t);
+	void drawParticles(float t);
+	virtual void drawParts(std::vector<Particle> curPs) = 0;
 
 	// This fxn should save the configuration of all particles
 	// at current time t.
