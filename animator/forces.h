@@ -12,4 +12,16 @@ class Gravity : public Force {
     }
 };
 
+class Drag : public Force {
+  public:
+    float k;
+    Drag(float _k) : k(_k) {
+     
+    }
+
+    void apply(Particle& p) {
+      p.f += -k * p.v;
+    }
+};
+
 #endif

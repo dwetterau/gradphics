@@ -66,7 +66,7 @@ public:
   std::vector<std::vector<Particle> > particles;
   std::vector<Force> forces;
   Mat4f glMat; 
-  int pc;
+  float pc;
 
   virtual void applyForces(std::vector<Particle>& p);
 
@@ -116,11 +116,11 @@ public:
 	bool isSimulate() { return simulate; }
 	bool isDirty() { return dirty; }
 	void setDirty(bool d) { dirty = d; }
-  int getPc() {
+  float getPc() {
     return pc;
   }
   void setPc(float p) {
-    pc = int(roundf(p) + .000001);
+    pc = p;
   }
 
 protected:
