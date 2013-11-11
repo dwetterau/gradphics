@@ -8,7 +8,8 @@ class EngineSystem : public ParticleSystem {
   public:
 
     EngineSystem();
-    std::vector<Particle> initialFill(); 
+    std::vector<Particle> initialFill();
+    void drawParts(std::vector<Particle> curPs);
 };
 
 #endif

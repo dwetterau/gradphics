@@ -1,5 +1,6 @@
 #include "engineParticleSystem.h"
 #include "forces.h"
+#include "modelerdraw.h"
 
 #define VAR 5.0
 #define HVAR VAR / 2
@@ -34,4 +35,16 @@ vector<Particle> EngineSystem::initialFill() {
     toReturn.push_back(p);
   }
   return toReturn;
+}
+
+void EngineSystem::drawParts(vector<Particle> curPs) {
+  for (int j = 0; j < curPs.size(); j++) {
+    Particle p = curPs[j];
+    setDiffuseColor(p.c[0], p.c[1], p.c[2]);
+    setAmbientColor(p.c[0], p.c[1], p.c[2]);
+    glPushMatrix();
+    glTranslatef(p.p[0], p.p[1], p.p[2]);
+    drawSphere(p.rad);
+    glPopMatrix();
+  }
 }
