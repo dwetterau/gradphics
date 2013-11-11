@@ -695,7 +695,6 @@ int main()
     ModelerApplication::Instance()->PutParticleSystem(ps);
     ps = new EngineSystem();
     ps->setPc(1.0);
-    cout << ps->getPc() << endl;
     ModelerApplication::Instance()->PutParticleSystem(ps);
     ps = new EngineSystem();
     ps->setPc(1.0);

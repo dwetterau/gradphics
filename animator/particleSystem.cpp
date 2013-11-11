@@ -47,7 +47,6 @@ ParticleSystem::~ParticleSystem()
 /** Start the simulation */
 void ParticleSystem::startSimulation(float t)
 {
-	// TODO
   resetSimulation(t);
   prevT = t;
 	// These values are used by the UI ...
@@ -56,16 +55,15 @@ void ParticleSystem::startSimulation(float t)
 	// indicator window above the time slider
 	// to correctly show the "baked" region
 	// in grey.
+  bake_start_time = t;
 	bake_end_time = -1;
 	simulate = true;
 	dirty = true;
-
 }
 
 /** Stop the simulation */
 void ParticleSystem::stopSimulation(float t)
 {
-	// TODO
   bake_end_time = t;
 	// These values are used by the UI
 	simulate = false;
@@ -88,27 +86,33 @@ void ParticleSystem::resetSimulation(float t)
 /** Compute forces and update particles **/
 void ParticleSystem::computeForcesAndUpdateParticles(float t)
 {
+  if (!simulate || t < bake_start_time) {
+    return;
+  }
   if (particles.size() == 0) {
     return;
   }
-  if (t != prevT) {
+  //prevT = .16667
+  // t = .17
+  t = t + IDELTA / 2;
+  if (int(t * DELTA) != int(prevT * DELTA)) {
     vector<Particle> newParticles = initialFill();
     // determine the right thing to grab
     if (time_to_index.find(int(t * DELTA)) == time_to_index.end()) {
       // not in here, we need to find the prevT to use
       int max = -1;
       for(map<int, int>::iterator iter = time_to_index.begin(); iter != time_to_index.end(); ++iter) {
-        if (iter->first > max && iter->first < t) {
+        if (iter->first > max && iter->first < int(t * DELTA)) {
           max = iter->first;
         }
       }
-      if (max < int((t - IDELTA) * DELTA)) {
+      if (max <= int(t * DELTA - 1)) {
         computeForcesAndUpdateParticles(t - IDELTA);
       }
     } else {
       return;
     }
-    int prevIndex = int((t - IDELTA) * DELTA);
+    int prevIndex = int(t * DELTA - 1);
     int index = time_to_index[prevIndex];
     for (int i = 0; i < particles[index].size(); i++) {
       Particle p = particles[index][i];
@@ -138,6 +142,9 @@ void ParticleSystem::drawParticles(float t)
   if (particles.size() == 0) {
     return;
   }
+  if (time_to_index.find(int(t * DELTA)) == time_to_index.end()) {
+    return;
+  }
   int i = time_to_index[int(t * DELTA)];
   vector<Particle> curPs = particles[i];
   for (int j = 0; j < curPs.size(); j++) {
@@ -156,7 +163,8 @@ void ParticleSystem::drawParticles(float t)
 void ParticleSystem::bakeParticles(float t, vector<Particle> newbs) 
 {
   int i = particles.size();
-  time_to_index[int(t * DELTA)] = i;
+  int index = int(t * DELTA);
+  time_to_index[index] = i;
   particles.push_back(newbs);
 }
 
