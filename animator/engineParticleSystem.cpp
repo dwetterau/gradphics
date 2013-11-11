@@ -8,8 +8,6 @@
 #define M 10.0
 #define L 1.0
 #define V 5.0
-#define G 10.0
-#define K 10.0
 
 using namespace std;
 
@@ -29,7 +27,7 @@ vector<Particle> EngineSystem::initialFill() {
   
   vector<Particle> toReturn = vector<Particle>();
   Vec3d f = Vec3d(0,0,0);
-  Vec3d c = Vec3d(1,0,0);
+  Vec3d c = Vec3d(.8902,.2588,.2039);
   int numToDraw = getPc() < 1.0 ? (((float)rand()/(float)RAND_MAX) <= getPc() ? 1 : 0) : int(getPc() + .05);
   for (int i = 0; i < numToDraw; i++) {
     float dvx = VAR * ((float)rand()/(float)RAND_MAX) - HVAR;

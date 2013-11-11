@@ -129,6 +129,9 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 
 void ParticleSystem::applyForces(vector<Particle>& p) {
   for (int i = 0; i < p.size(); i++) {
+    if (p[i].rad <= 0.0) {
+      continue;
+    }
     p[i].f = Vec3d(0,0,0);
     for (int j = 0; j < forces.size(); j++) {
       forces[j].apply(p[i]);

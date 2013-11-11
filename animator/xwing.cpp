@@ -11,7 +11,7 @@
 #include "modelerdraw.h"
 #include "particleSystem.h"
 #include "engineParticleSystem.h"
-
+#include "laserSystem.h"
 
 #include "mat.h"
 #include <FL/gl.h>
@@ -168,6 +168,11 @@ void XWing::draw()
       glPopMatrix();
       glPushMatrix();
         glTranslatef(-(WING_LENGTH - GUN_BASE_R), WING_WIDTH + GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        // drawing the laser firing system
+        glPushMatrix();
+          glRotatef(180.0, 0, 1.0, 0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
         gun(gun_length);
         glPushMatrix();
           glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
@@ -190,6 +195,11 @@ void XWing::draw()
       glPopMatrix();
       glPushMatrix();
         glTranslatef(-(WING_LENGTH - GUN_BASE_R), -GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        // drawing the laser firing system
+        glPushMatrix();
+          glRotatef(180.0, 0, 1.0, 0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
         gun(gun_length);
         glPushMatrix();
           glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
@@ -212,6 +222,11 @@ void XWing::draw()
       glPopMatrix();
       glPushMatrix();
         glTranslatef((WING_LENGTH - GUN_BASE_R), WING_WIDTH + GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        // drawing the laser firing system
+        glPushMatrix();
+          glRotatef(180.0, 0, 1.0, 0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
         gun(gun_length);
         glPushMatrix();
           glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
@@ -234,6 +249,11 @@ void XWing::draw()
       glPopMatrix();
       glPushMatrix();
         glTranslatef((WING_LENGTH - GUN_BASE_R), -GUN_BASE_R, - BACK_LENGTH - gun_length - 2 * GUN_BASE_R - GUN_BARREL_R);
+        // drawing the laser firing system
+        glPushMatrix();
+          glRotatef(180.0, 0, 1.0, 0);
+          (*pss)[pss_index++]->glMat = matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX);
+        glPopMatrix();
         gun(gun_length);
         glPushMatrix();
           glTranslatef(0.0, 0.0, GUN_BASE_R * 2.0 + GUN_BARREL_R + gun_length);
@@ -693,13 +713,28 @@ int main()
     ParticleSystem *ps = new EngineSystem();
     ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new LaserSystem();
+    ps->setPc(1.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+    
     ps = new EngineSystem();
     ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new LaserSystem();
+    ps->setPc(1.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+
     ps = new EngineSystem();
     ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new LaserSystem();
+    ps->setPc(1.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+
     ps = new EngineSystem();
+    ps->setPc(1.0);
+    ModelerApplication::Instance()->PutParticleSystem(ps);
+    ps = new LaserSystem();
     ps->setPc(1.0);
     ModelerApplication::Instance()->PutParticleSystem(ps);
 

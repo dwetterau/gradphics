@@ -1,6 +1,9 @@
 #ifndef FORCES_H
 #define FORCES_H
 
+#define G 10.0
+#define K 10.0
+
 #include "particleSystem.h"
 
 class Gravity : public Force {
