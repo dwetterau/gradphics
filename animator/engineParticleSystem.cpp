@@ -9,12 +9,14 @@
 #define L 1.0
 #define V 5.0
 #define G 10.0
+#define K 10.0
 
 using namespace std;
 
 EngineSystem::EngineSystem() {
   prevT = 0.0;
   Force f = Gravity(M, G);
+  Force d = Drag(K);
   forces = vector<Force>();
   forces.push_back(f);
 }
