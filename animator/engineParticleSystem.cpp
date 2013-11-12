@@ -28,7 +28,7 @@ vector<Particle> EngineSystem::initialFill() {
   
   Vec4f npo = glMat * Vec4f(0,0,0,1);
   Vec3d po = Vec3d(npo[0], npo[1], npo[2]);
-  Vec4f nv = (glMat * Vec4f(0,0,V,0)) + vel;
+  Vec4f nv = (glMat * Vec4f(0,0,V,0)) + EngineSystem::vel;
   
   vector<Particle> toReturn = vector<Particle>();
   Vec3d f = Vec3d(0,0,0);

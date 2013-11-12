@@ -328,8 +328,8 @@ void XWing::draw()
   
   pss = ModelerApplication::Instance()->GetParticleSystems();
   for (vector<ParticleSystem*>::iterator iter = pss->begin(); iter != pss->end(); ++iter) {
-    ParticleSystem* ps = *(iter++);
-    ps->setVel(curPos - worldPosition);
+    ParticleSystem* ps = *iter;
+    ps->setVel((curPos - worldPosition) / (1.0 / 30.0));
   }
   worldPosition = curPos;
 	endDraw();
