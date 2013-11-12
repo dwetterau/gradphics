@@ -41,7 +41,9 @@ Fl_Menu_Item* ModelerUIWindows::m_pmiSetAniLen = ModelerUIWindows::menu_m_pmbMen
 Fl_Menu_Item ModelerUIWindows::menu_m_pchoCurveType[] = {
  {"Linear", 0,  0, 0, 0, 0, 0, 12, 0},
  {"B-Spline", 0,  0, 0, 0, 0, 0, 12, 0},
+ {"B-Spline de C", 0,  0, 0, 0, 0, 0, 12, 0},
  {"Bezier", 0,  0, 0, 0, 0, 0, 12, 0},
+ {"Bezier de C", 0,  0, 0, 0, 0, 0, 12, 0},
  {"Catmull-Rom", 0,  0, 0, 0, 0, 0, 12, 0},
  {"C2-Interpolating", 0,  0, 0, 0, 0, 0, 12, 0},
  {0}

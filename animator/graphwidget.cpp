@@ -27,6 +27,7 @@
 #include "camera.h"		// for NUM_CAM_CURVES
 #include "linearcurveevaluator.h"
 #include "beziercurveevaluator.h"
+#include "bezierdC.h"
 #include "bsplinecurveevaluator.h"
 
 #define LEFT		1
@@ -118,7 +119,9 @@ m_flcCurrCurve(FL_BLACK)
 	m_ppceCurveEvaluators[CURVE_TYPE_LINEAR] = new LinearCurveEvaluator();
 	// TODO: replace these linear evaluators
 	m_ppceCurveEvaluators[CURVE_TYPE_BSPLINE] = new BSplineCurveEvaluator();
+	m_ppceCurveEvaluators[CURVE_TYPE_BSPLINE_DC] = new LinearCurveEvaluator();
 	m_ppceCurveEvaluators[CURVE_TYPE_BEZIER] = new BezierCurveEvaluator();
+	m_ppceCurveEvaluators[CURVE_TYPE_BEZIER_DC] = new BezierdC();
 	m_ppceCurveEvaluators[CURVE_TYPE_CATMULLROM] = new LinearCurveEvaluator();
 	// Note that C2-Interpolating curve is not a requirement
 	m_ppceCurveEvaluators[CURVE_TYPE_C2INTERPOLATING] = new LinearCurveEvaluator();

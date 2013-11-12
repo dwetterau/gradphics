@@ -377,6 +377,22 @@ void Curve::drawEvaluatedCurveSegments() const
 		}
 
 	glEnd();
+  
+  double fPointSize;
+	glGetDoublev(GL_POINT_SIZE, &fPointSize);
+	glPointSize(1.0);
+
+	glColor3d(0,0,1);
+	glBegin(GL_POINTS);
+
+  for (std::vector<Point>::const_iterator it = m_ptvEvaluatedCurvePts.begin(); 
+			it != m_ptvEvaluatedCurvePts.end(); 
+			++it) {
+
+			glVertex2f(it->x, it->y);
+  }
+  glEnd();
+ 
 }
 
 void Curve::drawControlPoint(int iCtrlPt) const
