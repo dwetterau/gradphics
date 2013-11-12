@@ -31,10 +31,15 @@ LaserSystem::LaserSystem() {
 vector<Particle> LaserSystem::initialFill() {
   Vec4f npo = glMat * Vec4f(0,0,0,1);
   Vec3d po = Vec3d(npo[0], npo[1], npo[2]);
-  Vec4f nv = (glMat * Vec4f(0,0,V,0)) + LaserSystem::vel;
+  Vec4f nv = (glMat * Vec4f(0,0,V,0)); 
+  Vec3d d = Vec3d(nv[0], nv[1], nv[2]);
+  nv += LaserSystem::vel;
   vector<Particle> toReturn = vector<Particle>();
   Vec3d f = Vec3d(0,0,0);
   Vec3d c = Vec3d(1,.1,0);
+  
+
+  
   int numToDraw = getPc() < 1.0 ? (((float)rand()/(float)RAND_MAX) <= getPc() ? 1 : 0) : int(getPc() + .05);
   for (int i = 0; i < numToDraw; i++) {
     bool bad = ((float)rand()/(float)RAND_MAX) <= PROB;
@@ -46,6 +51,7 @@ vector<Particle> LaserSystem::initialFill() {
       toReturn.push_back(p);
     } else {
       Particle p = Particle(po, Vec3d(nv[0], nv[1], nv[2]), f, c, 0.0, M, L); 
+      p.d = d;
       toReturn.push_back(p);
     }
   }
@@ -65,9 +71,9 @@ void LaserSystem::drawParts(vector<Particle> curPs) {
       continue;
     }
     // determine xy plane rot
-    double x = p.v[0];
-    double y = p.v[1];
-    double z = p.v[2];
+    double x = p.d[0];
+    double y = p.d[1];
+    double z = p.d[2];
     double len = sqrt(x*x + y*y);
     double ang = acos(x / len);
     if (y < 0) {

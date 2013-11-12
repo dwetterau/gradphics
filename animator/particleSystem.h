@@ -28,11 +28,14 @@ class Particle {
     Vec3d f;
     Vec3d c;
     
+    Vec3d d;
+    
     double rad;
     double m;
     double lifespan;
 
     Particle(Vec3d _p, Vec3d _v, Vec3d _f, Vec3d _c, double r, double mass, double l) : p(_p), v(_v), f(_f), c(_c), rad(r), m(mass), lifespan(l) {
+      d = Vec3d(0,0,0);
     }
 
     void update(float dt) {
