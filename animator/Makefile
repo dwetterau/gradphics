@@ -40,8 +40,15 @@ animator:  $(OURS.O)
 old_animator: $(ALL.O)
 	$(CC) $(CFLAGS) -o $@ $(ALL.O) $(INCLUDE) $(LIBDIR) $(LIBS)
 
+urn:
+	make && ./animator
 run:
 	make && ./animator
+rrun:
+	make && ./animator
+r:
+	make && ./animator
+
 
 clean:  
 	rm -f $(OURS.O)

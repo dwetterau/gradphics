@@ -65,6 +65,7 @@ public:
   Mat4f glMat; 
   float pc;
 
+  virtual void setVel(Vec4f v) = 0;
   virtual void applyForces(std::vector<Particle>& p);
 
 	/** Constructor **/

@@ -6,7 +6,9 @@
 
 class EngineSystem : public ParticleSystem {
   public:
-
+    Vec4f vel;
+    
+    void setVel(Vec4f v);
     EngineSystem();
     std::vector<Particle> initialFill();
     void drawParts(std::vector<Particle> curPs);

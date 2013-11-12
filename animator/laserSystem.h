@@ -6,7 +6,9 @@
 
 class LaserSystem : public ParticleSystem {
   public:
+    Vec4f vel;
 
+    void setVel(Vec4f v);
     LaserSystem();
     std::vector<Particle> initialFill();
     void drawParts(std::vector<Particle> curPs);

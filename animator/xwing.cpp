@@ -50,7 +50,8 @@ void landingSled();
 void y_box(float h);
 
 Mat4f glGetMatrix(GLenum pname);
-Vec3f getWorldPoint(Mat4f matCamXforms);
+
+Vec4f worldPosition;
 
 float Gravity::g;
 float Drag::k;
@@ -160,6 +161,7 @@ void XWing::draw()
 	ground(-0.2);
   glPushMatrix();
     glTranslatef(0.0, body_height + BIG_HEX_SIZE / 2, 0.0); 
+  Vec4f curPos = (matCamInverse * glGetMatrix(GL_MODELVIEW_MATRIX)) * Vec4f(0,0,0,1);    
     glRotatef(yaw, 0.0, 1.0, 0.0);
     glRotatef(pitch, 1.0, 0.0, 0.0);
     glRotatef(roll, 0.0, 0.0, 1.0);
@@ -324,6 +326,12 @@ void XWing::draw()
     glPopMatrix();
   glPopMatrix();
   
+  pss = ModelerApplication::Instance()->GetParticleSystems();
+  for (vector<ParticleSystem*>::iterator iter = pss->begin(); iter != pss->end(); ++iter) {
+    ParticleSystem* ps = *(iter++);
+    ps->setVel(curPos - worldPosition);
+  }
+  worldPosition = curPos;
 	endDraw();
 }
 
@@ -703,6 +711,7 @@ void y_box(float h) {
 
 int main()
 {
+    worldPosition = Vec4f(0,0,0,1);
     ModelerControl controls[NUMCONTROLS ];
 // min max step default
     controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 100.0, 0.1, 1.0 );

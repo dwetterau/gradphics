@@ -15,6 +15,10 @@
 
 using namespace std;
 
+void LaserSystem::setVel(Vec4f v) {
+      vel = v;
+    }
+
 LaserSystem::LaserSystem() {
   prevT = 0.0;
   Force* f = new Gravity(M);
@@ -27,8 +31,8 @@ LaserSystem::LaserSystem() {
 vector<Particle> LaserSystem::initialFill() {
   Vec4f npo = glMat * Vec4f(0,0,0,1);
   Vec3d po = Vec3d(npo[0], npo[1], npo[2]);
-  Vec4f nv = glMat * Vec4f(0,0,V,0);
-  
+  Vec4f nv = (glMat * Vec4f(0,0,V,0)) + vel;
+  cout << "this vel= " << vel << endl;  
   vector<Particle> toReturn = vector<Particle>();
   Vec3d f = Vec3d(0,0,0);
   Vec3d c = Vec3d(1,.1,0);

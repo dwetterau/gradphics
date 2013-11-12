@@ -11,6 +11,10 @@
 
 using namespace std;
 
+void EngineSystem::setVel(Vec4f v) {
+  vel = v;
+}
+
 EngineSystem::EngineSystem() {
   prevT = 0.0;
   Force* f = new Gravity(M);
@@ -24,7 +28,7 @@ vector<Particle> EngineSystem::initialFill() {
   
   Vec4f npo = glMat * Vec4f(0,0,0,1);
   Vec3d po = Vec3d(npo[0], npo[1], npo[2]);
-  Vec4f nv = glMat * Vec4f(0,0,V,0);
+  Vec4f nv = (glMat * Vec4f(0,0,V,0)) + vel;
   
   vector<Particle> toReturn = vector<Particle>();
   Vec3d f = Vec3d(0,0,0);

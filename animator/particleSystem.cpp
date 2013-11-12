@@ -35,7 +35,6 @@ ParticleSystem::~ParticleSystem()
   delete &forces;
 }
 
-
 /******************
  * Simulation fxns
  ******************/
