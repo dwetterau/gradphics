@@ -12,6 +12,7 @@
 #include "particleSystem.h"
 #include "engineParticleSystem.h"
 #include "laserSystem.h"
+#include "forces.h"
 
 #include "mat.h"
 #include <FL/gl.h>
@@ -30,7 +31,7 @@ using namespace std;
 // of the controls from the user interface.
 enum XWingControls
 { 
-    WING_ANGLE=0, BODY_HEIGHT, BODY_MOVEMENT, YAW, PITCH, ROLL, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, GUN_LENGTH, R2_ROTATION, ENGINE_PARTICLE_COUNT, GUN_PARTICLE_COUNT, NUMCONTROLS
+    WING_ANGLE=0, BODY_HEIGHT, BODY_MOVEMENT, YAW, PITCH, ROLL, COCKPIT_ANGLE, LANDING_GEAR_ANGLE, LANDING_GEAR_LENGTH, GUN_LENGTH, R2_ROTATION, ENGINE_PARTICLE_COUNT, GUN_PARTICLE_COUNT, GRAVITY, DRAG, NUMCONTROLS
 };
 
 void ground(float h);
@@ -47,8 +48,12 @@ void cockpit();
 void landingGear(float l);
 void landingSled();
 void y_box(float h);
+
 Mat4f glGetMatrix(GLenum pname);
 Vec3f getWorldPoint(Mat4f matCamXforms);
+
+float Gravity::g;
+float Drag::k;
 
 // To make a RobotArm, we inherit off of ModelerView
 class XWing : public ModelerView 
@@ -124,6 +129,9 @@ void XWing::draw()
   float r2_rot = VAL(R2_ROTATION);
 	float eng_pc = VAL( ENGINE_PARTICLE_COUNT );
 	float gun_pc = VAL( GUN_PARTICLE_COUNT );
+  float gravity = VAL( GRAVITY );
+  float drag = VAL( DRAG );
+
   vector<ParticleSystem*> *pss = ModelerApplication::Instance()->GetParticleSystems();
   for (vector<ParticleSystem*>::iterator iter = pss->begin(); iter != pss->end(); ++iter) {
     ParticleSystem* ps = *(iter++);
@@ -131,7 +139,8 @@ void XWing::draw()
     ps = *iter;
     ps->setPc(gun_pc);
   }
-  //TODO : set the mat right
+  setGravity(gravity);
+  setDrag(drag);
 
   // This call takes care of a lot of the nasty projection 
   // matrix stuff
@@ -710,6 +719,8 @@ int main()
     controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", -180.0, 180.0, 0.1, 0.0 );
     controls[ENGINE_PARTICLE_COUNT] = ModelerControl("engine particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
     controls[GUN_PARTICLE_COUNT] = ModelerControl("gun particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
+    controls[GRAVITY] = ModelerControl("gravity", 0.0, 100.0, 0.1, 10.0 );
+    controls[DRAG] = ModelerControl("drag", 0.0, 100.0, 0.1, 10.0 );
 
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)

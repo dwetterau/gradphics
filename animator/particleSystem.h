@@ -50,11 +50,8 @@ class Force {
   public: 
     std::vector<Vec3d> vectors;
 
-    void apply(Particle& p) {
-      for (int i = 0; i < vectors.size(); i++) {
-        p.f += vectors[i];
-      }
-    }
+    virtual void apply(Particle& p) = 0; 
+    virtual void buildVectors() = 0;
 };
 
 
@@ -64,7 +61,7 @@ public:
   float prevT;
   std::map<int, int> time_to_index;
   std::vector<std::vector<Particle> > particles;
-  std::vector<Force> forces;
+  std::vector<Force*> forces;
   Mat4f glMat; 
   float pc;
 

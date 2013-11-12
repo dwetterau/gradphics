@@ -13,7 +13,6 @@
 
 using namespace std;
 
-
 /***************
  * Constructors
  ***************/
@@ -22,11 +21,8 @@ ParticleSystem::ParticleSystem()
 {
   particles = vector<vector<Particle> >();
   time_to_index = map<int, int>();
-  forces = vector<Force>();
+  forces = vector<Force*>();
 }
-
-
-
 
 /*************
  * Destructor
@@ -129,12 +125,12 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 
 void ParticleSystem::applyForces(vector<Particle>& p) {
   for (int i = 0; i < p.size(); i++) {
-    if (p[i].rad <= 0.0) {
+    if (p[i].rad <= 0.00000001) {
       continue;
     }
     p[i].f = Vec3d(0,0,0);
     for (int j = 0; j < forces.size(); j++) {
-      forces[j].apply(p[i]);
+      forces[j]->apply(p[i]);
     }
   }
 }
@@ -147,6 +143,9 @@ void ParticleSystem::drawParticles(float t)
   }
   if (time_to_index.find(int(t * DELTA)) == time_to_index.end()) {
     return;
+  }
+  for (int j = 0; j < forces.size(); j++) {
+    forces[j]->buildVectors();
   }
   int i = time_to_index[int(t * DELTA)];
   vector<Particle> curPs = particles[i];

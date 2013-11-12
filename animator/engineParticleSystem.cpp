@@ -13,10 +13,11 @@ using namespace std;
 
 EngineSystem::EngineSystem() {
   prevT = 0.0;
-  Force f = Gravity(M, G);
-  Force d = Drag(K);
-  forces = vector<Force>();
+  Force* f = new Gravity(M);
+  Force* d = new Drag();
+  forces = vector<Force*>();
   forces.push_back(f);
+  forces.push_back(d);
 }
 
 vector<Particle> EngineSystem::initialFill() {

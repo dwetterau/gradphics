@@ -44,7 +44,7 @@ run:
 	make && ./animator
 
 clean:  
-	rm -f $(ALL.O)
+	rm -f $(OURS.O)
 
 clean_all:
-	rm -f $(ALL.O) animator
+	rm -f $(OURS.O) animator
