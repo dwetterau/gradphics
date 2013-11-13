@@ -33,7 +33,7 @@ OURS.O = bitmap.o camera.o color.o curve.o curveevaluator.o \
         modelerview.o particleSystem.o point.o \
         rect.o xwing.o rulerwindow.o \
         engineParticleSystem.o laserSystem.o \
-				bezierdC.o cat.o
+				bezierdC.o cat.o c2.o
 
 animator:  $(OURS.O)
 	$(CC) $(CFLAGS) -o $@ $(OURS.O) $(INCLUDE) $(LIBDIR) $(LIBS)
