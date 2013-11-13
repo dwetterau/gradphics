@@ -17,7 +17,6 @@ public:
   void helper(Point p0, Point p1, Point p2, Point p3,
 		std::vector<Point>* ptvEvaluatedCurvePts,
     float fAniLength, bool bWrap) const; 
-    
 };
 
 #endif
