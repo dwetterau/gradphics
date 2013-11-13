@@ -13,10 +13,44 @@ void BSplineCurveEvaluator::evaluateCurve(const std::vector<Point>& stupidCtrlPt
   Point fp = ptvCtrlPts[0];
   Point ep = ptvCtrlPts[ptvCtrlPts.size()-1];
 
-  ptvCtrlPts.insert(ptvCtrlPts.begin(), fp);
-  ptvCtrlPts.insert(ptvCtrlPts.begin(), fp);
-  ptvCtrlPts.push_back(ep);
-  ptvCtrlPts.push_back(ep);
+  if (!bWrap) {
+    ptvCtrlPts.insert(ptvCtrlPts.begin(), fp);
+    ptvCtrlPts.insert(ptvCtrlPts.begin(), fp);
+    ptvCtrlPts.push_back(ep);
+    ptvCtrlPts.push_back(ep);
+  } else {
+    // push on some new front points mannn
+    std::vector<Point> newFrontPts = std::vector<Point>();
+    int i = ptvCtrlPts.size() - 1;
+    int j = 1;
+    while(newFrontPts.size() < 3) {
+      if (i < 0) {
+        j++;
+        i += ptvCtrlPts.size();
+      }
+      newFrontPts.push_back(Point(ptvCtrlPts[i].x - j * fAniLength, ptvCtrlPts[i].y));
+      i--;
+    }
+    // push on some new back points
+    std::vector<Point> newBackPts = std::vector<Point>();
+    i = 0;
+    j = 1;
+    while(newBackPts.size() < 3) {
+      if (i >= ptvCtrlPts.size()) {
+        j++;
+        i -= ptvCtrlPts.size();
+      }
+      newBackPts.push_back(Point(ptvCtrlPts[i].x + j * fAniLength, ptvCtrlPts[i].y));
+      i++;
+    }
+    for (i = 0; i < newFrontPts.size(); i++) {
+      ptvCtrlPts.insert(ptvCtrlPts.begin(), newFrontPts[i]);
+    }
+    for (i = 0; i < newBackPts.size(); i++) {
+      ptvCtrlPts.push_back(newBackPts[i]);
+    }
+  }
+  
   int ctrlCount = ptvCtrlPts.size();
   double delta = 0.01;
   if (ctrlCount == 0) {
@@ -27,11 +61,13 @@ void BSplineCurveEvaluator::evaluateCurve(const std::vector<Point>& stupidCtrlPt
     ptvEvaluatedCurvePts.insert(ptvEvaluatedCurvePts.begin(), Point(0.0, ptvCtrlPts[0].y));
 	  ptvEvaluatedCurvePts.push_back(Point(fAniLength, ptvCtrlPts[ctrlCount - 1].y));
     return;
-  }
+ }
   double sixth = 1.0/6.0;
   double third = 2.0/3.0;
-  ptvEvaluatedCurvePts.push_back(Point(0.0, ptvCtrlPts[0].y));
-  ptvEvaluatedCurvePts.push_back(ptvCtrlPts[0]);
+  if (!bWrap) {
+    ptvEvaluatedCurvePts.push_back(Point(0.0, ptvCtrlPts[0].y));
+    ptvEvaluatedCurvePts.push_back(ptvCtrlPts[0]);
+  }
   int k = 0;
   for (int i = 0; i < ptvCtrlPts.size() - 3; i += 1) {
     Point p0 = ptvCtrlPts[i];
@@ -51,6 +87,8 @@ void BSplineCurveEvaluator::evaluateCurve(const std::vector<Point>& stupidCtrlPt
       ptvEvaluatedCurvePts.push_back(f);
     }
   }
-  ptvEvaluatedCurvePts.push_back(ptvCtrlPts[ctrlCount-1]);
-	ptvEvaluatedCurvePts.push_back(Point(fAniLength, ptvCtrlPts[ctrlCount - 1].y));
+  if (!bWrap) {
+    ptvEvaluatedCurvePts.push_back(ptvCtrlPts[ctrlCount-1]);
+	  ptvEvaluatedCurvePts.push_back(Point(fAniLength, ptvCtrlPts[ctrlCount - 1].y));
+  }
 }
