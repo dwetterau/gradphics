@@ -44,11 +44,11 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ctrlPts,
       Point p012 = Point(p01.x * (1 - j) + p12.x * j, p01.y * (1 - j) + p12.y * j);
       Point p123 = Point(p12.x * (1 - j) + p23.x * j, p12.y * (1 - j) + p23.y * j);
       Point f = Point(p012.x * (1 - j) + p123.x * j, p012.y * (1 - j) + p123.y * j);
-      if (f.x > fAniLength - .1) {
-        ptvEvaluatedCurvePts.push_back(f);
-        f.x -= fAniLength;
-      }
       ptvEvaluatedCurvePts.push_back(f);
+      if (bWrap) {
+        f.x -= fAniLength;
+        ptvEvaluatedCurvePts.insert(ptvEvaluatedCurvePts.begin(), f);
+      }
     }
   }
   for (int i = k + 1; i < ptvCtrlPts.size(); i++) {
