@@ -70,7 +70,6 @@ void C2::evaluateCurve(const std::vector<Point>& stupidCtrlPts,
     gammas.push_back(1/(4.0 - gammas[i - 1]));
   }
   gammas.push_back(1/(2.0 - gammas[ctrlCount - 2]));
-  
 
   vector<Point> deltas = vector<Point>();
   deltas.push_back(Point(3*gammas[0]*(ptvCtrlPts[1].x-ptvCtrlPts[0].x), 3*gammas[0]*(ptvCtrlPts[1].y-ptvCtrlPts[0].y)));
@@ -84,7 +83,7 @@ void C2::evaluateCurve(const std::vector<Point>& stupidCtrlPts,
   vector<Point> Ds = vector<Point>();
   Ds.push_back(deltas[ctrlCount - 1]);
   for (int i = ctrlCount - 2; i >= 0; i--) {
-    Ds.insert(Ds.begin(), Point(deltas[i].x - gammas[i]*Ds[i+1].x, deltas[i].y - gammas[i]*Ds[i+1].y));
+    Ds.insert(Ds.begin(), Point(deltas[i].x - gammas[i]*Ds[0].x, deltas[i].y - gammas[i]*Ds[0].y));
   }
 
   // add the evaulation points (evaluate the hermite matrix)
@@ -99,7 +98,7 @@ void C2::evaluateCurve(const std::vector<Point>& stupidCtrlPts,
     Point p1 = ptvCtrlPts[i+1];
     Point p2 = Ds[i];
     Point p3 = Ds[i+1];
-    for (double j = delta; j <= 1.0 + delta; j += delta) {
+    for (double j = 0.0; j <= 1.0; j += delta) {
       double j2 = j*j;
       double j3 = j*j2;
       double p0b = 2*j3 - 3*j2 + 1;
@@ -110,7 +109,7 @@ void C2::evaluateCurve(const std::vector<Point>& stupidCtrlPts,
                       p0.y*p0b + p1.y*p1b + p2.y*p2b + p3.y*p3b);
       if (f.x > x_min && f.x < ptvCtrlPts[ctrlCount - 1].x) {
         x_min = f.x;
-        ptvEvaluatedCurvePts.push_back(f);
+      	ptvEvaluatedCurvePts.push_back(f);
       }
     }
   }
