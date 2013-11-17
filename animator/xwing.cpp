@@ -108,6 +108,8 @@ Mat4f glGetMatrix(GLenum pname)
 #define R2_TOP .3
 #define EYE_WIDTH .4
 
+#define EPS 0.0001
+
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out RobotArm
 void XWing::draw()
@@ -169,7 +171,7 @@ void XWing::draw()
     body();
     // right upper wing
 	  glPushMatrix();
-      glTranslatef(1 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2, 0.0);
+      glTranslatef(1 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2, -EPS);
       glRotatef(wing_angle, 0, 0, -1.0);
       right_wing();
       glPushMatrix();
@@ -196,7 +198,7 @@ void XWing::draw()
     glPopMatrix();
     // right lower wing
 	  glPushMatrix();
-      glTranslatef(1 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2 - WING_WIDTH, 0.0);
+      glTranslatef(1 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2 - WING_WIDTH, -EPS);
       glRotatef(wing_angle, 0, 0, 1.0);
       right_wing();
       glPushMatrix();
@@ -223,7 +225,7 @@ void XWing::draw()
     glPopMatrix();
     // left upper wing
     glPushMatrix();
-      glTranslatef(2 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2, 0.0);
+      glTranslatef(2 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2, -EPS);
       glRotatef(wing_angle, 0, 0, 1.0);
       left_wing();
       glPushMatrix();
@@ -250,7 +252,7 @@ void XWing::draw()
     glPopMatrix();
     // left lower wing
 	  glPushMatrix();
-      glTranslatef(2 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2 - WING_WIDTH, 0.0);
+      glTranslatef(2 * BIG_HEX_SIZE / 3.0, BIG_HEX_SIZE / 2 - WING_WIDTH, -EPS);
       glRotatef(wing_angle, 0, 0, -1.0);
       left_wing();
       glPushMatrix();
@@ -280,8 +282,9 @@ void XWing::draw()
       glRotatef(cock_angle, 1.0, 0, 0);
       cockpit();
     glPopMatrix();
+    // landing gear
     glPushMatrix();
-      glTranslatef(BIG_HEX_SIZE / 2 - GEAR_W / 2, 0.0, -TOTAL_LENGTH + 2.0);
+      glTranslatef(BIG_HEX_SIZE / 2 - GEAR_W / 2, EPS, -TOTAL_LENGTH + 2.0);
       glRotatef(landing_angle, -1.0, 0, 0);
       landingGear(landing_length);
       glPushMatrix();
@@ -291,7 +294,7 @@ void XWing::draw()
       glPopMatrix();
     glPopMatrix();
     glPushMatrix();
-      glTranslatef(BIG_HEX_SIZE / 3, 0.0, -0.5);
+      glTranslatef(BIG_HEX_SIZE / 3, EPS, -0.5);
       glRotatef(landing_angle, -1.0, 0, 0);
       landingGear(landing_length);
       glPushMatrix();
@@ -301,7 +304,7 @@ void XWing::draw()
       glPopMatrix();
     glPopMatrix();
     glPushMatrix();
-      glTranslatef(2 * BIG_HEX_SIZE / 3.0 - GEAR_W, 0.0, -.5);
+      glTranslatef(2 * BIG_HEX_SIZE / 3.0 - GEAR_W, EPS, -.5);
       glRotatef(landing_angle, -1.0, 0, 0);
       landingGear(landing_length);
       glPushMatrix();
@@ -310,6 +313,7 @@ void XWing::draw()
         landingSled();
       glPopMatrix();
     glPopMatrix();
+    //R2
     glPushMatrix();
         glTranslatef(BIG_HEX_SIZE / 2, BIG_HEX_SIZE, -2 * BACK_LENGTH / 3 );
         glRotatef(r2_rot, 0, 1.0, 0);
@@ -714,22 +718,22 @@ int main()
     worldPosition = Vec4f(0,0,0,1);
     ModelerControl controls[NUMCONTROLS ];
 // min max step default
-    controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 100.0, 0.1, 1.0 );
-    controls[BODY_MOVEMENT] = ModelerControl("body movement (body_mov)", 0.0, 100.0, 0.1, 0.0 );
+    controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 20.0, 0.01, 3.0 );
+    controls[BODY_MOVEMENT] = ModelerControl("body movement (body_mov)", 0.0, 30.0, 0.01, 0.0 );
     controls[YAW] = ModelerControl("yaw (yaw)", -180.0, 180.0, 0.1, 0.0 );
     controls[PITCH] = ModelerControl("pitch (pitch)", -180.0, 180.0, 0.1, 0.0 );
     controls[ROLL] = ModelerControl("roll (roll)", -180.0, 180.0, 0.1, 0.0 );
     
     controls[WING_ANGLE] = ModelerControl("wing angle (wing_angle)", 0.0, 30.0, 0.1, 0.0 );
-	  controls[COCKPIT_ANGLE] = ModelerControl("cockpit angle (cock_angle)", 0.0, 90.0, 0.1, 0.0 );
+	  controls[COCKPIT_ANGLE] = ModelerControl("cockpit angle (cockpit_angle)", 0.0, 90.0, 0.1, 0.0 );
     controls[LANDING_GEAR_ANGLE] = ModelerControl("landing gear angle (landing_angle)", 0.0, 90.0, 0.1, 0.0 );
     controls[LANDING_GEAR_LENGTH] = ModelerControl("landing gear length (landing_length)", .1, 1.5, 0.01, 1.0 );
     controls[GUN_LENGTH] = ModelerControl("gun length (gun_length)", 0.0, 5.0, 0.1, 5.0 );
     controls[R2_ROTATION] = ModelerControl("r2 rotation (r2_rot)", -180.0, 180.0, 0.1, 0.0 );
     controls[ENGINE_PARTICLE_COUNT] = ModelerControl("engine particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
     controls[GUN_PARTICLE_COUNT] = ModelerControl("gun particle count (pc)", 0.0, 10.0, 0.01, 1.0 );
-    controls[GRAVITY] = ModelerControl("gravity", 0.0, 100.0, 0.1, 10.0 );
-    controls[DRAG] = ModelerControl("drag", 0.0, 100.0, 0.1, 10.0 );
+    controls[GRAVITY] = ModelerControl("gravity", 0.0, 20.0, 0.01, 10.0 );
+    controls[DRAG] = ModelerControl("drag", 0.0, 20.0, 0.01, 10.0 );
 
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)

@@ -69,18 +69,18 @@ void C2::evaluateCurve(const std::vector<Point>& stupidCtrlPts,
   for (int i = 1; i < ctrlCount - 1; i++) {
     gammas.push_back(1/(4.0 - gammas[i - 1]));
   }
-  gammas.push_back(1/(2.0 - gammas[ctrlCount - 1]));
+  gammas.push_back(1/(2.0 - gammas[ctrlCount - 2]));
   
 
   vector<Point> deltas = vector<Point>();
   deltas.push_back(Point(3*gammas[0]*(ptvCtrlPts[1].x-ptvCtrlPts[0].x), 3*gammas[0]*(ptvCtrlPts[1].y-ptvCtrlPts[0].y)));
-  for (int i = 1; i < ctrlCount; i++) {
+  for (int i = 1; i < ctrlCount-1; i++) {
     deltas.push_back(Point(3*gammas[i]*(ptvCtrlPts[i+1].x-ptvCtrlPts[i-1].x) - deltas[i-1].x*gammas[i],
                            3*gammas[i]*(ptvCtrlPts[i+1].y-ptvCtrlPts[i-1].y) - deltas[i-1].y*gammas[i]));
   }
   deltas.push_back(Point(3*gammas[ctrlCount - 1]*(ptvCtrlPts[ctrlCount - 1].x-ptvCtrlPts[ctrlCount - 2].x) - deltas[ctrlCount - 2].x*gammas[ctrlCount - 1],
                          3*gammas[ctrlCount - 1]*(ptvCtrlPts[ctrlCount - 1].y-ptvCtrlPts[ctrlCount - 2].y) - deltas[ctrlCount - 2].y*gammas[ctrlCount - 1]));
-  
+
   vector<Point> Ds = vector<Point>();
   Ds.push_back(deltas[ctrlCount - 1]);
   for (int i = ctrlCount - 2; i >= 0; i--) {

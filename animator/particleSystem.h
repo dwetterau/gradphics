@@ -44,8 +44,15 @@ class Particle {
     }
     
     void move(float dt) {
-        p = p + v * dt;
-        v = v + f * (dt / m);
+        Vec3d k1, k2, k3, k4;
+        k1 = f*(dt/m);
+        k2 = k1 + f * (dt/2.0)/m;
+        k3 = k2 + f * (dt/2.0)/m;
+        k4 = k3 + f * (dt/m);
+        v = v + (1.0/6.0)*(k1 + 2*k2 + 2*k3 + k4);
+        p = p + v*dt;
+        /*p = p + v * dt;
+        v = v + f * (dt / m);*/
     }
 };
 
