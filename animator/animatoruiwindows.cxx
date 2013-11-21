@@ -122,6 +122,17 @@ ModelerUIWindows::ModelerUIWindows() {
             o->user_data((void*)(this));
             o->menu(menu_m_pchoCurveType);
           }
+          { Fl_Value_Slider* o = m_psldrFLAT = new Fl_Value_Slider(300, 490, 100, 20, "flatness");
+            o->type(5);
+            o->labelsize(12);
+            o->minimum(-10);
+            o->maximum(0);
+            o->step(1);
+            o->value(-5);
+            o->user_data((void*)(this));
+            o->align(FL_ALIGN_LEFT);
+            Fl_Group::current()->resizable(o);
+          }
           { Fl_Light_Button* o = m_pbtWrap = new Fl_Light_Button(345, 470, 70, 20, "Wrap");
             o->labelsize(12);
             o->user_data((void*)(this));

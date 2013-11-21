@@ -163,6 +163,11 @@ class ModelerUIWindows {open
                 xywh {0 0 100 20} labelsize 12
               }
             }
+            Fl_Value_Slider m_psldrFLAT {
+              label flatness
+              user_data this
+              xywh {300 490 100 20} type {Horz Knob} labelsize 12 align 4 minimum -10 maximum 0 step 1 value -5 resizable
+            }
             Fl_Light_Button m_pbtWrap {
               label Wrap
               user_data this

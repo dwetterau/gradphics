@@ -10,13 +10,16 @@
 class CurveEvaluator
 {
 public:
-	virtual ~CurveEvaluator(void);
+	float cutoff;
+    virtual ~CurveEvaluator(void);
 	virtual void evaluateCurve(const std::vector<Point>& control_points, 
 							   std::vector<Point>& evaluated_curve_points, 
 							   const float& animation_length, 
 							   const bool& wrap_control_points) const = 0;
 	static float s_fFlatnessEpsilon;
-	static int s_iSegCount;
+    static int s_iSegCount;
+    float getCutoff() const;
+    void setCutoff(float f);
 };
 
 

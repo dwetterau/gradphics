@@ -36,8 +36,9 @@ public:
 	Curve* getCurve(int iControl);
 	void setValueChangedCallback(ValueChangedCallback* pcbf);
 	void animate(bool bAnimate);
-	int fps();
+    int fps();
 	void fps(int fps);
+	void flatness(int flat);
 	bool simulate() const;
 	void simulate(bool bSimulate);
 	void redrawModelerView();
@@ -95,6 +96,8 @@ private:
 	static void cb_aniLen(Fl_Menu_*, void*);
 	inline void cb_fps_i(Fl_Slider*, void*);
 	static void cb_fps(Fl_Slider*, void*);
+	inline void cb_flatness_i(Fl_Slider*, void*);
+	static void cb_flatness(Fl_Slider*, void*);
 	inline void cb_m_modelerWindow_i(Fl_Window*, void*);
 	static void cb_m_modelerWindow(Fl_Window*, void*);
 	static void cb_sliders(Fl_Widget* o, void* v);

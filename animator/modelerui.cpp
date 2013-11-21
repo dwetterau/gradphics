@@ -260,6 +260,16 @@ void ModelerUI::cb_fps(Fl_Slider* o, void* v)
 	((ModelerUI*)(o->user_data()))->cb_fps_i(o,v);
 }
 
+inline void ModelerUI::cb_flatness_i(Fl_Slider*, void*) 
+{
+    flatness(m_psldrFLAT->value());
+}
+
+void ModelerUI::cb_flatness(Fl_Slider* o, void* v) 
+{
+	((ModelerUI*)(o->user_data()))->cb_flatness_i(o,v);
+}
+
 void ModelerUI::cb_sliders(Fl_Widget* o, void* v)
 {
 	ModelerUI* pui = (ModelerUI*)o->user_data();
@@ -606,12 +616,14 @@ void ModelerUI::redrawRulers()
 
 void ModelerUI::activeCurvesChanged()
 {
+        m_psldrFLAT->activate();
 	if (m_pwndGraphWidget->currCurveType() >= 0) {
 		m_pchoCurveType->activate();
 		m_pchoCurveType->value(m_pwndGraphWidget->currCurveType());
 	}
-	else
+	else {
 		m_pchoCurveType->deactivate();
+    }
 
 	if (m_pwndGraphWidget->currCurveWrap() >= 0) {
 		m_pbtWrap->activate();
@@ -892,7 +904,15 @@ int ModelerUI::fps()
 
 void ModelerUI::fps(const int iFps)
 {
+    cout << "fps updated to " << iFps << endl;
 	m_iFps = iFps;
+}
+
+void ModelerUI::flatness(const int p)
+{
+    // TODO: Update the flatness, and redraw the curves
+    float flatness = pow(10, p);
+    cout << "flatness set to: " << flatness << endl;
 }
 
 ModelerUI::ModelerUI() : 
@@ -921,6 +941,7 @@ m_bSaveMovie(false)
 	m_pwndGraphWidget->callback((Fl_Callback*)cb_graphWidget);
 	m_pbtZoomAll->callback((Fl_Callback*)cb_zoomAll);
 	m_pchoCurveType->callback((Fl_Callback*)cb_curveType);
+	m_psldrFLAT->callback((Fl_Callback*)cb_flatness);
 	m_pbtWrap->callback((Fl_Callback*)cb_wrap);
 	m_pbtSetCamKeyFrame->callback((Fl_Callback*)cb_setCamKeyFrame);
 	m_pbtRemoveCamKeyFrame->callback((Fl_Callback*)cb_removeCamKeyFrame);

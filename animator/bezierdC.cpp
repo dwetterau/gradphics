@@ -59,7 +59,8 @@ void BezierdC::helper(Point p0, Point p1, Point p2, Point p3,
   // check if flat enough
   float dist_segs = p0.distance(p1) + p1.distance(p2) + p2.distance(p3);
   float total_dist = p0.distance(p3);
-  if (dist_segs / total_dist < 1 + .00001 || fabs(dist_segs - total_dist) < .0001) {
+  float cutoff = getCutoff();
+  if (dist_segs / total_dist < 1 + cutoff || fabs(dist_segs - total_dist) < cutoff) {
     ptvEvaluatedCurvePts->push_back(p0);
     if (bWrap) {
       p0 = Point(p0.x - fAniLength, p0.y);

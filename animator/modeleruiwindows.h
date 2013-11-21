@@ -53,6 +53,7 @@ public:
   GraphWidget *m_pwndGraphWidget;
   Fl_Choice *m_pchoCurveType;
   static Fl_Menu_Item menu_m_pchoCurveType[];
+  Fl_Value_Slider *m_psldrFLAT;
   Fl_Light_Button *m_pbtWrap;
   Fl_Button *m_pbtZoomAll;
   Fl_Button *m_pbtStepBack;
