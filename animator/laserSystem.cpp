@@ -7,7 +7,7 @@
 #define R 0.03
 #define M 10.0
 #define L 1.0
-#define V 10.0
+#define V 33.0
 
 #define ML .5
 #define PROB .1

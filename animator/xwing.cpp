@@ -404,7 +404,7 @@ void ground(float h)
 	glDisable(GL_LIGHTING);
 	glColor3f(0.65,0.45,0.2);
 	glPushMatrix();
-	glScalef(30,0,30);
+	glScalef(10000,0,10000);
 	y_box(h);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
@@ -719,10 +719,10 @@ int main()
     ModelerControl controls[NUMCONTROLS ];
 // min max step default
     controls[BODY_HEIGHT] = ModelerControl("body height (body_height)", 0.0, 20.0, 0.01, 3.0 );
-    controls[BODY_MOVEMENT] = ModelerControl("body movement (body_mov)", 0.0, 30.0, 0.01, 0.0 );
+    controls[BODY_MOVEMENT] = ModelerControl("body movement (body_mov)", 0.0, 300.0, 0.01, 0.0 );
     controls[YAW] = ModelerControl("yaw (yaw)", -180.0, 180.0, 0.1, 0.0 );
     controls[PITCH] = ModelerControl("pitch (pitch)", -180.0, 180.0, 0.1, 0.0 );
-    controls[ROLL] = ModelerControl("roll (roll)", -180.0, 180.0, 0.1, 0.0 );
+    controls[ROLL] = ModelerControl("roll (roll)", -360.0, 720.0, 0.1, 0.0 );
     
     controls[WING_ANGLE] = ModelerControl("wing angle (wing_angle)", 0.0, 30.0, 0.1, 0.0 );
 	  controls[COCKPIT_ANGLE] = ModelerControl("cockpit angle (cockpit_angle)", 0.0, 90.0, 0.1, 0.0 );
