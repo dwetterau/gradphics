@@ -31,10 +31,10 @@ public:
       { return m_bBufferReady; }
 
 	const Scene& getScene() { return *scene; }
-  void setEyePos(Vec3d o, double u, double v);
-  Vec3d getEyePos();
+  void setEyePos(double u, double v);
 private:
-	unsigned char *buffer;
+	Vec3d eye_origin;
+  unsigned char *buffer;
 	int buffer_width, buffer_height;
 	int bufferSize;
 	Scene* scene;

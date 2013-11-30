@@ -31,7 +31,9 @@ public:
     objectLimit(5),
     depthLimit(15),
     raytracer(0),
-    cutoff(0.0)
+    cutoff(0.0),
+    m_cameraU(0.0),
+    m_cameraV(0.0)
 	{ }
 
 	virtual int		run() = 0;
@@ -79,7 +81,9 @@ public:
     znName = s;
   }
 	// accessors:
-	int		getSize() const { return m_nSize; }
+	double getCameraU() const { return m_cameraU; }
+	double getCameraV() const { return m_cameraV; }
+  int		getSize() const { return m_nSize; }
 	int		getDepth() const { return m_nDepth; }
 	int		getAa() const { return m_nAa; }
   bool  getAccelerated() const { return m_accelerated; }
@@ -103,6 +107,8 @@ protected:
   bool    m_accelerated;
   bool    m_stoc;
   bool    m_cm;
+  double m_cameraU;
+  double m_cameraV;
   int objectLimit;
   int depthLimit;
   string xpName;

@@ -131,6 +131,15 @@ void GraphicalUI::cb_objectLimitSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->objectLimit=int( ((Fl_Slider *)o)->value() ) ;
 }
 
+void GraphicalUI::cb_cameraUSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_cameraU = double( ((Fl_Slider *)o)->value() ) ;
+}
+void GraphicalUI::cb_cameraVSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_cameraV = double( ((Fl_Slider *)o)->value() ) ;
+}
+
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
@@ -241,6 +250,14 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v)
 		Fl::check();
 		Fl::flush();
 
+    // LIGHTFIELD ----------------------------------
+    double u = pUI->getCameraU();
+    double v = pUI->getCameraV();
+    pUI->raytracer->setEyePos(u, v); 
+
+
+    // LIGHTFIELD ----------------------------------
+
 		doneTrace = false;
 		stopTrace = false;
 		for (int y=0; y<height; y++) {
@@ -262,12 +279,6 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v)
 						Fl::flush();
 					}
 				}
-        // LIGHTFIELD ----------------------------------
-        Vec3d origin = pUI->raytracer->getEyePos();
-        pUI->raytracer->setEyePos(origin, 0, 0); 
-
-
-        // LIGHTFIELD ----------------------------------
 				pUI->raytracer->tracePixel( x, y );
 				pUI->m_debuggingWindow->m_debuggingView->setDirty();
 			}
@@ -350,7 +361,7 @@ void GraphicalUI::stopTracing()
 GraphicalUI::GraphicalUI() {
 	// init.
 
-	m_mainWindow = new Fl_Window(100, 40, 350, 430, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 500, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -496,6 +507,31 @@ GraphicalUI::GraphicalUI() {
 		m_stopButton = new Fl_Button(240, 55, 70, 25, "&Stop");
 		m_stopButton->user_data((void*)(this));
 		m_stopButton->callback(cb_stop);
+
+    m_cameraUSlider = new Fl_Value_Slider(10, 450, 180, 20, "Camera U skew");
+		m_cameraUSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_cameraUSlider->type(FL_HOR_NICE_SLIDER);
+        m_cameraUSlider->labelfont(FL_COURIER);
+        m_cameraUSlider->labelsize(12);
+		m_cameraUSlider->minimum(-1.0);
+		m_cameraUSlider->maximum(1.0);
+		m_cameraUSlider->step(.01);
+		m_cameraUSlider->value(0.0);
+		m_cameraUSlider->align(FL_ALIGN_RIGHT);
+		m_cameraUSlider->callback(cb_cameraUSlides);
+
+
+    m_cameraVSlider = new Fl_Value_Slider(10, 470, 180, 20, "Camera V skew");
+		m_cameraVSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_cameraVSlider->type(FL_HOR_NICE_SLIDER);
+        m_cameraVSlider->labelfont(FL_COURIER);
+        m_cameraVSlider->labelsize(12);
+		m_cameraVSlider->minimum(-1.0);
+		m_cameraVSlider->maximum(1.0);
+		m_cameraVSlider->step(.01);
+		m_cameraVSlider->value(0.0);
+		m_cameraVSlider->align(FL_ALIGN_RIGHT);
+		m_cameraVSlider->callback(cb_cameraVSlides);
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

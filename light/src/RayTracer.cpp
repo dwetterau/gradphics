@@ -26,15 +26,11 @@ using namespace std;
 // in TraceGLWindow, for example.
 bool debugMode = false;
 
-Vec3d RayTracer::getEyePos() {
-  return scene->getCamera().getEye();
-}
-
-void RayTracer::setEyePos(Vec3d o, double u, double v) {
-  Vec3d p = o;
-  o += u * scene->getCamera().getU();
-  o += v * scene->getCamera().getV();
-  scene->getCamera().setEye(o);
+void RayTracer::setEyePos(double u, double v) {
+  Vec3d p = eye_origin;
+  p += u * scene->getCamera().getU();
+  p += v * scene->getCamera().getV();
+  scene->getCamera().setEye(p);
 }
 
 // Trace a top-level ray through normalized window coordinates (x,y)
@@ -312,6 +308,10 @@ bool RayTracer::loadScene( char* fn )
 	if( ! sceneLoaded() ) { 
     return false;
   }
+  eye_origin = Vec3d(
+    scene->getCamera().getEye()[0],
+    scene->getCamera().getEye()[1],
+    scene->getCamera().getEye()[2]);
   reloadScene();
   return true;
 }
