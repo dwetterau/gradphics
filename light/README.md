@@ -1,0 +1,5 @@
+David Wetterau
+
+I have implemented the following features beyond the default ray tracing requirements: Texture mapping (including polymeshes), Cube mapping with file selection for each face, adaptive threshold cutoff, stochastic AA. Using these features should be pretty straightforward.
+
+When the scene is loaded, a kd tree with the current depth and leaf object size limit selected in the gui is created for the objects in the scene and for each trimesh. If the box is unchecked, the scene will be rendered without the use of the tree (you can turn it on and off while rendering too). If you change the values for depth of the tree, you must press the update the scene button to rebuild the tree. Note that this does not rebuild the trimesh trrees. If you want to rebuild the trimesh trees with new settings, you must reload the scene file to trigger that. While selected cube map files, ensure you have loaded one image for each face of the cube and checked the box for cube mapping to see the effects. If you change a image selection, or select the images after the scene has loaded, press the update scene button to reload the textures. 
