@@ -23,7 +23,9 @@ Camera::rayThrough( double x, double y, ray &r, Vec3d skew)
 {
   x -= 0.5;
   y -= 0.5;
-  Vec3d dir = look + x * u + y * v + skew;
+  Vec3d dir = look + x * u + y * v;
+	dir.normalize();
+  dir += skew;
 	dir.normalize();
   r = ray( eye, dir, ray::VISIBILITY );
 }

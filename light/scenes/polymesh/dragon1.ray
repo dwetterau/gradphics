@@ -1,7 +1,7 @@
 SBT-raytracer 1.0
 
 camera {
-  position=( 0,0.1,0.3 );
+  position=( 0,.2,1.2 );
   viewdir=( 0,0,-1 );
   updir=( 0,1,0 );
   fov=45;
@@ -10,8 +10,8 @@ directional_light {
   direction=( 0.609525,-0.664451,-0.432416 );
   color=( 1,1,1 );
 }
+scale(1.0, 
 polymesh {
-  name="";
   material={
     diffuse=( 0.9,0.4,0.1);
     ambient=( 0.2,0.1,0.05);
@@ -14934,4 +14934,4 @@ polymesh {
 ( 888, 4909, 3348 ), 
 ( 888, 2965, 4909 ) );
   gennormals;
-  }
+  })
