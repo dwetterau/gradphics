@@ -253,6 +253,7 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v)
     // LIGHTFIELD ----------------------------------
     double u = pUI->getCameraU();
     double v = pUI->getCameraV();
+    std::cout << "about to set the eye position" << std::endl;
     pUI->raytracer->setEyePos(u, v); 
 
 
@@ -513,8 +514,8 @@ GraphicalUI::GraphicalUI() {
 		m_cameraUSlider->type(FL_HOR_NICE_SLIDER);
         m_cameraUSlider->labelfont(FL_COURIER);
         m_cameraUSlider->labelsize(12);
-		m_cameraUSlider->minimum(-1.0);
-		m_cameraUSlider->maximum(1.0);
+		m_cameraUSlider->minimum(-0.5);
+		m_cameraUSlider->maximum(0.5);
 		m_cameraUSlider->step(.01);
 		m_cameraUSlider->value(0.0);
 		m_cameraUSlider->align(FL_ALIGN_RIGHT);
@@ -526,8 +527,8 @@ GraphicalUI::GraphicalUI() {
 		m_cameraVSlider->type(FL_HOR_NICE_SLIDER);
         m_cameraVSlider->labelfont(FL_COURIER);
         m_cameraVSlider->labelsize(12);
-		m_cameraVSlider->minimum(-1.0);
-		m_cameraVSlider->maximum(1.0);
+		m_cameraVSlider->minimum(-.5);
+		m_cameraVSlider->maximum(.5);
 		m_cameraVSlider->step(.01);
 		m_cameraVSlider->value(0.0);
 		m_cameraVSlider->align(FL_ALIGN_RIGHT);

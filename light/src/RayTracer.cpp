@@ -33,6 +33,7 @@ void RayTracer::setEyePos(double u, double v) {
   cur_u = u;
   cur_v = v;
   scene->getCamera().setEye(p);
+  std::cout << "set eye to: " << scene->getCamera().getEye() << std::endl;
 }
 
 // Trace a top-level ray through normalized window coordinates (x,y)
@@ -47,10 +48,10 @@ Vec3d RayTracer::trace( double x, double y )
   ray r( Vec3d(0,0,0), Vec3d(0,0,0), ray::VISIBILITY );
 
   // LIGHTFIELD ----------------------------------------------
-  Vec3d skew = cur_u * scene->getCamera().getU(); 
-  skew += cur_v * scene->getCamera().getV(); 
+  Vec3d skew = eye_origin - scene->getCamera().getEye(); //cur_u * scene->getCamera().getU(); 
+  //skew += cur_v * scene->getCamera().getV();
   
-  scene->getCamera().rayThrough( x,y,r,-skew);
+  scene->getCamera().rayThrough( x,y,r,skew);
   // LIGHTFIELD ----------------------------------------------
 
   double cutoff = traceUI->getCutoff();
