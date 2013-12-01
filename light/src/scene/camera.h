@@ -7,7 +7,7 @@ class Camera
 {
 public:
     Camera();
-    void rayThrough( double x, double y, ray &r );
+    void rayThrough( double x, double y, ray &r, Vec3d o);
     void setEye( const Vec3d &eye );
     void setLook( double, double, double, double );
     void setLook( const Vec3d &viewDir, const Vec3d &upDir );

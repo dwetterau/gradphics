@@ -30,6 +30,8 @@ void RayTracer::setEyePos(double u, double v) {
   Vec3d p = eye_origin;
   p += u * scene->getCamera().getU();
   p += v * scene->getCamera().getV();
+  cur_u = u;
+  cur_v = v;
   scene->getCamera().setEye(p);
 }
 
@@ -42,10 +44,16 @@ Vec3d RayTracer::trace( double x, double y )
 	// Clear out the ray cache in the scene for debugging purposes,
 	scene->intersectCache.clear();
 
-    ray r( Vec3d(0,0,0), Vec3d(0,0,0), ray::VISIBILITY );
+  ray r( Vec3d(0,0,0), Vec3d(0,0,0), ray::VISIBILITY );
 
-    scene->getCamera().rayThrough( x,y,r );
-    double cutoff = traceUI->getCutoff();
+  // LIGHTFIELD ----------------------------------------------
+  Vec3d skew = cur_u * scene->getCamera().getU(); 
+  skew += cur_v * scene->getCamera().getV(); 
+  
+  scene->getCamera().rayThrough( x,y,r,-skew);
+  // LIGHTFIELD ----------------------------------------------
+
+  double cutoff = traceUI->getCutoff();
 	Vec3d ret = traceRay( r, Vec3d(cutoff,cutoff,cutoff), 0 );
 	ret.clamp();
 	return ret;

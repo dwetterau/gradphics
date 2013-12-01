@@ -32,6 +32,8 @@ public:
 
 	const Scene& getScene() { return *scene; }
   void setEyePos(double u, double v);
+  double cur_u;
+  double cur_v;
 private:
 	Vec3d eye_origin;
   unsigned char *buffer;
