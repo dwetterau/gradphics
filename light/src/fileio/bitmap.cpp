@@ -97,6 +97,39 @@ unsigned char *readBMP(const char *fname, int& width, int& height)
 	return data; 
 } 
  
+unsigned char *readLightfield(const char *fname, LIGHTFIELD_HEADER *h)
+{ 
+	FILE* file; 
+	if ( (file=fopen( fname, "rb" )) == NULL )  
+		return NULL; 
+	fread(h, sizeof(LIGHTFIELD_HEADER), 1, file); 
+	int bytes = h->height * h->width * h->num_pictures;
+	unsigned char *data = new unsigned char [bytes]; 
+	int foo = fread( data, bytes, 1, file ); 
+	if (!foo) {
+		delete [] data;
+		return NULL;
+	}
+	fclose( file );
+	return data; 
+}
+
+void writeLightfield(const char *iname,
+                     LIGHTFIELD_HEADER *h, unsigned char *data)
+{ 
+	int bytes, pad;
+	bytes = h->width * 3;
+	bytes *= h->height;
+  bytes *= h->num_pictures;
+
+	FILE *foo=fopen(iname, "wb"); 
+
+  fwrite(h, sizeof(LIGHTFIELD_HEADER), 1, foo);
+  fwrite(data, bytes, 1, foo);
+
+	fclose(foo);
+}
+ 
 void writeBMP(const char *iname, int width, int height, unsigned char *data) 
 { 
 	int bytes, pad;
@@ -152,4 +185,4 @@ void writeBMP(const char *iname, int width, int height, unsigned char *data)
 	delete [] scanline;
 
 	fclose(foo);
-} 
+}
