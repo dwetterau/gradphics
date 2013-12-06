@@ -36,7 +36,7 @@ ALL.O = src/main.o src/getopt.o src/RayTracer.o \
 	src/SceneObjects/Box.o src/SceneObjects/Cone.o \
 	src/SceneObjects/Cylinder.o src/SceneObjects/trimesh.o \
 	src/SceneObjects/Sphere.o src/SceneObjects/Square.o \
-	src/ui/LFWindow.o
+	src/ui/LFWindow.o src/LFTracer.o
 
 ray: $(ALL.O)
 	$(CC) $(CFLAGS) -o $@ $(ALL.O) $(INCLUDE) $(LIBDIR) $(LIBS)
@@ -46,6 +46,7 @@ clean:
 
 clean_all:
 	rm -f $(ALL.O) ray
-
+urn:
+	make && ./ray
 run:
 	make && ./ray

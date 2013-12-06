@@ -36,7 +36,7 @@ public:
   void setEyePos(double u, double v);
   double cur_u;
   double cur_v;
-private:
+protected:
 	Vec3d eye_origin;
   unsigned char *buffer;
 	int buffer_width, buffer_height;

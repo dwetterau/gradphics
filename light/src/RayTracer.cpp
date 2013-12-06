@@ -41,6 +41,8 @@ LIGHTFIELD_HEADER RayTracer::getLightfieldHeader() {
   toReturn.camera_point = eye_origin;
   toReturn.v1 = scene->getCamera().getU();
   toReturn.v2 = scene->getCamera().getV();
+  toReturn.fov = scene->getCamera().getFOV();
+  toReturn.ar = scene->getCamera().getAspectRatio();
   return toReturn;
 }
 
