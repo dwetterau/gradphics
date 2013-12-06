@@ -33,7 +33,6 @@ void RayTracer::setEyePos(double u, double v) {
   cur_u = u;
   cur_v = v;
   scene->getCamera().setEye(p);
-  std::cout << "set eye to: " << scene->getCamera().getEye() << std::endl;
 }
 
 // Trace a top-level ray through normalized window coordinates (x,y)

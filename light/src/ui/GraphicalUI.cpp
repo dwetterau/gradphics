@@ -19,6 +19,8 @@
 bool GraphicalUI::stopTrace = false;
 bool GraphicalUI::doneTrace = true;
 
+using namespace std;
+
 //------------------------------------- Help Functions --------------------------------------------
 GraphicalUI* GraphicalUI::whoami(Fl_Menu_* o)	// from menu item back to UI itself
 {
@@ -220,13 +222,6 @@ void GraphicalUI::cb_znName(Fl_Widget* o, void* v) {
   }
 }
 
-// Lightfield renderer button callbacks
-void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v)
-{
-	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
-  //TODO: Generate a lightfield file for current slider values
-}
-
 void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
@@ -238,6 +233,57 @@ void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {
   if (pUI->raytracer->sceneLoaded()) {
     pUI->raytracer->reloadScene();
   }
+}
+
+void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
+	
+  GraphicalUI* pUI=((GraphicalUI*)(o->user_data()));
+	
+	if (pUI->raytracer->sceneLoaded()) {
+		int width=pUI->getSize();
+		int	height = (int)(width / pUI->raytracer->aspectRatio() + 0.5);
+	  int lf_n = pUI->getLFN();
+
+    cout << "Generating lightfield with n=" << lf_n << endl;
+    
+
+    // Allocate massive buffer for light field
+    int bufsize = width * height * lf_n * 3;
+    unsigned char * big_buffs = new unsigned char [bufsize];
+    memset(big_buffs, 0, bufsize);
+    cout << "Allocated big buffer of size: " << bufsize << endl;
+
+    for (int r = 0; r < lf_n; r++) {
+      for (int c = 0; c < lf_n; c++) {
+        pUI->raytracer->traceSetup(width, height);
+        // r and c go from 0 to n, we want them to go from -.5 to .5
+        double u = (double(c) / lf_n) - .5;
+        double v = (double(r) / lf_n) - .5;
+        pUI->raytracer->setEyePos(u, v); 
+
+		    doneTrace = false;
+		    stopTrace = false;
+       	for (int y=0; y<height; y++) {
+       		for (int x=0; x<width; x++) {
+       			if (stopTrace) break;
+       			pUI->raytracer->tracePixel( x, y );
+       		}
+
+       		if (stopTrace) {
+            cout << "trace aborted..." << endl;
+          }
+             //cout << "(%d%%) %s", (int)((double)y / (double)height * 100.0) << endl;
+       	}
+        cout << "finished rendering image: " << (r * lf_n) + c << " of: " << (lf_n * lf_n) << endl;
+       	doneTrace=true;
+       	stopTrace=false;
+          
+        unsigned char * tempPointer = big_buffs + (((r * lf_n) + c) * 3);
+        // copy the raytracer's buffer back to our buffer
+        pUI->raytracer->getBuffer(tempPointer, width, height);
+      }
+    }
+	}
 }
 
 void GraphicalUI::cb_render(Fl_Widget* o, void* v)
@@ -506,12 +552,12 @@ GraphicalUI::GraphicalUI() {
 		m_reloadButton->callback(cb_reload);
 
     // set up "render Lightfield" button
-		m_generateLightfield = new Fl_Button(200, 515, 180, 25, "Render Lightfield");
+		m_generateLightfield = new Fl_Button(175, 515, 150, 25, "Render Lightfield");
 		m_generateLightfield->user_data((void*)(this));
 		m_generateLightfield->callback(cb_renderLightfield);
 
     // set up "generate Lightfield" button
-		m_generateLightfield = new Fl_Button(5, 515, 180, 25, "Generate Lightfield");
+		m_generateLightfield = new Fl_Button(5, 515, 150, 25, "Generate Lightfield");
 		m_generateLightfield->user_data((void*)(this));
 		m_generateLightfield->callback(cb_generateLightfield);
 
@@ -557,8 +603,6 @@ GraphicalUI::GraphicalUI() {
 		m_cameraVSlider->align(FL_ALIGN_RIGHT);
 		m_cameraVSlider->callback(cb_cameraVSlides);
 
-<<<<<<< HEAD
-=======
     m_lfnSlider = new Fl_Value_Slider(10, 490, 180, 20, "Lightfield n");
 		m_lfnSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_lfnSlider->type(FL_HOR_NICE_SLIDER);
@@ -570,7 +614,6 @@ GraphicalUI::GraphicalUI() {
 		m_lfnSlider->value(1);
 		m_lfnSlider->align(FL_ALIGN_RIGHT);
 		m_lfnSlider->callback(cb_lfnSlides);
->>>>>>> 6af31e42691aa6bfda8d2b2211eb6a8066e004b5
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
