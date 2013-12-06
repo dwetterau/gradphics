@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "../vecmath/vec.h"
 
 #define BMP_BI_RGB        0L
 
@@ -39,9 +40,20 @@ typedef struct {
 	BMP_DWORD	biClrImportant; 
 } BMP_BITMAPINFOHEADER; 
 
+typedef struct {
+  int num_pictures;
+  int width;
+  int height;
+  Vec3d image_point;
+  Vec3d camera_point;
+  Vec3d v1;
+  Vec3d v2;
+} LIGHTFIELD_HEADER;
+
 // global I/O routines
 extern unsigned char *readBMP(const char *fname, int& width, int& height);
-extern void writeBMP(const char *iname, int width, int height, unsigned char *data); 
+extern void writeBMP(const char *iname, int width, int height, unsigned char *data);
+extern unsigned char *readLightfield(const char *fname, LIGHTFIELD_HEADER *h);
+extern void writeLightfield(const char *iname, LIGHTFIELD_HEADER *h, unsigned char *data);
 
 #endif
-
