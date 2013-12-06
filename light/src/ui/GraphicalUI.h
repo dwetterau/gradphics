@@ -58,6 +58,8 @@ public:
 	Fl_Button*			m_loadZPButton;
 	Fl_Button*			m_loadZNButton;
 	Fl_Button*			m_reloadButton;
+	Fl_Button*			m_generateLightfield;
+	Fl_Button*			m_renderLightfield;
 
 	TraceGLWindow*		m_traceGlWindow;
 
@@ -104,6 +106,10 @@ private:
 	static void cb_ynName(Fl_Widget* o, void* v);
 	static void cb_zpName(Fl_Widget* o, void* v);
 	static void cb_znName(Fl_Widget* o, void* v);
+
+  // Lightfield Button callbacks
+	static void cb_renderLightfield(Fl_Widget* o, void* v);
+	static void cb_generateLightfield(Fl_Widget* o, void* v);
 	
   static bool doneTrace;		// Flag that gets set when the trace is done
 	static bool stopTrace;		// Flag that gets set when the trace should be stopped

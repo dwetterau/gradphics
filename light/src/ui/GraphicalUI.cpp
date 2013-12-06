@@ -168,7 +168,6 @@ void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
   pUI->setCubeMap(((Fl_Check_Button*)o)->value() == 1);
 }
 
-
 void GraphicalUI::cb_xpName(Fl_Widget* o, void* v) {
   GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
 	char* newfile = fl_file_chooser("Choose +X file", "*.{png,bmp}", NULL );
@@ -215,6 +214,19 @@ void GraphicalUI::cb_znName(Fl_Widget* o, void* v) {
 	if (newfile != NULL) {
     pUI->setZNName(newfile);
   }
+}
+
+// Lightfield renderer button callbacks
+void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  //TODO: Generate a lightfield file for current slider values
+}
+
+void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  //TODO: kick off the rendering for the loaded lightfield
 }
 
 void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {
@@ -362,7 +374,7 @@ void GraphicalUI::stopTracing()
 GraphicalUI::GraphicalUI() {
 	// init.
 
-	m_mainWindow = new Fl_Window(100, 40, 350, 500, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 600, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -489,6 +501,16 @@ GraphicalUI::GraphicalUI() {
 		m_reloadButton->user_data((void*)(this));
 		m_reloadButton->callback(cb_reload);
 
+    // set up "render Lightfield" button
+		m_generateLightfield = new Fl_Button(200, 515, 180, 25, "Render Lightfield");
+		m_generateLightfield->user_data((void*)(this));
+		m_generateLightfield->callback(cb_renderLightfield);
+
+    // set up "generate Lightfield" button
+		m_generateLightfield = new Fl_Button(5, 515, 180, 25, "Generate Lightfield");
+		m_generateLightfield->user_data((void*)(this));
+		m_generateLightfield->callback(cb_generateLightfield);
+
    	m_cutoffSlider = new Fl_Value_Slider(10, 385, 180, 20, "Adaptive Threshold");
 		m_cutoffSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_cutoffSlider->type(FL_HOR_NICE_SLIDER);
@@ -500,9 +522,6 @@ GraphicalUI::GraphicalUI() {
 		m_cutoffSlider->value(cutoff);
 		m_cutoffSlider->align(FL_ALIGN_RIGHT);
 		m_cutoffSlider->callback(cb_cutoffSlides);
-
-
-
 
 		// set up "stop" button
 		m_stopButton = new Fl_Button(240, 55, 70, 25, "&Stop");
@@ -533,6 +552,7 @@ GraphicalUI::GraphicalUI() {
 		m_cameraVSlider->value(0.0);
 		m_cameraVSlider->align(FL_ALIGN_RIGHT);
 		m_cameraVSlider->callback(cb_cameraVSlides);
+
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
