@@ -67,37 +67,40 @@ void LFWindow::draw() {
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
-    updateDrawbuffer();
 	if ( drawbuffer ) {
-        // just copy image to GLwindow conceptually
+    updateDrawbuffer();
+    cout << int(drawbuffer[0]) << int(drawbuffer[1]) << int(drawbuffer[2]) << endl;
+    // just copy image to GLwindow conceptually
 		glRasterPos2i( 0, 0 );
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, m_nDrawWidth );
 		glDrawBuffer( GL_BACK );
-		glDrawPixels( m_nDrawWidth, m_nDrawHeight, GL_RGB, GL_UNSIGNED_BYTE, drawbuffer );
+		glDrawPixels( header.width, header.height, GL_RGB, GL_UNSIGNED_BYTE, drawbuffer );
 	}
-    cout << "frame drawn" << endl;
-		
 	glFlush();
-    end = clock();
-    cout << "drawing took: " << double(end - start) << endl;
+  end = clock();
+  cout << "drawing took: " << double(end - start) / CLOCKS_PER_SEC << endl;
 }
 
 void LFWindow::updateDrawbuffer() {
-        // compute bounding box for both planes = 8 ray casts w/ 1 plane intersect
+    // compute bounding box for both planes = 8 ray casts w/ 1 plane intersect
     int max_x, max_y, min_x, min_y;
-        //computeRenderRectangle(&max_x, &max_y, &min_x, &min_y);
-        // For each pixel in bounding box, cast a lightfield ray
-        // if it has u,v,s,t draw a color   = 2 plane intersections
-        // else fill it with black
-        
-    delete [] drawbuffer;
-    drawbuffer = new unsigned char [header.width * header.height * 3];
+    //computeRenderRectangle(&max_x, &max_y, &min_x, &min_y);
+    // For each pixel in bounding box, cast a lightfield ray
+    // if it has u,v,s,t draw a color   = 2 plane intersections
+    // else fill it with black
+    tracer->traceSetup(header.width, header.height);    
+    for (int x = 0; x < header.width; x++) {
+	    for (int y = 0; y < header.height; y++) {
+        tracer->tracePixel(x, y);   
+      }
+    }
+    tracer->getBuffer(drawbuffer, header.width, header.height);
 }
 
 void LFWindow::refresh()
 {
-	redraw();
+  redraw();
 }
 
 void LFWindow::resizeWindow(int width, int height)
@@ -118,7 +121,7 @@ void LFWindow::setBuffer(unsigned char* buf)
 void LFWindow::setHeader(LIGHTFIELD_HEADER* h)
 {
 	header = *h;
-    drawbuffer = new unsigned char [header.width * header.height * 3];
+  drawbuffer = new unsigned char [header.width * header.height * 3];
 }
 
 void LFWindow::init() {

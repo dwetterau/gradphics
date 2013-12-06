@@ -40,8 +40,8 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 	isect i;
 
   // TODO: Manually intersect both planes
-	if( scene->intersect( r, i ) ) {
-  
+	if( true ) {
+    return Vec3d(1.0, 0.0, 0.0);
 
   } else {
 		// No intersection.  This ray travels to infinity, so we color
@@ -91,6 +91,7 @@ LFTracer::~LFTracer()
 }
 
 bool Plane::intersect(double &u, double&v) {
+  //TODO: this
   return false; 
 }
 

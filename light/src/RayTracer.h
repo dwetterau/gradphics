@@ -14,8 +14,8 @@ public:
     RayTracer();
     ~RayTracer();
 
-    Vec3d trace( double x, double y );
-	Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
+  virtual Vec3d trace( double x, double y );
+	virtual Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
 
   
   LIGHTFIELD_HEADER getLightfieldHeader();
@@ -23,13 +23,13 @@ public:
 	double aspectRatio();
 	void traceSetup( int w, int h );
 	void tracePixel( int i, int j );
-    void reloadScene();
-    bool loadScene( char* fn );
+  void reloadScene();
+  bool loadScene( char* fn );
     
 	bool sceneLoaded() { return scene != 0; }
-    void setReady( bool ready )
+  void setReady( bool ready )
       { m_bBufferReady = ready; }
-    bool isReady() const
+  bool isReady() const
       { return m_bBufferReady; }
 
 	const Scene& getScene() { return *scene; }
@@ -43,7 +43,7 @@ protected:
 	int bufferSize;
 	Scene* scene;
 
-    bool m_bBufferReady;
+  bool m_bBufferReady;
 
 
 };
