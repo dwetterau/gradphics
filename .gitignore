@@ -10,5 +10,6 @@ impressionist/impressionist
 shader/src/bin.*
 shader/src/objs.*
 *~
+*.lf
 ray/Penrose_Triangle/
 ray/src/PenroseTriangle.stl

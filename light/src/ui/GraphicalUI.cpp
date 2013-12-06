@@ -15,6 +15,7 @@
 
 #include "GraphicalUI.h"
 #include "../RayTracer.h"
+#include "../fileio/bitmap.h"
 
 bool GraphicalUI::stopTrace = false;
 bool GraphicalUI::doneTrace = true;
@@ -282,6 +283,17 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
         // copy the raytracer's buffer back to our buffer
         pUI->raytracer->getBuffer(tempPointer, width, height);
       }
+    }
+    // write the buffer to disk
+    char* savefile = fl_file_chooser("Save Lightfield data?", "*.lf", "scene.lf" );
+	  if (savefile != NULL) {
+      // write out the bmp
+      LIGHTFIELD_HEADER header = pUI->raytracer->getLightfieldHeader();
+      header.num_pictures = lf_n;
+      header.width = width;
+      header.height = height;
+	    writeLightfield(savefile, &header, big_buffs);
+      cout << "finished writing lf " << header.v1 << endl;
     }
 	}
 }

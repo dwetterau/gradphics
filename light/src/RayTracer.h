@@ -4,6 +4,7 @@
 // The main ray tracer.
 
 #include "scene/ray.h"
+#include "fileio/bitmap.h"
 
 class Scene;
 
@@ -16,7 +17,8 @@ public:
     Vec3d trace( double x, double y );
 	Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
 
-
+  
+  LIGHTFIELD_HEADER getLightfieldHeader();
 	void getBuffer( unsigned char *&buf, int &w, int &h );
 	double aspectRatio();
 	void traceSetup( int w, int h );

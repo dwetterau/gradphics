@@ -35,6 +35,15 @@ void RayTracer::setEyePos(double u, double v) {
   scene->getCamera().setEye(p);
 }
 
+LIGHTFIELD_HEADER RayTracer::getLightfieldHeader() {
+  LIGHTFIELD_HEADER toReturn = LIGHTFIELD_HEADER();
+  toReturn.image_point = eye_origin + scene->getCamera().getLook();
+  toReturn.camera_point = eye_origin;
+  toReturn.v1 = scene->getCamera().getU();
+  toReturn.v2 = scene->getCamera().getV();
+  return toReturn;
+}
+
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
 // enter the main ray-tracing method, getting things started by plugging
