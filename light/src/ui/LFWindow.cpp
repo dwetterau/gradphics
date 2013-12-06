@@ -120,3 +120,8 @@ void LFWindow::setHeader(LIGHTFIELD_HEADER* h)
 	header = *h;
     drawbuffer = new unsigned char [header.width * header.height * 3];
 }
+
+void LFWindow::init() {
+  tracer = new LFTracer();
+  tracer->init(header, buffer);
+}

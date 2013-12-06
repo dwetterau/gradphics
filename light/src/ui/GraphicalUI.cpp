@@ -236,6 +236,7 @@ void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
         pUI->m_lfWindow->resizeWindow( w, h );
         pUI->m_lfWindow->setHeader(&header);
         pUI->m_lfWindow->setBuffer(bigbuf);
+        pUI->m_lfWindow->init();
         pUI->m_lfWindow->show();
     }
 

@@ -8,6 +8,7 @@
 #include <FL/glu.h>
 
 #include "../RayTracer.h"
+#include "../LFTracer.h"
 #include "../fileio/bitmap.h"
 
 class LFWindow : public Fl_Gl_Window
@@ -24,13 +25,15 @@ public:
 
 	void setHeader(LIGHTFIELD_HEADER *h);
 	void setBuffer(unsigned char * buf);
+  void init();
 
 private:
 	unsigned char* buffer;
     unsigned char* drawbuffer;
     LIGHTFIELD_HEADER header;
 	int m_nWindowWidth, m_nWindowHeight;
-	int m_nDrawWidth, m_nDrawHeight;
+  int m_nDrawWidth, m_nDrawHeight;
+  LFTracer* tracer;
 };
 
 #endif // __LF_WINDOW_H__
