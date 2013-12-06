@@ -304,6 +304,8 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
       header.num_pictures = lf_n;
       header.width = width;
       header.height = height;
+      header.fov = raytracer->scene->getCamera().getFOV();
+      header.ar = raytracer->scene->getCamera().getAspectRatio();
 	    writeLightfield(savefile, &header, big_buffs);
       cout << "finished writing lf " << header.v1 << endl;
     }

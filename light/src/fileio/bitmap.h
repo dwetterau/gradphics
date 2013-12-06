@@ -48,6 +48,8 @@ typedef struct {
   Vec3d camera_point;
   Vec3d v1;
   Vec3d v2;
+  double fov;
+  double ar;
 } LIGHTFIELD_HEADER;
 
 // global I/O routines
