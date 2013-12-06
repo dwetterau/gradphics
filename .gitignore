@@ -3,4 +3,12 @@
 *.o
 *.swp
 ray/ray
+light/ray
+*test*
+*.ani*
 impressionist/impressionist
+shader/src/bin.*
+shader/src/objs.*
+*~
+ray/Penrose_Triangle/
+ray/src/PenroseTriangle.stl

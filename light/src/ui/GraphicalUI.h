@@ -42,6 +42,7 @@ public:
 	Fl_Slider*			m_cutoffSlider;
 	Fl_Slider*			m_cameraUSlider;
 	Fl_Slider*			m_cameraVSlider;
+	Fl_Slider*			m_lfnSlider;
 
 	Fl_Check_Button*	m_debuggingDisplayCheckButton;
 	Fl_Check_Button*	m_acceleratedButton;
@@ -91,6 +92,7 @@ private:
 	
   static void cb_cameraUSlides(Fl_Widget* o, void* v);
 	static void cb_cameraVSlides(Fl_Widget* o, void* v);
+	static void cb_lfnSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_reload(Fl_Widget* o, void* v);

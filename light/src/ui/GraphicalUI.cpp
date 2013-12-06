@@ -139,6 +139,10 @@ void GraphicalUI::cb_cameraVSlides(Fl_Widget* o, void* v)
 {
 	((GraphicalUI*)(o->user_data()))->m_cameraV = double( ((Fl_Slider *)o)->value() ) ;
 }
+void GraphicalUI::cb_lfnSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_lf_n = int( ((Fl_Slider *)o)->value() ) ;
+}
 
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
 {
@@ -553,6 +557,20 @@ GraphicalUI::GraphicalUI() {
 		m_cameraVSlider->align(FL_ALIGN_RIGHT);
 		m_cameraVSlider->callback(cb_cameraVSlides);
 
+<<<<<<< HEAD
+=======
+    m_lfnSlider = new Fl_Value_Slider(10, 490, 180, 20, "Lightfield n");
+		m_lfnSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_lfnSlider->type(FL_HOR_NICE_SLIDER);
+        m_lfnSlider->labelfont(FL_COURIER);
+        m_lfnSlider->labelsize(12);
+		m_lfnSlider->minimum(1);
+		m_lfnSlider->maximum(10);
+		m_lfnSlider->step(1);
+		m_lfnSlider->value(1);
+		m_lfnSlider->align(FL_ALIGN_RIGHT);
+		m_lfnSlider->callback(cb_lfnSlides);
+>>>>>>> 6af31e42691aa6bfda8d2b2211eb6a8066e004b5
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

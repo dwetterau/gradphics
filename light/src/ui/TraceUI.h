@@ -33,7 +33,8 @@ public:
     raytracer(0),
     cutoff(0.0),
     m_cameraU(0.0),
-    m_cameraV(0.0)
+    m_cameraV(0.0),
+    m_lf_n(0)
 	{ }
 
 	virtual int		run() = 0;
@@ -83,6 +84,7 @@ public:
 	// accessors:
 	double getCameraU() const { return m_cameraU; }
 	double getCameraV() const { return m_cameraV; }
+  int		getLFN() const { return m_lf_n; }
   int		getSize() const { return m_nSize; }
 	int		getDepth() const { return m_nDepth; }
 	int		getAa() const { return m_nAa; }
@@ -109,6 +111,7 @@ protected:
   bool    m_cm;
   double m_cameraU;
   double m_cameraV;
+  int m_lf_n;
   int objectLimit;
   int depthLimit;
   string xpName;
