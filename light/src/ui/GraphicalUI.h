@@ -18,6 +18,7 @@
 
 #include "TraceUI.h"
 #include "TraceGLWindow.h"
+#include "LFWindow.h"
 #include "debuggingWindow.h"
 
 class ModelerView;
@@ -63,6 +64,7 @@ public:
 	Fl_Button*			m_renderLightfield;
 
 	TraceGLWindow*		m_traceGlWindow;
+    LFWindow*           m_lfWindow;
 
 	DebuggingWindow*	m_debuggingWindow;
 	// member functions

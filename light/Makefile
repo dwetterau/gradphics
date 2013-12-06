@@ -36,7 +36,7 @@ ALL.O = src/main.o src/getopt.o src/RayTracer.o \
 	src/SceneObjects/Box.o src/SceneObjects/Cone.o \
 	src/SceneObjects/Cylinder.o src/SceneObjects/trimesh.o \
 	src/SceneObjects/Sphere.o src/SceneObjects/Square.o \
-	src/LFWindow.o
+	src/ui/LFWindow.o
 
 ray: $(ALL.O)
 	$(CC) $(CFLAGS) -o $@ $(ALL.O) $(INCLUDE) $(LIBDIR) $(LIBS)

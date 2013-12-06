@@ -226,7 +226,19 @@ void GraphicalUI::cb_znName(Fl_Widget* o, void* v) {
 void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
-  //TODO: kick off the rendering for the loaded lightfield
+    char* newfile = fl_file_chooser("Open Lightfield?", "*.lf", NULL );
+
+	if (newfile != NULL) {
+        LIGHTFIELD_HEADER header;
+        unsigned char* bigbuf = readLightfield(newfile, &header);
+        int w = header.width;
+        int h = header.height;
+        pUI->m_lfWindow->resizeWindow( w, h );
+        pUI->m_lfWindow->setHeader(&header);
+        pUI->m_lfWindow->setBuffer(bigbuf);
+        pUI->m_lfWindow->show();
+    }
+
 }
 
 void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {
@@ -635,6 +647,10 @@ GraphicalUI::GraphicalUI() {
 	m_traceGlWindow = new TraceGLWindow(100, 150, m_nSize, m_nSize, "Rendered Image");
 	m_traceGlWindow->end();
 	m_traceGlWindow->resizable(m_traceGlWindow);
+
+    m_lfWindow = new LFWindow(100, 150, m_nSize, m_nSize, "Lightfield Renderer");
+    m_lfWindow->end();
+    m_lfWindow->resizable(m_lfWindow);
 
 	// debugging view
 	m_debuggingWindow = new DebuggingWindow();
