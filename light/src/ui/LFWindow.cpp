@@ -72,20 +72,34 @@ int LFWindow::handle(int event)
       default:
         break; 
     }
+  } else if(event == FL_RELEASE) {
+    prevx = -1;
+    prevy = -1;
   } else if(event == FL_PUSH || event == FL_DRAG) {
     s = true;
 		int x = Fl::event_x();
 		int y = Fl::event_y();
-		if(x < 0) x = 0;
+		/*
+    if(x < 0) x = 0;
 		if(x > m_nWindowWidth) x = m_nWindowWidth;
 		if(y < 0) y = 0;
-		if(y > m_nWindowHeight) y = m_nWindowHeight;
-
+		if(y > m_nWindowHeight) y = m_nWindowHeight;*/
+    
+    if (prevx != -1) {
+      // do a rotation thing!
+      int dx = x - prevx;
+      int dy = y - prevy;
+      tracer->rotateV(.1 * dx);
+      tracer->rotateU(.1 * dy);
+      cout << prevx << "=prevx x=" << x << endl;  
+    }
+    prevx = x;
+    prevy = y;
 		// Flip for FL's upside-down window coords
-		y = m_nWindowHeight - y;
+		//y = m_nWindowHeight - y;
 
-		std::cout << "Clicking " << x << ", " << y << std::endl;
-    tracer->tracePixel(x, y);
+		//std::cout << "Clicking " << x << ", " << y << std::endl;
+    //tracer->tracePixel(x, y);
 	}
 
   if (s) {

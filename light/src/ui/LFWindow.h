@@ -34,6 +34,8 @@ private:
 	int m_nWindowWidth, m_nWindowHeight;
   int m_nDrawWidth, m_nDrawHeight;
   LFTracer* tracer;
+  int prevx;
+  int prevy;
 };
 
 #endif // __LF_WINDOW_H__
