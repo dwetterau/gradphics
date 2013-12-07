@@ -66,36 +66,45 @@ Vec3d LFTracer::sample(double u, double v, double s, double t) {
   int n = header.num_pictures - 1;
   int u_index = (u + .5) * n;
   int v_index = (v + .5) * n;
-  int s_index = (s + .5) * (header.width - 1);
-  int t_index = (t + .5) * (header.height - 1);
-
+  
   // determine which picture to sample
   double c00, c01, c10, c11;
-  getCoeffs(c00, c01, c10, c11, u, v);
-  return c00 * samplePicture(u_index, v_index, s_index, t_index) +
-         c01 * samplePicture(u_index, v_index + 1, s_index, t_index) +
-         c10 * samplePicture(u_index + 1, v_index, s_index, t_index) +
-         c11 * samplePicture(u_index + 1, v_index + 1, s_index, t_index);
+  getCoeffs(c00, c01, c10, c11, u, v, n, n);
+  return c00 * samplePicture(u_index, v_index, s, t) +
+         c01 * samplePicture(u_index, v_index + 1, s, t) +
+         c10 * samplePicture(u_index + 1, v_index, s, t) +
+         c11 * samplePicture(u_index + 1, v_index + 1, s, t);
 }
 
-void LFTracer::getCoeffs(double &c00, double &c01, double &c10, double &c11, double u, double v) {
-  int n = header.num_pictures - 1;
-  int u_index = (u + .5) * n;
-  int v_index = (v + .5) * n;
+void LFTracer::getCoeffs(double &c00, double &c01, double &c10, double &c11, double u, double v, int u_num, int v_num) {
+  int u_index = (u + .5) * u_num;
+  int v_index = (v + .5) * v_num;
 
-  double u00 = 1 - ((u + .5) * n - u_index);
-  double v00 = 1 - ((v + .5) * n - v_index);
-  double u10 = ((u + .5) * n - u_index);
-  double v10 = 1 - ((v + .5) * n - v_index);
-  double u01 = 1 - ((u + .5) * n - u_index);
-  double v01 = ((v + .5) * n - v_index);
-  double u11 = ((u + .5) * n - u_index);
-  double v11 = ((v + .5) * n - v_index);
+  double u00 = 1 - ((u + .5) * u_num - u_index);
+  double v00 = 1 - ((v + .5) * v_num - v_index);
+  double u10 = ((u + .5) * u_num - u_index);
+  double v10 = 1 - ((v + .5) * v_num - v_index);
+  double u01 = 1 - ((u + .5) * u_num - u_index);
+  double v01 = ((v + .5) * v_num - v_index);
+  double u11 = ((u + .5) * u_num - u_index);
+  double v11 = ((v + .5) * v_num - v_index);
   
   c00 = u00 * v00;
   c01 = u01 * v01;
   c10 = u10 * v10;
   c11 = u11 * v11;
+}
+
+Vec3d LFTracer::samplePicture(int u_index, int v_index, double s, double t) {
+  int s_index = (s + .5) * (header.width - 1);
+  int t_index = (t + .5) * (header.height - 1);
+
+  double c00, c01, c10, c11;
+  getCoeffs(c00, c01, c10, c11, s, t, header.width, header.height);
+  return c11 * samplePicture(u_index, v_index, s_index, t_index) +
+         c01 * samplePicture(u_index, v_index, s_index + 1, t_index) +
+         c10 * samplePicture(u_index, v_index, s_index, t_index + 1) +
+         c00 * samplePicture(u_index, v_index, s_index + 1, t_index + 1);
 }
 
 Vec3d LFTracer::samplePicture(int u_index, int v_index, int s_index, int t_index) {
