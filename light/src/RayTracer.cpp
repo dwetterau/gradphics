@@ -278,6 +278,10 @@ void RayTracer::getBuffer( unsigned char *&buf, int &w, int &h )
 	h = buffer_height;
 }
 
+void RayTracer::copyBufferTo(unsigned char *&buf, int size) {
+  memcpy(buf, buffer, size);
+}
+
 double RayTracer::aspectRatio()
 {
 	return sceneLoaded() ? scene->getCamera().getAspectRatio() : 1;

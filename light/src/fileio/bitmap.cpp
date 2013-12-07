@@ -14,6 +14,8 @@
 BMP_BITMAPFILEHEADER bmfh; 
 BMP_BITMAPINFOHEADER bmih; 
 
+using namespace std;
+
 unsigned char *readBMP(const char *fname, int& width, int& height)
 { 
 	FILE* file; 
@@ -102,11 +104,14 @@ unsigned char *readLightfield(const char *fname, LIGHTFIELD_HEADER *h)
 	FILE* file; 
 	if ( (file=fopen( fname, "rb" )) == NULL )  
 		return NULL; 
-	fread(h, sizeof(LIGHTFIELD_HEADER), 1, file); 
-	int bytes = h->height * h->width * h->num_pictures;
+	fread(h, sizeof(LIGHTFIELD_HEADER), 1, file);
+
+	int bytes = h->height * h->width * (h->num_pictures * h->num_pictures) * 3;
+  cout << "read in the header information and will try size of: " << bytes << endl;
 	unsigned char *data = new unsigned char [bytes]; 
 	int foo = fread( data, bytes, 1, file ); 
 	if (!foo) {
+    cout << "failed to actually read the file" << endl;
 		delete [] data;
 		return NULL;
 	}
@@ -120,6 +125,7 @@ void writeLightfield(const char *iname,
 	int bytes, pad;
 	bytes = h->width * 3;
 	bytes *= h->height;
+  bytes *= h->num_pictures;
   bytes *= h->num_pictures;
 
 	FILE *foo=fopen(iname, "wb"); 

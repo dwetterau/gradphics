@@ -20,6 +20,7 @@ public:
   
   LIGHTFIELD_HEADER getLightfieldHeader();
 	void getBuffer( unsigned char *&buf, int &w, int &h );
+	void copyBufferTo( unsigned char *&buf, int size );
 	double aspectRatio();
 	void traceSetup( int w, int h );
 	void tracePixel( int i, int j );

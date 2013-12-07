@@ -70,7 +70,6 @@ void LFWindow::draw() {
 
 	if ( drawbuffer ) {
     updateDrawbuffer();
-    cout << int(drawbuffer[0]) << int(drawbuffer[1]) << int(drawbuffer[2]) << endl;
     // just copy image to GLwindow conceptually
 		glRasterPos2i( 0, 0 );
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );

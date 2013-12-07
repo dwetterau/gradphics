@@ -40,13 +40,11 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 
   // TODO: Manually intersect both planes
 	if( true ) {
-    double u, v;
-    if (nearPlane.intersect(u, v, r)) {
-    } else {
-      cout << "falsee" << endl;
+    double u, v, s, t;
+    if (nearPlane.intersect(u, v, r) && farPlane.intersect(s, t, r)) {
+      return sample(u, v, s, t);
     }
-    return Vec3d( 1.0, 0, 0);
-
+    return Vec3d( 1, 1, 1);
   } else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
@@ -60,6 +58,23 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
   }
 }
 
+Vec3d LFTracer::sample(double u, double v, double s, double t) {
+  // determine which picture to sample
+  int n = header.num_pictures - 1;
+  int u_index = (u + .5) * n;
+  int v_index = (v + .5) * n;
+  int s_index = (s + .5) * (header.width - 1);
+  int t_index = (t + .5) * (header.height - 1);
+
+  int picture_index = (v_index * (n + 1)) + u_index;
+  int picture_offset = picture_index * (header.width * header.height * 3);
+  int pixel_index = (t_index * header.width + s_index) * 3;
+  double r = bigbuf[picture_offset + pixel_index + 0] / 255.0;
+  double g = bigbuf[picture_offset + pixel_index + 1] / 255.0;
+  double b = bigbuf[picture_offset + pixel_index + 2] / 255.0;
+  return Vec3d(r, g, b);
+}
+
 LFTracer::LFTracer()
 	: RayTracer() 
 {
@@ -69,13 +84,14 @@ LFTracer::LFTracer()
 void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   //TODO: Build scene
   scene = new Scene;
-  scene->getCamera().eye = h.camera_point + (h.camera_point - h.image_point);
+  scene->getCamera().eye = h.camera_point + .3 * (h.camera_point - h.image_point);
   scene->getCamera().look = h.image_point - h.camera_point;
   scene->getCamera().aspectRatio = h.ar;
   scene->getCamera().normalizedHeight = h.nh;
   scene->getCamera().m = h.m;
   scene->getCamera().u = h.v1;
   scene->getCamera().v = h.v2;
+  
   bigbuf = bbuf;
   
   farPlane = Plane();
@@ -89,6 +105,8 @@ void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   nearPlane.u = h.v1;
   nearPlane.v = h.v2;
   nearPlane.n = (h.image_point - h.camera_point);
+
+  header = h;
 }
 
 LFTracer::~LFTracer()

@@ -262,7 +262,7 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
     
 
     // Allocate massive buffer for light field
-    int bufsize = width * height * lf_n * 3;
+    int bufsize = width * height * lf_n * lf_n * 3;
     unsigned char * big_buffs = new unsigned char [bufsize];
     memset(big_buffs, 0, bufsize);
     cout << "Allocated big buffer of size: " << bufsize << endl;
@@ -291,10 +291,10 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
         cout << "finished rendering image: " << (r * lf_n) + c << " of: " << (lf_n * lf_n) << endl;
        	doneTrace=true;
        	stopTrace=false;
-          
-        unsigned char * tempPointer = big_buffs + (((r * lf_n) + c) * 3);
+        int image_size = width * height * 3;
+        unsigned char * tempPointer = &big_buffs[(r * (image_size * lf_n)) + (c * image_size)];
         // copy the raytracer's buffer back to our buffer
-        pUI->raytracer->getBuffer(tempPointer, width, height);
+        pUI->raytracer->copyBufferTo(tempPointer, image_size);
       }
     }
     // write the buffer to disk

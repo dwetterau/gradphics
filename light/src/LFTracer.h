@@ -26,12 +26,14 @@ public:
 
   Vec3d trace( double x, double y );
   Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
+  Vec3d sample(double u, double v, double s, double t);
   void init(LIGHTFIELD_HEADER h, unsigned char* bigbuf);
 
 private:
   unsigned char* bigbuf;
   Plane farPlane;
   Plane nearPlane;
+  LIGHTFIELD_HEADER header;
 };
 
 #endif 
