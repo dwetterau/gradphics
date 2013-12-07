@@ -634,7 +634,7 @@ GraphicalUI::GraphicalUI() {
         m_lfnSlider->labelfont(FL_COURIER);
         m_lfnSlider->labelsize(12);
 		m_lfnSlider->minimum(1);
-		m_lfnSlider->maximum(10);
+		m_lfnSlider->maximum(100);
 		m_lfnSlider->step(1);
 		m_lfnSlider->value(1);
 		m_lfnSlider->align(FL_ALIGN_RIGHT);

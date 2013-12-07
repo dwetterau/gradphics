@@ -24,10 +24,14 @@ public:
     LFTracer();
     ~LFTracer();
 
+  void moveU(double d);
+  void moveV(double d);
   Vec3d trace( double x, double y );
   Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
   Vec3d sample(double u, double v, double s, double t);
   void init(LIGHTFIELD_HEADER h, unsigned char* bigbuf);
+  void getCoeffs(double &c00, double &c01, double &c10, double &c11, double u, double v);
+  Vec3d samplePicture(int u_index, int v_index, int s_index, int t_index);
 
 private:
   unsigned char* bigbuf;

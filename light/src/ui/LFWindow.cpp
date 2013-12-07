@@ -26,10 +26,33 @@ LFWindow::LFWindow(int x, int y, int w, int h, const char *l)
 
 int LFWindow::handle(int event)
 {
-	// disable all mouse and keyboard events
-	if(event == FL_PUSH ||
-		event == FL_DRAG)
-	{
+  bool s = false;
+  switch (Fl::event_key()) {
+    case 119: // w key
+      tracer->moveV(.01);
+      s = true;
+      break;
+    case 97: // a key
+      tracer->moveU(-.01);
+      s = true;
+      break;
+    case 115: // s key
+      tracer->moveV(-.01);
+      s = true;
+      break;
+    case 100: // d key
+      tracer->moveU(.01);
+      s = true;
+      break;
+    case 101: // e key
+      break;
+    case 113: // q key
+      break;
+    default:
+      break; 
+  }
+  if(event == FL_PUSH || event == FL_DRAG) {
+    s = true;
 		int x = Fl::event_x();
 		int y = Fl::event_y();
 		if(x < 0) x = 0;
@@ -42,12 +65,14 @@ int LFWindow::handle(int event)
 
 		std::cout << "Clicking " << x << ", " << y << std::endl;
     tracer->tracePixel(x, y);
-		//refresh();
-		
-		if (Fl::damage()) {
+	}
+
+  if (s) {
+    if (Fl::damage()) {
 			Fl::flush();
 		}
-	}
+    refresh();
+  }
 	return 1;
 }
 
