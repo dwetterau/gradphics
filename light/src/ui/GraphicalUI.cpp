@@ -143,9 +143,15 @@ void GraphicalUI::cb_cameraVSlides(Fl_Widget* o, void* v)
 {
 	((GraphicalUI*)(o->user_data()))->m_cameraV = double( ((Fl_Slider *)o)->value() ) ;
 }
+
 void GraphicalUI::cb_lfnSlides(Fl_Widget* o, void* v)
 {
 	((GraphicalUI*)(o->user_data()))->m_lf_n = int( ((Fl_Slider *)o)->value() ) ;
+}
+
+void GraphicalUI::cb_focalSlides(Fl_Widget* o, void* v)
+{
+	((GraphicalUI*)(o->user_data()))->m_focal = double( ((Fl_Slider *)o)->value() ) ;
 }
 
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
@@ -187,6 +193,12 @@ void GraphicalUI::cb_stButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
   pUI->setSTInterp(((Fl_Check_Button*)o)->value() == 1);
+}
+
+void GraphicalUI::cb_useDOFButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setUseDOF(((Fl_Check_Button*)o)->value() == 1);
 }
 
 void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
@@ -469,7 +481,7 @@ void GraphicalUI::stopTracing()
 GraphicalUI::GraphicalUI() {
 	// init.
 
-	m_mainWindow = new Fl_Window(100, 40, 350, 600, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 620, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -671,7 +683,24 @@ GraphicalUI::GraphicalUI() {
 		m_stButton->value(m_st);
     m_stButton->deactivate();
 
-		m_mainWindow->callback(cb_exit2);
+    m_useDOFButton = new Fl_Check_Button(5, 570, 180, 20, "Use Depth of Field");
+		m_useDOFButton->user_data((void*)(this));
+		m_useDOFButton->callback(cb_useDOFButton);
+		m_useDOFButton->value(m_usedof);
+
+    m_focalSlider = new Fl_Value_Slider(10, 595, 180, 20, "Focal Length");
+		m_focalSlider->user_data((void*)(this));
+		m_focalSlider->type(FL_HOR_NICE_SLIDER);
+        m_focalSlider->labelfont(FL_COURIER);
+        m_focalSlider->labelsize(12);
+		m_focalSlider->minimum(0.01);
+		m_focalSlider->maximum(10.0);
+		m_focalSlider->step(0.01);
+		m_focalSlider->value(1.0);
+		m_focalSlider->align(FL_ALIGN_RIGHT);
+		m_focalSlider->callback(cb_focalSlides);
+
+    m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
     m_mainWindow->end();
 

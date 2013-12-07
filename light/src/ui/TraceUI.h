@@ -30,6 +30,8 @@ public:
     m_cm( false ),
     m_uv( false ),
     m_st( false ),
+    m_usedof( false ),
+    m_focal( 1.0 ),
     objectLimit(5),
     depthLimit(15),
     raytracer(0),
@@ -64,6 +66,12 @@ public:
   }
   virtual void setSTInterp(bool b) {
     m_st = b;
+  }
+  virtual void setUseDOF(bool b) {
+    m_usedof = b;
+  }
+  virtual void setFocal(double d) {
+    m_focal = d;
   }
   virtual void setObjectLimit(int l) {
     objectLimit = l;
@@ -101,6 +109,8 @@ public:
   bool getCubeMap() const { return m_cm; }
   bool getUVInterp() const { return m_uv; }
   bool getSTInterp() const { return m_st; }
+  double getFocal() const { return m_focal; }
+  bool useDOF() const { return m_usedof; }
   int getObjectLimit() const { return objectLimit; }
   int getDepthLimit() const { return depthLimit; }
   string getXPName() const { return xpName; }
@@ -121,6 +131,8 @@ protected:
   bool    m_cm;
   bool    m_uv;
   bool    m_st;
+  bool    m_usedof;
+  double m_focal;
   double m_cameraU;
   double m_cameraV;
   int m_lf_n;
