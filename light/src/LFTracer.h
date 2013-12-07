@@ -34,6 +34,7 @@ public:
   void getCoeffs(double &c00, double &c01, double &c10, double &c11, double u, double v, int u_n, int v_n);
   Vec3d samplePicture(int u_index, int v_index, double s, double t);
   Vec3d samplePicture(int u_index, int v_index, int s_index, int t_index);
+  const ray rayLens(const ray& r, double u, double v);
 
 private:
   unsigned char* bigbuf;

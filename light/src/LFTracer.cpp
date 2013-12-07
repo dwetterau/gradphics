@@ -40,7 +40,8 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 
   double u, v, s, t;
   if (nearPlane.intersect(u, v, r)) {
-    if (farPlane.intersect(s, t, r)) {
+    const ray new_r = rayLens(r, u, v);
+    if (farPlane.intersect(s, t, new_r)) {
       return sample(u, v, s, t);
     }
     return Vec3d( .5, .5 ,.5);
@@ -55,6 +56,25 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 		  return Vec3d( 0.0, 0.0, 0.0 );
 	  }
   }
+}
+
+const ray LFTracer::rayLens(const ray& r, double u, double v) {
+  if (!traceUI->useDOF()) return r;
+  // find closest u
+  int c_u = int(u);
+  if (u - c_u > .5) {
+    c_u++;
+  }
+  int c_v = int(v);
+  if (v - c_v > .5) {
+    c_v++;
+  }
+
+   
+
+  Vec3d vect = (u - c_u) * scene->getCamera().u + (v - c_v) * scene->getCamera().v;
+  Vec3d new_dir = r.getDirection() + (vect * (1 / traceUI->getFocal()));
+  return ray(r.getPosition(), new_dir, ray::VISIBILITY); 
 }
 
 Vec3d LFTracer::sample(double u, double v, double s, double t) {
