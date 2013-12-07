@@ -125,7 +125,7 @@ void LFTracer::moveV(double d) {
 
 void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   scene = new Scene;
-  scene->getCamera().eye = h.camera_point + .3 * (h.camera_point - h.image_point);
+  scene->getCamera().eye = h.camera_point - .3 * (h.camera_point - h.image_point);
   scene->getCamera().look = h.image_point - h.camera_point;
   scene->getCamera().aspectRatio = h.ar;
   scene->getCamera().normalizedHeight = h.nh;
@@ -164,9 +164,7 @@ bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r) {
     return false;
   }
   double t = d / dot;
-  if (t < RAY_EPSILON) {
-    return false;
-  }
+  
   Vec3d ip = r.at(t);
   Vec3d toPoint = ip - origin;
   double du = (toPoint * u) / u.length2();
