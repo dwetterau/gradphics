@@ -53,6 +53,22 @@ int LFWindow::handle(int event)
         tracer->moveLook(-.01);
         s = true;
         break;
+      case 120: // x key
+        tracer->rotateU(.3);
+        s = true;
+        break;
+      case 122: // z key
+        tracer->rotateU(-.3);
+        s = true;
+        break;
+      case 99:
+        tracer->rotateV(-.3);
+        s = true;
+        break;
+      case 118:
+        tracer->rotateV(.3);
+        s = true;
+        break;
       default:
         break; 
     }

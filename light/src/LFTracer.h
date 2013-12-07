@@ -24,6 +24,8 @@ public:
     LFTracer();
     ~LFTracer();
 
+  void rotateU(double ang);
+  void rotateV(double ang);
   void moveU(double d);
   void moveV(double d);
   void moveLook(double d);

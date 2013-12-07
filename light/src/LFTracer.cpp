@@ -13,6 +13,7 @@
 #include "ui/TraceUI.h"
 #include <cmath>
 #include <algorithm>
+#include <FL/gl.h>
 
 extern TraceUI* traceUI;
 
@@ -20,6 +21,33 @@ extern TraceUI* traceUI;
 #include <fstream>
 
 using namespace std;
+
+void LFTracer::rotateU(double ang) {
+  glPushMatrix();
+  glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW_MATRIX);
+  glRotated(ang, scene->getCamera().u[0], scene->getCamera().u[1], scene->getCamera().u[2]);
+  double mat [16];
+  glGetDoublev(GL_MODELVIEW_MATRIX, mat);
+  Mat3d rotMat = Mat3d(mat[0], mat[4], mat[8], mat[1], mat[5], mat[9], mat[2], mat[6], mat[10]);
+  scene->getCamera().m = scene->getCamera().m * rotMat;
+  scene->getCamera().update();
+  glPopMatrix();
+}
+
+void LFTracer::rotateV(double ang) {
+  glPushMatrix();
+  glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW_MATRIX);
+  glRotated(ang, scene->getCamera().v[0], scene->getCamera().v[1], scene->getCamera().v[2]);
+  double mat [16];
+  glGetDoublev(GL_MODELVIEW_MATRIX, mat);
+  Mat3d rotMat = Mat3d(mat[0], mat[4], mat[8], mat[1], mat[5], mat[9], mat[2], mat[6], mat[10]);
+  scene->getCamera().m = scene->getCamera().m * rotMat;
+  scene->getCamera().update();
+  glPopMatrix();
+}
+
 
 Vec3d LFTracer::trace( double x, double y ) {
 	// Clear out the ray cache in the scene for debugging purposes,
