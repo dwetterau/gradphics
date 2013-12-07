@@ -26,11 +26,14 @@ void LFTracer::rotateU(double ang) {
   glPushMatrix();
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW_MATRIX);
+  Vec3d eye = scene->getCamera().eye;
   glRotated(ang, scene->getCamera().u[0], scene->getCamera().u[1], scene->getCamera().u[2]);
+  glTranslated(eye[0], eye[1], eye[2]);
   double mat [16];
   glGetDoublev(GL_MODELVIEW_MATRIX, mat);
   Mat3d rotMat = Mat3d(mat[0], mat[4], mat[8], mat[1], mat[5], mat[9], mat[2], mat[6], mat[10]);
   scene->getCamera().m = scene->getCamera().m * rotMat;
+  scene->getCamera().eye = scene->getCamera().eye * rotMat;
   scene->getCamera().update();
   glPopMatrix();
 }
@@ -39,11 +42,14 @@ void LFTracer::rotateV(double ang) {
   glPushMatrix();
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW_MATRIX);
+  Vec3d eye = scene->getCamera().eye;
+  glTranslated(eye[0], eye[1], eye[2]);
   glRotated(ang, scene->getCamera().v[0], scene->getCamera().v[1], scene->getCamera().v[2]);
   double mat [16];
   glGetDoublev(GL_MODELVIEW_MATRIX, mat);
   Mat3d rotMat = Mat3d(mat[0], mat[4], mat[8], mat[1], mat[5], mat[9], mat[2], mat[6], mat[10]);
   scene->getCamera().m = scene->getCamera().m * rotMat;
+  scene->getCamera().eye = scene->getCamera().eye * rotMat;
   scene->getCamera().update();
   glPopMatrix();
 }
