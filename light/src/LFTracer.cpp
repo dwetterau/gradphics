@@ -58,15 +58,21 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 }
 
 Vec3d LFTracer::sample(double u, double v, double s, double t) {
+  int n = header.num_pictures - 1;
+  int u_index = (u + .5) * n;
+  int v_index = (v + .5) * n;
+  int s_index = (s + .5) * header.width;
+  int t_index = (t + .5) * header.height;
+        
+  if (!traceUI->getUVInterp()) {
+    return samplePicture(u_index, v_index, s_index, t_index);
+  }
+        
   //TODO: think about this more
   if (u == .5 || v == .5) {
     return Vec3d(0, 0, 0);
   }
-        
-  int n = header.num_pictures - 1;
-  int u_index = (u + .5) * n;
-  int v_index = (v + .5) * n;
-  
+    
   // determine which picture to sample
   double c00, c01, c10, c11;
   getCoeffs(c00, c01, c10, c11, u, v, n, n);
@@ -98,6 +104,10 @@ void LFTracer::getCoeffs(double &c00, double &c01, double &c10, double &c11, dou
 Vec3d LFTracer::samplePicture(int u_index, int v_index, double s, double t) {
   int s_index = (s + .5) * (header.width - 1);
   int t_index = (t + .5) * (header.height - 1);
+
+  if (!traceUI->getSTInterp()) {
+    return samplePicture(u_index, v_index, s_index, t_index);
+  }
 
   double c00, c01, c10, c11;
   getCoeffs(c00, c01, c10, c11, s, t, header.width, header.height);
