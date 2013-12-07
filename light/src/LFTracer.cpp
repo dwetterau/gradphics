@@ -71,10 +71,13 @@ LFTracer::LFTracer()
 void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   //TODO: Build scene
   scene = new Scene;
-  scene->getCamera().setEye(h.camera_point + (h.camera_point - h.image_point));
-  scene->getCamera().setFOV(h.fov);
-  scene->getCamera().setAspectRatio(h.ar);
-  scene->getCamera().setLook(h.image_point - h.camera_point, h.v2);
+  scene->getCamera().eye = h.camera_point + (h.camera_point - h.image_point);
+  scene->getCamera().look = h.image_point - h.camera_point;
+  scene->getCamera().aspectRatio = h.ar;
+  scene->getCamera().normalizedHeight = h.nh;
+  scene->getCamera().m = h.m;
+  scene->getCamera().u = h.v1;
+  scene->getCamera().v = h.v2;
   bigbuf = bbuf;
   
   farPlane = Plane();

@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../vecmath/vec.h"
+#include "../vecmath/mat.h"
 
 #define BMP_BI_RGB        0L
 
@@ -48,7 +49,8 @@ typedef struct {
   Vec3d camera_point;
   Vec3d v1;
   Vec3d v2;
-  double fov;
+  Mat3d m;
+  double nh;
   double ar;
 } LIGHTFIELD_HEADER;
 

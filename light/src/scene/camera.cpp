@@ -75,7 +75,6 @@ void
 Camera::setFOV( double fov )
 // fov - field of view (height) in degrees    
 {
-    prevfov = fov;
     fov /= (180.0 / PI);      // convert to radians
     normalizedHeight = 2 * tan( fov / 2 );
     update();
