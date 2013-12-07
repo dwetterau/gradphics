@@ -12,7 +12,7 @@ public:
     void setLook( double, double, double, double );
     void setLook( const Vec3d &viewDir, const Vec3d &upDir );
     void setFOV( double );
-    double getFOV() { return fov; }
+    double getFOV() { return prevfov; }
     void setAspectRatio( double );
 
     double getAspectRatio() { return aspectRatio; }
@@ -25,7 +25,7 @@ private:
     Mat3d m;                     // rotation matrix
     double normalizedHeight;    // dimensions of image place at unit dist from eye
     double aspectRatio;
-    double fov;
+    double prevfov;
     
     void update();              // using the above three values calculate look,u,v
     

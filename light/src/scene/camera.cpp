@@ -24,6 +24,7 @@ Camera::rayThrough( double x, double y, ray &r, Vec3d skew)
   x -= 0.5;
   y -= 0.5;
   Vec3d dir = look + x * u + y * v;
+  //cout << "dir in rt=" << dir << " u=" << u << endl;
   dir += skew;
 	dir.normalize();
   r = ray( eye - skew, dir, ray::VISIBILITY );
@@ -74,6 +75,7 @@ void
 Camera::setFOV( double fov )
 // fov - field of view (height) in degrees    
 {
+    prevfov = fov;
     fov /= (180.0 / PI);      // convert to radians
     normalizedHeight = 2 * tan( fov / 2 );
     update();

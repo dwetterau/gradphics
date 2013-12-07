@@ -41,7 +41,8 @@ int LFWindow::handle(int event)
 		y = m_nWindowHeight - y;
 
 		std::cout << "Clicking " << x << ", " << y << std::endl;
-		refresh();
+    tracer->tracePixel(x, y);
+		//refresh();
 		
 		if (Fl::damage()) {
 			Fl::flush();
