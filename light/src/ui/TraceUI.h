@@ -28,6 +28,8 @@ public:
 		m_accelerated( true ),
     m_stoc( false ),
     m_cm( false ),
+    m_uv( false ),
+    m_st( false ),
     objectLimit(5),
     depthLimit(15),
     raytracer(0),
@@ -56,6 +58,12 @@ public:
   }
   virtual void setCubeMap(bool b) {
     m_cm = b;
+  }
+  virtual void setUVInterp(bool b) {
+    m_uv = b;
+  }
+  virtual void setSTInterp(bool b) {
+    m_st = b;
   }
   virtual void setObjectLimit(int l) {
     objectLimit = l;
@@ -91,6 +99,8 @@ public:
   bool  getAccelerated() const { return m_accelerated; }
   bool  getStoc() const { return m_stoc; }
   bool getCubeMap() const { return m_cm; }
+  bool getUVInterp() const { return m_uv; }
+  bool getSTInterp() const { return m_st; }
   int getObjectLimit() const { return objectLimit; }
   int getDepthLimit() const { return depthLimit; }
   string getXPName() const { return xpName; }
@@ -109,6 +119,8 @@ protected:
   bool    m_accelerated;
   bool    m_stoc;
   bool    m_cm;
+  bool    m_uv;
+  bool    m_st;
   double m_cameraU;
   double m_cameraV;
   int m_lf_n;

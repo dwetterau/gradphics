@@ -19,6 +19,7 @@
 
 bool GraphicalUI::stopTrace = false;
 bool GraphicalUI::doneTrace = true;
+Fl_Check_Button*	GraphicalUI::m_stButton;
 
 using namespace std;
 
@@ -167,6 +168,25 @@ void GraphicalUI::cb_stocButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
   pUI->setStoc(((Fl_Check_Button*)o)->value() == 1);
+}
+
+void GraphicalUI::cb_uvButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setUVInterp(((Fl_Check_Button*)o)->value() == 1);
+  if (((Fl_Check_Button*)o)->value() == 1) {
+    m_stButton->activate();
+  } else {
+    pUI->setSTInterp(false);
+    m_stButton->clear();
+    m_stButton->deactivate();
+  }
+}
+
+void GraphicalUI::cb_stButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setSTInterp(((Fl_Check_Button*)o)->value() == 1);
 }
 
 void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
@@ -639,6 +659,17 @@ GraphicalUI::GraphicalUI() {
 		m_lfnSlider->value(1);
 		m_lfnSlider->align(FL_ALIGN_RIGHT);
 		m_lfnSlider->callback(cb_lfnSlides);
+
+    m_uvButton = new Fl_Check_Button(5, 545, 180, 20, "UV Interpolation");
+		m_uvButton->user_data((void*)(this));
+		m_uvButton->callback(cb_uvButton);
+		m_uvButton->value(m_uv);
+
+    m_stButton = new Fl_Check_Button(185, 545, 180, 20, "ST Interpolation");
+		m_stButton->user_data((void*)(this));
+		m_stButton->callback(cb_stButton);
+		m_stButton->value(m_st);
+    m_stButton->deactivate();
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
