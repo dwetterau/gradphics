@@ -45,8 +45,12 @@ int LFWindow::handle(int event)
       s = true;
       break;
     case 101: // e key
+      tracer->moveLook(.01);
+      s = true;
       break;
     case 113: // q key
+      tracer->moveLook(-.01);
+      s = true;
       break;
     default:
       break; 
@@ -68,6 +72,7 @@ int LFWindow::handle(int event)
 	}
 
   if (s) {
+	  Fl::flush();
     if (Fl::damage()) {
 			Fl::flush();
 		}

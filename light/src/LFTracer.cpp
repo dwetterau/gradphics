@@ -123,6 +123,10 @@ void LFTracer::moveV(double d) {
   scene->getCamera().eye += d * scene->getCamera().v;
 }
 
+void LFTracer::moveLook(double d) {
+  scene->getCamera().eye += d * scene->getCamera().look;
+}
+
 void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   scene = new Scene;
   scene->getCamera().eye = h.camera_point - .3 * (h.camera_point - h.image_point);
