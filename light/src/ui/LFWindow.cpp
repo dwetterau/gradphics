@@ -27,35 +27,36 @@ LFWindow::LFWindow(int x, int y, int w, int h, const char *l)
 int LFWindow::handle(int event)
 {
   bool s = false;
-  switch (Fl::event_key()) {
-    case 119: // w key
-      tracer->moveV(.01);
-      s = true;
-      break;
-    case 97: // a key
-      tracer->moveU(-.01);
-      s = true;
-      break;
-    case 115: // s key
-      tracer->moveV(-.01);
-      s = true;
-      break;
-    case 100: // d key
-      tracer->moveU(.01);
-      s = true;
-      break;
-    case 101: // e key
-      tracer->moveLook(.01);
-      s = true;
-      break;
-    case 113: // q key
-      tracer->moveLook(-.01);
-      s = true;
-      break;
-    default:
-      break; 
-  }
-  if(event == FL_PUSH || event == FL_DRAG) {
+  if (event == 8) { 
+    switch (Fl::event_key()) {
+      case 119: // w key
+        tracer->moveV(.01);
+        s = true;
+        break;
+      case 97: // a key
+        tracer->moveU(-.01);
+        s = true;
+        break;
+      case 115: // s key
+        tracer->moveV(-.01);
+        s = true;
+        break;
+      case 100: // d key
+        tracer->moveU(.01);
+        s = true;
+        break;
+      case 101: // e key
+        tracer->moveLook(.01);
+        s = true;
+        break;
+      case 113: // q key
+        tracer->moveLook(-.01);
+        s = true;
+        break;
+      default:
+        break; 
+    }
+  } else if(event == FL_PUSH || event == FL_DRAG) {
     s = true;
 		int x = Fl::event_x();
 		int y = Fl::event_y();
