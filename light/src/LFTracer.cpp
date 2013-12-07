@@ -42,8 +42,6 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 	if( true ) {
     double u, v;
     if (nearPlane.intersect(u, v, r)) {
-      cout << "u: " << u << " v: " << v << endl;
-      cout << "camerau: " << scene->getCamera().getU() << endl;
     } else {
       cout << "falsee" << endl;
     }
@@ -82,14 +80,14 @@ void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   
   farPlane = Plane();
   farPlane.origin = h.image_point;
-  farPlane.u = scene->getCamera().getU();
-  farPlane.v = scene->getCamera().getV();
+  farPlane.u = h.v1;
+  farPlane.v = h.v2;
   farPlane.n = (h.image_point - h.camera_point);
 
   nearPlane = Plane();
   nearPlane.origin = h.camera_point;
-  farPlane.u = scene->getCamera().getU();
-  farPlane.v = scene->getCamera().getV();
+  nearPlane.u = h.v1;
+  nearPlane.v = h.v2;
   nearPlane.n = (h.image_point - h.camera_point);
 }
 
@@ -112,16 +110,12 @@ bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r) {
   }
   Vec3d ip = r.at(t);
   Vec3d toPoint = ip - origin;
-  cout << ip << "=ip and origin=" << origin << " t=" << t << endl;
-  cout << u << "=u with length=" << u.length() << endl;
-  cout << v << "=v with length=" << v.length() << endl;
-
-  double du = (toPoint * u) / u.length();
+  double du = (toPoint * u) / u.length2();
   if (du < -.5 || du > .5) {
     return false;
   }
   u_coeff = du;
-  double dv = (toPoint * v) / v.length();
+  double dv = (toPoint * v) / v.length2();
   if (dv < -.5 || dv > .5) {
     return false;
   }
