@@ -104,9 +104,7 @@ const ray LFTracer::rayLens(const ray& r, double u, double v) {
     c_v++;
   }
 
-   
-
-  Vec3d vect = (u - c_u) * scene->getCamera().u + (v - c_v) * scene->getCamera().v;
+  Vec3d vect = (u + c_u) * scene->getCamera().u + (v + c_v) * scene->getCamera().v;
   Vec3d new_dir = r.getDirection() + (vect * (1 / traceUI->getFocal()));
   return ray(r.getPosition(), new_dir, ray::VISIBILITY); 
 }
@@ -139,6 +137,9 @@ Vec3d LFTracer::sample(double u, double v, double s, double t) {
 void LFTracer::getCoeffs(double &c00, double &c01, double &c10, double &c11, double u, double v, int u_num, int v_num) {
   int u_index = (u + .5) * u_num;
   int v_index = (v + .5) * v_num;
+
+  cout << "u: " << u << " u_ind: " << u_index << " u_ind - double(u_ind): " << ((u+0.5)*u_num - u_index) << endl;
+  cout << "v: " << v << " v_ind: " << v_index << " v_ind - double(v_ind): " << ((v+0.5)*v_num - v_index) << endl;
 
   double u00 = 1 - ((u + .5) * u_num - u_index);
   double v00 = 1 - ((v + .5) * v_num - v_index);

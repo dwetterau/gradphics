@@ -31,6 +31,7 @@ public:
     m_uv( false ),
     m_st( false ),
     m_usedof( false ),
+    m_debug( true ),
     m_focal( 1.0 ),
     objectLimit(5),
     depthLimit(15),
@@ -106,9 +107,10 @@ public:
 	int		getAa() const { return m_nAa; }
   bool  getAccelerated() const { return m_accelerated; }
   bool  getStoc() const { return m_stoc; }
-  bool getCubeMap() const { return m_cm; }
-  bool getUVInterp() const { return m_uv; }
-  bool getSTInterp() const { return m_st; }
+  bool  getCubeMap() const { return m_cm; }
+  bool  getUVInterp() const { return m_uv; }
+  bool  getSTInterp() const { return m_st; }
+  bool  getDebug() const { return m_debug; }
   double getFocal() const { return m_focal; }
   bool useDOF() const { return m_usedof; }
   int getObjectLimit() const { return objectLimit; }
@@ -132,6 +134,7 @@ protected:
   bool    m_uv;
   bool    m_st;
   bool    m_usedof;
+  bool    m_debug;
   double m_focal;
   double m_cameraU;
   double m_cameraV;
