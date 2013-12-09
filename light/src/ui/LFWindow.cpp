@@ -171,6 +171,7 @@ void LFWindow::updateDrawbuffer() {
     // For each pixel in bounding box, cast a lightfield ray
     // if it has u,v,s,t draw a color   = 2 plane intersections
     // else fill it with black
+    traceUI->m_done = false;
     tracer->traceSetup(header.width, header.height);    
     for (int x = 0; x < header.width; x++) {
 	    for (int y = 0; y < header.height; y++) {
@@ -178,6 +179,7 @@ void LFWindow::updateDrawbuffer() {
       }
     }
     tracer->getBuffer(drawbuffer, header.width, header.height);
+    traceUI->m_done = true;
 }
 
 void LFWindow::refresh()

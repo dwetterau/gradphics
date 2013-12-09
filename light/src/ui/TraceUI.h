@@ -39,8 +39,10 @@ public:
     cutoff(0.0),
     m_cameraU(0.0),
     m_cameraV(0.0),
-    m_lf_n(0)
+    m_lf_n(0),
+    m_done(false)
 	{ }
+  bool    m_done;
 
 	virtual int		run() = 0;
 

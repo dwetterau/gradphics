@@ -271,7 +271,6 @@ void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
         pUI->m_lfWindow->init();
         pUI->m_lfWindow->show();
     }
-
 }
 
 void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {
