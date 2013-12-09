@@ -149,9 +149,9 @@ void GraphicalUI::cb_lfnSlides(Fl_Widget* o, void* v)
 	((GraphicalUI*)(o->user_data()))->m_lf_n = int( ((Fl_Slider *)o)->value() ) ;
 }
 
-void GraphicalUI::cb_focalSlides(Fl_Widget* o, void* v)
+void GraphicalUI::cb_factorSlides(Fl_Widget* o, void* v)
 {
-	((GraphicalUI*)(o->user_data()))->m_focal = double( ((Fl_Slider *)o)->value() ) ;
+	((GraphicalUI*)(o->user_data()))->m_factor = double( ((Fl_Slider *)o)->value() ) ;
 }
 
 void GraphicalUI::cb_debuggingDisplayCheckButton(Fl_Widget* o, void* v)
@@ -193,12 +193,6 @@ void GraphicalUI::cb_stButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
   pUI->setSTInterp(((Fl_Check_Button*)o)->value() == 1);
-}
-
-void GraphicalUI::cb_useDOFButton(Fl_Widget* o, void* v)
-{
-	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
-  pUI->setUseDOF(((Fl_Check_Button*)o)->value() == 1);
 }
 
 void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
@@ -682,22 +676,17 @@ GraphicalUI::GraphicalUI() {
 		m_stButton->value(m_st);
     m_stButton->deactivate();
 
-    m_useDOFButton = new Fl_Check_Button(5, 570, 180, 20, "Use Depth of Field");
-		m_useDOFButton->user_data((void*)(this));
-		m_useDOFButton->callback(cb_useDOFButton);
-		m_useDOFButton->value(m_usedof);
-
-    m_focalSlider = new Fl_Value_Slider(10, 595, 180, 20, "Focal Length");
-		m_focalSlider->user_data((void*)(this));
-		m_focalSlider->type(FL_HOR_NICE_SLIDER);
-        m_focalSlider->labelfont(FL_COURIER);
-        m_focalSlider->labelsize(12);
-		m_focalSlider->minimum(0.01);
-		m_focalSlider->maximum(10.0);
-		m_focalSlider->step(0.01);
-		m_focalSlider->value(1.0);
-		m_focalSlider->align(FL_ALIGN_RIGHT);
-		m_focalSlider->callback(cb_focalSlides);
+    m_factorSlider = new Fl_Value_Slider(10, 570, 180, 20, "UV-Scale");
+		m_factorSlider->user_data((void*)(this));
+		m_factorSlider->type(FL_HOR_NICE_SLIDER);
+        m_factorSlider->labelfont(FL_COURIER);
+        m_factorSlider->labelsize(12);
+		m_factorSlider->minimum(0.01);
+		m_factorSlider->maximum(2.0);
+		m_factorSlider->step(0.01);
+		m_factorSlider->value(1.0);
+		m_factorSlider->align(FL_ALIGN_RIGHT);
+		m_factorSlider->callback(cb_factorSlides);
 
     m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

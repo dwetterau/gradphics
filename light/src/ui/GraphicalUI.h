@@ -44,7 +44,7 @@ public:
 	Fl_Slider*			m_cameraUSlider;
 	Fl_Slider*			m_cameraVSlider;
 	Fl_Slider*			m_lfnSlider;
-	Fl_Slider*			m_focalSlider;
+	Fl_Slider*			m_factorSlider;
 
 	Fl_Check_Button*	m_debuggingDisplayCheckButton;
 	Fl_Check_Button*	m_acceleratedButton;
@@ -52,7 +52,6 @@ public:
 	Fl_Check_Button*	m_cmButton;
 	Fl_Check_Button*	m_uvButton;
 	static Fl_Check_Button*	m_stButton;
-	Fl_Check_Button*	m_useDOFButton;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -99,7 +98,7 @@ private:
   static void cb_cameraUSlides(Fl_Widget* o, void* v);
 	static void cb_cameraVSlides(Fl_Widget* o, void* v);
 	static void cb_lfnSlides(Fl_Widget* o, void* v);
-	static void cb_focalSlides(Fl_Widget* o, void* v);
+	static void cb_factorSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_reload(Fl_Widget* o, void* v);
@@ -110,7 +109,6 @@ private:
 	static void cb_cmButton(Fl_Widget* o, void* v);
 	static void cb_uvButton(Fl_Widget* o, void* v);
 	static void cb_stButton(Fl_Widget* o, void* v);
-	static void cb_useDOFButton(Fl_Widget* o, void* v);
 
 	static void cb_xpName(Fl_Widget* o, void* v);
 	static void cb_xnName(Fl_Widget* o, void* v);
