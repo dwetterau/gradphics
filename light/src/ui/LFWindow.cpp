@@ -18,6 +18,8 @@ using namespace std;
 LFWindow::LFWindow(int x, int y, int w, int h, const char *l)
 			: Fl_Gl_Window(x,y,w,h,l)
 {
+  prevx = -1;
+  prevy = -1;
 	m_nWindowWidth = w;
 	m_nWindowHeight = h;
   iters = 0;
@@ -76,7 +78,6 @@ int LFWindow::handle(int event)
         break; 
     }
   }
-  if (!traceUI->getDebug()) {
   if(event == FL_RELEASE) {
     prevx = -1;
     prevy = -1;
@@ -91,11 +92,12 @@ int LFWindow::handle(int event)
 		if(y > m_nWindowHeight) y = m_nWindowHeight;*/
     
     if (prevx != -1) {
+      cout << prevx << ", " << prevy << ", " << x << ", " << y << endl;
       // do a rotation thing!
       int dx = x - prevx;
       int dy = y - prevy;
-      tracer->rotateV(.1 * dx);
-      tracer->rotateU(.1 * dy);
+      tracer->moveU(-.005 * dx);
+      tracer->moveV(.005 * dy);
       cout << prevx << "=prevx x=" << x << endl;  
     }
     prevx = x;
@@ -106,7 +108,7 @@ int LFWindow::handle(int event)
 		//std::cout << "Clicking " << x << ", " << y << std::endl;
     //tracer->tracePixel(x, y);
 	}
-  } else {
+  /*} else {
   if(event == FL_PUSH || event == FL_DRAG) {
     //s = true;
 		int x = Fl::event_x();
@@ -123,7 +125,7 @@ int LFWindow::handle(int event)
 		std::cout << "Clicking " << x << ", " << y << std::endl;
     tracer->tracePixel(x, y);
 	}
-  }
+  }*/
 
   if (s) {
 	  Fl::flush();
