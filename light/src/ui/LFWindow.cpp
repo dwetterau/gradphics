@@ -92,22 +92,18 @@ int LFWindow::handle(int event)
 		if(y > m_nWindowHeight) y = m_nWindowHeight;*/
     
     if (prevx != -1) {
-      cout << prevx << ", " << prevy << ", " << x << ", " << y << endl;
       // do a rotation thing!
       int dx = x - prevx;
       int dy = y - prevy;
       tracer->moveU(-.005 * dx);
       tracer->moveV(.005 * dy);
-      cout << prevx << "=prevx x=" << x << endl;  
     }
     prevx = x;
     prevy = y;
-		// Flip for FL's upside-down window coords
-		//y = m_nWindowHeight - y;
-
-		//std::cout << "Clicking " << x << ", " << y << std::endl;
-    //tracer->tracePixel(x, y);
-	}
+	} else if (event == FL_MOUSEWHEEL) {
+    s = true;
+    tracer->moveLook(-.01 * Fl::event_dy());
+  }
   /*} else {
   if(event == FL_PUSH || event == FL_DRAG) {
     //s = true;
