@@ -20,6 +20,8 @@ LFWindow::LFWindow(int x, int y, int w, int h, const char *l)
 {
 	m_nWindowWidth = w;
 	m_nWindowHeight = h;
+  iters = 0;
+  timing = 0.0;
 	// Do not allow the user to re-size the window
 	size_range(w, h, w, h);
 }
@@ -161,10 +163,13 @@ void LFWindow::draw() {
 	}
 	glFlush();
   end = clock();
-  cout << "drawing took: " << double(end - start) / CLOCKS_PER_SEC << endl;
+  cout << "drawing took: " << timing / iters << endl;
 }
 
 void LFWindow::updateDrawbuffer() {
+    iters += 1;
+    clock_t start, end;
+    start = clock();
     // compute bounding box for both planes = 8 ray casts w/ 1 plane intersect
     int max_x, max_y, min_x, min_y;
     //computeRenderRectangle(&max_x, &max_y, &min_x, &min_y);
@@ -180,6 +185,13 @@ void LFWindow::updateDrawbuffer() {
     }
     tracer->getBuffer(drawbuffer, header.width, header.height);
     traceUI->m_done = true;
+    end = clock();
+    timing += double(end - start) / CLOCKS_PER_SEC;
+    if (iters > 1000) {
+      cout << "drawing took: " << timing / iters << endl;
+      iters = 0;
+      timing = 0.0;
+    }
 }
 
 void LFWindow::refresh()

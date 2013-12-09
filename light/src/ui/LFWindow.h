@@ -36,6 +36,8 @@ private:
   LFTracer* tracer;
   int prevx;
   int prevy;
+  int iters;
+  double timing;
 };
 
 #endif // __LF_WINDOW_H__
