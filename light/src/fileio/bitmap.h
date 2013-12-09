@@ -52,6 +52,7 @@ typedef struct {
   Mat3d m;
   double nh;
   double ar;
+  double factor;
 } LIGHTFIELD_HEADER;
 
 // global I/O routines

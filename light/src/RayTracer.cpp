@@ -28,8 +28,8 @@ bool debugMode = false;
 
 void RayTracer::setEyePos(double u, double v) {
   Vec3d p = eye_origin;
-  p += u * scene->getCamera().getU();
-  p += v * scene->getCamera().getV();
+  p += traceUI->getFactor() * (u * scene->getCamera().getU());
+  p += traceUI->getFactor() * (v * scene->getCamera().getV());
   cur_u = u;
   cur_v = v;
   scene->getCamera().setEye(p);
@@ -60,7 +60,6 @@ Vec3d RayTracer::trace( double x, double y )
 
   // LIGHTFIELD ----------------------------------------------
   Vec3d skew = eye_origin - scene->getCamera().getEye(); //cur_u * scene->getCamera().getU(); 
-  //skew += cur_v * scene->getCamera().getV();
   
   scene->getCamera().rayThrough( x,y,r,skew);
   // LIGHTFIELD ----------------------------------------------

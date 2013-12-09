@@ -16,7 +16,7 @@ class Plane {
     Vec3d v;
     Vec3d n;
           
-    bool intersect(double &u, double &v, const ray& r);
+    bool intersect(double &u, double &v, const ray& r, double scale);
 };
 
 class LFTracer : public RayTracer{

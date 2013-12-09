@@ -330,6 +330,7 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
       header.num_pictures = lf_n;
       header.width = width;
       header.height = height;
+      header.factor = pUI->getFactor();
       writeLightfield(savefile, &header, big_buffs);
       cout << "finished writing lf " << header.v1 << endl;
     }
@@ -365,7 +366,6 @@ void GraphicalUI::cb_render(Fl_Widget* o, void* v)
     // LIGHTFIELD ----------------------------------
     double u = pUI->getCameraU();
     double v = pUI->getCameraV();
-    std::cout << "about to set the eye position" << std::endl;
     pUI->raytracer->setEyePos(u, v); 
 
 

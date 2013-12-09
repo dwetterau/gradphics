@@ -73,12 +73,9 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 	isect i;
 
   double u, v, s, t;
-  if (nearPlane.intersect(u, v, r)) {
-    if (farPlane.intersect(s, t, r)) {
-      if (traceUI->m_done) {
-        cout << "u: " << u << " v: " << v << " s: " << s << " t: " << t << endl;
-      }
-      return sample(u, v, s, t);
+  if (nearPlane.intersect(u, v, r, header.factor)) {
+    if (farPlane.intersect(s, t, r, 1.0)) {
+      return sample(u / header.factor, v / header.factor, s, t);
     }
     return Vec3d( .5, .5 ,.5);
   } else {
@@ -215,7 +212,7 @@ LFTracer::~LFTracer()
 	delete [] buffer;
 }
 
-bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r) {
+bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scale) {
   double dot = n * r.getDirection();
   if (dot == 0 || (dot != dot)) {
     return false;
@@ -226,12 +223,15 @@ bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r) {
   Vec3d ip = r.at(t);
   Vec3d toPoint = ip - origin;
   double du = (toPoint * u) / u.length2();
-  if (du < -.5 || du > .5) {
+  double ub = .5 * scale;
+  double lb = -.5 * scale;
+
+  if (du < lb || du > ub) {
     return false;
   }
   u_coeff = du;
   double dv = (toPoint * v) / v.length2();
-  if (dv < -.5 || dv > .5) {
+  if (dv < lb || dv > ub) {
     return false;
   }
   v_coeff = dv;
