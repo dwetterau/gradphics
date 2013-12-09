@@ -39,7 +39,8 @@ public:
     m_cameraU(0.0),
     m_cameraV(0.0),
     m_lf_n(0),
-    m_done(false)
+    m_done(false),
+    m_greedy(false)
 	{ }
   bool    m_done;
 
@@ -68,6 +69,9 @@ public:
   }
   virtual void setSTInterp(bool b) {
     m_st = b;
+  }
+  virtual void setGreedy(bool b) {
+    m_greedy = b;
   }
   virtual void setFactor(double d) {
     m_factor = d;
@@ -108,6 +112,7 @@ public:
   bool  getCubeMap() const { return m_cm; }
   bool  getUVInterp() const { return m_uv; }
   bool  getSTInterp() const { return m_st; }
+  bool  getGreedy() const { return m_greedy; }
   bool  getDebug() const { return m_debug; }
   double getFactor() const { return m_factor; }
   int getObjectLimit() const { return objectLimit; }
@@ -130,6 +135,7 @@ protected:
   bool    m_cm;
   bool    m_uv;
   bool    m_st;
+  bool    m_greedy;
   bool    m_debug;
   double m_factor;
   double m_cameraU;
