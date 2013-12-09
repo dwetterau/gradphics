@@ -292,7 +292,6 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
 
     cout << "Generating lightfield with n=" << lf_n << endl;
     
-
     // Allocate massive buffer for light field
     int bufsize = width * height * lf_n * lf_n * 3;
     unsigned char * big_buffs = new unsigned char [bufsize];
@@ -320,7 +319,7 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
           }
              //cout << "(%d%%) %s", (int)((double)y / (double)height * 100.0) << endl;
        	}
-        cout << "finished rendering image: " << (r * lf_n) + c << " of: " << (lf_n * lf_n) << endl;
+        cout << "finished rendering image: " << (r * lf_n) + c + 1 << " of: " << (lf_n * lf_n) << endl;
        	doneTrace=true;
        	stopTrace=false;
         int image_size = width * height * 3;

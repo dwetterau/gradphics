@@ -54,6 +54,32 @@ void LFTracer::rotateV(double ang) {
   glPopMatrix();
 }
 
+void LFTracer::getImage( double x, double y ) {
+
+  ray r( Vec3d(0,0,0), Vec3d(0,0,0), ray::VISIBILITY);
+  scene->getCamera().rayThrough(x, y, r, Vec3d(0,0,0));
+
+  double u, v, s, t;
+  cout << "x: " << x << " y: " << y << endl;
+  if (nearPlane.intersect(u, v, r, header.factor)) {
+    if (farPlane.intersect(s, t, r, 1.0)) {    
+      int n = header.num_pictures - 1;
+      int u_index = (u + .5) * n;
+      int v_index = (v + .5) * n;
+      int picture_index = (v_index * (n + 1)) + u_index;
+      int picture_offset = picture_index * (header.width * header.height * 3);
+      memcpy(buffer, bigbuf + picture_offset, header.width*header.height*3);
+    } else {
+      cout << "No intersect far" << endl;
+      memset(buffer, 0, header.width*header.height*3);
+    }
+  } else {
+    cout << "No intersect near" << endl;
+    memset(buffer, 0, header.width*header.height*3);
+  }
+
+  // memcpy contents of selected image into draw buffer
+}
 
 Vec3d LFTracer::trace( double x, double y ) {
 	// Clear out the ray cache in the scene for debugging purposes,
