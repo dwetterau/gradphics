@@ -116,7 +116,7 @@ int LFWindow::handle(int event)
 		if(y > m_nWindowHeight) y = m_nWindowHeight;
     
 		// Flip for FL's upside-down window coords
-		//y = m_nWindowHeight - y;
+		y = m_nWindowHeight - y;
 
 		std::cout << "Clicking " << x << ", " << y << std::endl;
     tracer->tracePixel(x, y);

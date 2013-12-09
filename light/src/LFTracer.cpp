@@ -76,6 +76,9 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
   if (nearPlane.intersect(u, v, r)) {
     const ray new_r = rayLens(r, u, v);
     if (farPlane.intersect(s, t, new_r)) {
+      if (traceUI->m_done) {
+        cout << "u: " << u << " v: " << v << " s: " << s << " t: " << t << endl;
+      }
       return sample(u, v, s, t);
     }
     return Vec3d( .5, .5 ,.5);
@@ -138,9 +141,6 @@ void LFTracer::getCoeffs(double &c00, double &c01, double &c10, double &c11, dou
   int u_index = (u + .5) * u_num;
   int v_index = (v + .5) * v_num;
 
-  cout << "u: " << u << " u_ind: " << u_index << " u_ind - double(u_ind): " << ((u+0.5)*u_num - u_index) << endl;
-  cout << "v: " << v << " v_ind: " << v_index << " v_ind - double(v_ind): " << ((v+0.5)*v_num - v_index) << endl;
-
   double u00 = 1 - ((u + .5) * u_num - u_index);
   double v00 = 1 - ((v + .5) * v_num - v_index);
   double u10 = ((u + .5) * u_num - u_index);
@@ -163,13 +163,12 @@ Vec3d LFTracer::samplePicture(int u_index, int v_index, double s, double t) {
   if (!traceUI->getSTInterp()) {
     return samplePicture(u_index, v_index, s_index, t_index);
   }
-
   double c00, c01, c10, c11;
   getCoeffs(c00, c01, c10, c11, s, t, header.width, header.height);
-  return c11 * samplePicture(u_index, v_index, s_index, t_index) +
-         c01 * samplePicture(u_index, v_index, s_index + 1, t_index) +
-         c10 * samplePicture(u_index, v_index, s_index, t_index + 1) +
-         c00 * samplePicture(u_index, v_index, s_index + 1, t_index + 1);
+  return c00 * samplePicture(u_index, v_index, s_index, t_index) +
+         c10 * samplePicture(u_index, v_index, s_index + 1, t_index) +
+         c01 * samplePicture(u_index, v_index, s_index, t_index + 1) +
+         c11 * samplePicture(u_index, v_index, s_index + 1, t_index + 1);
 }
 
 Vec3d LFTracer::samplePicture(int u_index, int v_index, int s_index, int t_index) {
@@ -235,12 +234,11 @@ LFTracer::~LFTracer()
 }
 
 bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r) {
-  double d = n * origin;
-  d -= n * r.getPosition();
   double dot = n * r.getDirection();
   if (dot == 0 || (dot != dot)) {
     return false;
   }
+  double d = (origin - r.getPosition()) * n;
   double t = d / dot;
   
   Vec3d ip = r.at(t);
