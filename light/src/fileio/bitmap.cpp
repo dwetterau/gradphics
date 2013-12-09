@@ -25,15 +25,15 @@ unsigned char *readBMP(const char *fname, int& width, int& height)
 		return NULL; 
 	 
 //	I am doing fread( &bmfh, sizeof(BMP_BITMAPFILEHEADER), 1, file ) in a safe way. :}
-	fread( &(bmfh.bfType), 2, 1, file); 
-	fread( &(bmfh.bfSize), 4, 1, file); 
-	fread( &(bmfh.bfReserved1), 2, 1, file); 
-	fread( &(bmfh.bfReserved2), 2, 1, file); 
-	fread( &(bmfh.bfOffBits), 4, 1, file); 
+	int f = fread( &(bmfh.bfType), 2, 1, file); 
+	f = fread( &(bmfh.bfSize), 4, 1, file); 
+	f = fread( &(bmfh.bfReserved1), 2, 1, file); 
+	f = fread( &(bmfh.bfReserved2), 2, 1, file); 
+	f = fread( &(bmfh.bfOffBits), 4, 1, file); 
 
 	pos = bmfh.bfOffBits; 
  
-	fread( &bmih, sizeof(BMP_BITMAPINFOHEADER), 1, file ); 
+	f = fread( &bmih, sizeof(BMP_BITMAPINFOHEADER), 1, file ); 
  
 	// error checking
 	if ( bmfh.bfType!= 0x4d42 ) {	// "BM" actually
@@ -111,7 +111,7 @@ unsigned char *readLightfield(const char *fname, LIGHTFIELD_HEADER *h)
 	unsigned char *data = new unsigned char [bytes]; 
 	int foo = fread( data, bytes, 1, file ); 
 	if (!foo) {
-    cout << "failed to actually read the file" << endl;
+    cout << "failed to read Lightfield file" << endl;
 		delete [] data;
 		return NULL;
 	}

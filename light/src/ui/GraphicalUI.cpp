@@ -195,6 +195,12 @@ void GraphicalUI::cb_stButton(Fl_Widget* o, void* v)
   pUI->setSTInterp(((Fl_Check_Button*)o)->value() == 1);
 }
 
+void GraphicalUI::cb_greedyButton(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->setGreedy(((Fl_Check_Button*)o)->value() == 1);
+}
+
 void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
@@ -257,6 +263,7 @@ void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
 	if (newfile != NULL) {
         LIGHTFIELD_HEADER header;
         unsigned char* bigbuf = readLightfield(newfile, &header);
+        cout << "factor: " << header.factor << endl;
         int w = header.width;
         int h = header.height;
         pUI->m_lfWindow->resizeWindow( w, h );
@@ -687,6 +694,11 @@ GraphicalUI::GraphicalUI() {
 		m_factorSlider->value(1.0);
 		m_factorSlider->align(FL_ALIGN_RIGHT);
 		m_factorSlider->callback(cb_factorSlides);
+
+    m_greedyButton = new Fl_Check_Button(5, 595, 180, 20, "Greedy UV Selection");
+		m_greedyButton->user_data((void*)(this));
+		m_greedyButton->callback(cb_greedyButton);
+		m_greedyButton->value(m_greedy);
 
     m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
