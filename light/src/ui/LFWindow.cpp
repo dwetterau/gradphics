@@ -176,9 +176,13 @@ void LFWindow::updateDrawbuffer() {
     // else fill it with black
     traceUI->m_done = false;
     tracer->traceSetup(header.width, header.height);    
-    for (int x = 0; x < header.width; x++) {
-	    for (int y = 0; y < header.height; y++) {
-        tracer->tracePixel(x, y);   
+    if (traceUI->getGreedy()) {
+      tracer->getImage(1/2.0, 1/2.0);
+    } else {
+      for (int x = 0; x < header.width; x++) {
+	      for (int y = 0; y < header.height; y++) {
+          tracer->tracePixel(x, y);   
+        }
       }
     }
     tracer->getBuffer(drawbuffer, header.width, header.height);

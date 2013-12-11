@@ -104,7 +104,7 @@ unsigned char *readLightfield(const char *fname, LIGHTFIELD_HEADER *h)
 	FILE* file; 
 	if ( (file=fopen( fname, "rb" )) == NULL )  
 		return NULL; 
-	fread(h, sizeof(LIGHTFIELD_HEADER), 1, file);
+	int boo = fread(h, sizeof(LIGHTFIELD_HEADER), 1, file);
 
 	int bytes = h->height * h->width * (h->num_pictures * h->num_pictures) * 3;
   cout << "read in the header information and will try size of: " << bytes << endl;

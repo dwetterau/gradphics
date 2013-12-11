@@ -29,6 +29,7 @@ public:
   void moveU(double d);
   void moveV(double d);
   void moveLook(double d);
+  void getImage( double x, double y );
   Vec3d trace( double x, double y );
   Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
   Vec3d sample(double u, double v, double s, double t);
