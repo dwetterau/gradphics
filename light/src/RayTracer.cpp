@@ -60,7 +60,6 @@ Vec3d RayTracer::trace( double x, double y )
 
   // LIGHTFIELD ----------------------------------------------
   Vec3d skew = eye_origin - scene->getCamera().getEye(); //cur_u * scene->getCamera().getU(); 
-  
   scene->getCamera().rayThrough( x,y,r,skew);
   // LIGHTFIELD ----------------------------------------------
 
