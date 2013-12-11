@@ -201,6 +201,12 @@ void GraphicalUI::cb_greedyButton(Fl_Widget* o, void* v)
   pUI->setGreedy(((Fl_Check_Button*)o)->value() == 1);
 }
 
+void GraphicalUI::cb_360Button(Fl_Widget* o, void* v)
+{
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  pUI->set360(((Fl_Check_Button*)o)->value() == 1);
+}
+
 void GraphicalUI::cb_cmButton(Fl_Widget* o, void* v)
 {
 	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
@@ -480,10 +486,10 @@ void GraphicalUI::stopTracing()
 GraphicalUI::GraphicalUI() {
 	// init.
 
-	m_mainWindow = new Fl_Window(100, 40, 350, 620, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 650, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
-		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
+		m_menubar = new Fl_Menu_Bar(0, 0, 350, 25);
 		m_menubar->menu(menuitems);
 
 		// install depth slider
@@ -698,6 +704,11 @@ GraphicalUI::GraphicalUI() {
 		m_greedyButton->user_data((void*)(this));
 		m_greedyButton->callback(cb_greedyButton);
 		m_greedyButton->value(m_greedy);
+
+    m_360Button = new Fl_Check_Button(5, 620, 180, 20, "Do a 360!!");
+		m_360Button->user_data((void*)(this));
+		m_360Button->callback(cb_360Button);
+		m_360Button->value(m_360);
 
     m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

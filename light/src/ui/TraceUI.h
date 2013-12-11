@@ -40,6 +40,7 @@ public:
     m_cameraV(0.0),
     m_lf_n(0),
     m_done(false),
+    m_360(false),
     m_greedy(false)
 	{ }
   bool    m_done;
@@ -72,6 +73,9 @@ public:
   }
   virtual void setGreedy(bool b) {
     m_greedy = b;
+  }
+  virtual void set360(bool b) {
+    m_360 = b;
   }
   virtual void setFactor(double d) {
     m_factor = d;
@@ -114,6 +118,7 @@ public:
   bool  getSTInterp() const { return m_st; }
   bool  getGreedy() const { return m_greedy; }
   bool  getDebug() const { return m_debug; }
+  bool  get360() const { return m_360; }
   double getFactor() const { return m_factor; }
   int getObjectLimit() const { return objectLimit; }
   int getDepthLimit() const { return depthLimit; }
@@ -137,6 +142,7 @@ protected:
   bool    m_st;
   bool    m_greedy;
   bool    m_debug;
+  bool    m_360;
   double m_factor;
   double m_cameraU;
   double m_cameraV;

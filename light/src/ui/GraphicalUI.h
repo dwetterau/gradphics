@@ -53,6 +53,7 @@ public:
 	Fl_Check_Button*	m_uvButton;
 	static Fl_Check_Button*	m_stButton;
 	Fl_Check_Button*	m_greedyButton;
+	Fl_Check_Button*	m_360Button;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -111,6 +112,7 @@ private:
 	static void cb_uvButton(Fl_Widget* o, void* v);
 	static void cb_stButton(Fl_Widget* o, void* v);
 	static void cb_greedyButton(Fl_Widget* o, void* v);
+	static void cb_360Button(Fl_Widget* o, void* v);
 
 	static void cb_xpName(Fl_Widget* o, void* v);
 	static void cb_xnName(Fl_Widget* o, void* v);
