@@ -18,6 +18,7 @@ public:
 	virtual Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
 
   
+  void rotateV(double ang);
   LIGHTFIELD_HEADER getLightfieldHeader();
 	void getBuffer( unsigned char *&buf, int &w, int &h );
 	void copyBufferTo( unsigned char *&buf, int size );
@@ -35,6 +36,7 @@ public:
 
 	const Scene& getScene() { return *scene; }
   void setEyePos(double u, double v);
+  void moveEyeByLook(double amt);
   double cur_u;
   double cur_v;
 protected:

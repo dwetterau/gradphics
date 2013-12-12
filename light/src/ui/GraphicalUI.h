@@ -76,6 +76,10 @@ public:
 	void		setRayTracer(RayTracer *tracer);
 
 	static void stopTracing();
+  static bool doneTrace;		// Flag that gets set when the trace is done
+	static bool stopTrace;		// Flag that gets set when the trace should be stopped
+
+
 private:
 
 // static class members
@@ -125,8 +129,6 @@ private:
 	static void cb_renderLightfield(Fl_Widget* o, void* v);
 	static void cb_generateLightfield(Fl_Widget* o, void* v);
 	
-  static bool doneTrace;		// Flag that gets set when the trace is done
-	static bool stopTrace;		// Flag that gets set when the trace should be stopped
 };
 
 #endif

@@ -303,10 +303,8 @@ void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {
   }
 }
 
-void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
-	
-  GraphicalUI* pUI=((GraphicalUI*)(o->user_data()));
-	
+void spawnLF(GraphicalUI* pUI) {
+
 	if (pUI->raytracer->sceneLoaded()) {
 		int width=pUI->getSize();
 		int	height = (int)(width / pUI->raytracer->aspectRatio() + 0.5);
@@ -328,22 +326,22 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
         double v = (double(r) / lf_n) - .5;
         pUI->raytracer->setEyePos(u, v); 
 
-		    doneTrace = false;
-		    stopTrace = false;
+		    pUI->doneTrace = false;
+		    pUI->stopTrace = false;
        	for (int y=0; y<height; y++) {
        		for (int x=0; x<width; x++) {
-       			if (stopTrace) break;
+       			if (pUI->stopTrace) break;
        			pUI->raytracer->tracePixel( x, y );
        		}
 
-       		if (stopTrace) {
+       		if (pUI->stopTrace) {
             cout << "trace aborted..." << endl;
           }
              //cout << "(%d%%) %s", (int)((double)y / (double)height * 100.0) << endl;
        	}
         cout << "finished rendering image: " << (r * lf_n) + c + 1 << " of: " << (lf_n * lf_n) << endl;
-       	doneTrace=true;
-       	stopTrace=false;
+       	pUI->doneTrace=true;
+       	pUI->stopTrace=false;
         int image_size = width * height * 3;
         unsigned char * tempPointer = &big_buffs[(r * (image_size * lf_n)) + (c * image_size)];
         // copy the raytracer's buffer back to our buffer
@@ -360,9 +358,28 @@ void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
       header.height = height;
       header.factor = pUI->getFactor();
       writeLightfield(savefile, &header, big_buffs);
-      cout << "finished writing lf " << header.v1 << endl;
+      cout << "finished writing lf camera_point = " << header.camera_point << endl;
     }
 	}
+
+}
+
+void GraphicalUI::cb_generateLightfield(Fl_Widget* o, void* v) {
+	
+  GraphicalUI* pUI=((GraphicalUI*)(o->user_data()));
+  if(pUI->get360()) {
+    for (int i = 0; i < 4; i++) {
+      spawnLF(pUI);
+      // move by +look/2
+      pUI->raytracer->moveEyeByLook(.5); 
+      // rotate
+      pUI->raytracer->rotateV(90);
+      // move by -look/2
+      pUI->raytracer->moveEyeByLook(-.5); 
+    }
+  } else {
+    spawnLF(pUI);
+  }
 }
 
 void GraphicalUI::cb_render(Fl_Widget* o, void* v)

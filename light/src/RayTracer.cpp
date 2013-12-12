@@ -13,6 +13,7 @@
 #include "ui/TraceUI.h"
 #include <cmath>
 #include <algorithm>
+#include <FL/gl.h>
 
 extern TraceUI* traceUI;
 
@@ -26,6 +27,21 @@ using namespace std;
 // in TraceGLWindow, for example.
 bool debugMode = false;
 
+void RayTracer::rotateV(double ang) {
+  glPushMatrix();
+  glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW_MATRIX);
+  Vec3d eye = scene->getCamera().eye;
+  glTranslated(eye[0], eye[1], eye[2]);
+  glRotated(ang, scene->getCamera().v[0], scene->getCamera().v[1], scene->getCamera().v[2]);
+  double mat [16];
+  glGetDoublev(GL_MODELVIEW_MATRIX, mat);
+  Mat3d rotMat = Mat3d(mat[0], mat[4], mat[8], mat[1], mat[5], mat[9], mat[2], mat[6], mat[10]);
+  scene->getCamera().m = scene->getCamera().m * rotMat;
+  scene->getCamera().update();
+  glPopMatrix();
+}
+
 void RayTracer::setEyePos(double u, double v) {
   Vec3d p = eye_origin;
   p += traceUI->getFactor() * (u * scene->getCamera().getU());
@@ -33,6 +49,11 @@ void RayTracer::setEyePos(double u, double v) {
   cur_u = u;
   cur_v = v;
   scene->getCamera().setEye(p);
+}
+
+void RayTracer::moveEyeByLook(double amt) {
+  eye_origin += amt * scene->getCamera().getLook();
+  scene->getCamera().setEye(eye_origin);
 }
 
 LIGHTFIELD_HEADER RayTracer::getLightfieldHeader() {

@@ -129,8 +129,8 @@ public:
   string getZPName() const { return zpName; }
   string getZNName() const { return znName; }
   double getCutoff() const { return cutoff; }
-protected:
 	RayTracer*	raytracer;
+protected:
 
 	int			m_nSize;				// Size of the traced image
 	int			m_nDepth;				// Max depth of recursion
