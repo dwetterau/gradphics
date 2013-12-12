@@ -149,7 +149,9 @@ void LFWindow::draw() {
 }
 
 void LFWindow::updateDrawbuffer() {
-    header = headers[0];
+    if (traceUI->get360()) {
+      header = headers[0];
+    } 
     iters += 1;
     clock_t start, end;
     start = clock();
