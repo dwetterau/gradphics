@@ -25,6 +25,8 @@ LFWindow::LFWindow(int x, int y, int w, int h, const char *l)
   iters = 0;
   timing = 0.0;
 	// Do not allow the user to re-size the window
+  vector<unsigned char*> buffers = vector<unsigned char*>();
+  vector<LIGHTFIELD_HEADER> headers = vector<LIGHTFIELD_HEADER>();
 	size_range(w, h, w, h);
 }
 
@@ -104,24 +106,6 @@ int LFWindow::handle(int event)
     s = true;
     tracer->moveLook(-.01 * Fl::event_dy());
   }
-  /*} else {
-  if(event == FL_PUSH || event == FL_DRAG) {
-    //s = true;
-		int x = Fl::event_x();
-		int y = Fl::event_y();
-		
-    if(x < 0) x = 0;
-		if(x > m_nWindowWidth) x = m_nWindowWidth;
-		if(y < 0) y = 0;
-		if(y > m_nWindowHeight) y = m_nWindowHeight;
-    
-		// Flip for FL's upside-down window coords
-		y = m_nWindowHeight - y;
-
-		std::cout << "Clicking " << x << ", " << y << std::endl;
-    tracer->tracePixel(x, y);
-	}
-  }*/
 
   if (s) {
 	  Fl::flush();
@@ -168,9 +152,6 @@ void LFWindow::updateDrawbuffer() {
     iters += 1;
     clock_t start, end;
     start = clock();
-    // compute bounding box for both planes = 8 ray casts w/ 1 plane intersect
-    int max_x, max_y, min_x, min_y;
-    //computeRenderRectangle(&max_x, &max_y, &min_x, &min_y);
     // For each pixel in bounding box, cast a lightfield ray
     // if it has u,v,s,t draw a color   = 2 plane intersections
     // else fill it with black
@@ -210,6 +191,14 @@ void LFWindow::resizeWindow(int width, int height)
 	m_nWindowHeight=h();
 }
 
+void LFWindow::addHeader(LIGHTFIELD_HEADER *h) {
+  headers.push_back(*h);
+  setHeader(h);
+}
+
+void LFWindow::addBuffer(unsigned char *buf) {
+  buffers.push_back(buf);
+}
 
 void LFWindow::setBuffer(unsigned char* buf)
 {
@@ -219,10 +208,16 @@ void LFWindow::setBuffer(unsigned char* buf)
 void LFWindow::setHeader(LIGHTFIELD_HEADER* h)
 {
 	header = *h;
+  if (drawbuffer != NULL)
+    delete drawbuffer;
   drawbuffer = new unsigned char [header.width * header.height * 3];
 }
 
 void LFWindow::init() {
   tracer = new LFTracer();
-  tracer->init(header, buffer);
+  if (traceUI->get360()) {
+    tracer->init(headers, buffers);
+  } else {
+    tracer->init(header, buffer);
+  }
 }

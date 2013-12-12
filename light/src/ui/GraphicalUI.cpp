@@ -263,21 +263,37 @@ void GraphicalUI::cb_znName(Fl_Widget* o, void* v) {
 
 void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
 {
-	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
-    char* newfile = fl_file_chooser("Open Lightfield?", "*.lf", NULL );
 
-	if (newfile != NULL) {
+	GraphicalUI* pUI=(GraphicalUI*)(o->user_data());
+  int w, h;
+  if (pUI->get360()) {
+    for (int i = 0; i < 4; i++) {
+      char* newfile = fl_file_chooser("Open Lightfield?", "*.lf", NULL );
+	    if (newfile != NULL) {
         LIGHTFIELD_HEADER header;
         unsigned char* bigbuf = readLightfield(newfile, &header);
         cout << "factor: " << header.factor << endl;
-        int w = header.width;
-        int h = header.height;
-        pUI->m_lfWindow->resizeWindow( w, h );
-        pUI->m_lfWindow->setHeader(&header);
-        pUI->m_lfWindow->setBuffer(bigbuf);
-        pUI->m_lfWindow->init();
-        pUI->m_lfWindow->show();
+        w = header.width;
+        h = header.height;
+        pUI->m_lfWindow->addHeader(&header);
+        pUI->m_lfWindow->addBuffer(bigbuf);
+      }
     }
+  } else {
+    char* newfile = fl_file_chooser("Open Lightfield?", "*.lf", NULL );
+	  if (newfile != NULL) {
+      LIGHTFIELD_HEADER header;
+      unsigned char* bigbuf = readLightfield(newfile, &header);
+      cout << "factor: " << header.factor << endl;
+      w = header.width;
+      h = header.height;
+      pUI->m_lfWindow->resizeWindow( w, h );
+      pUI->m_lfWindow->setHeader(&header);
+      pUI->m_lfWindow->setBuffer(bigbuf);
+    }
+  }
+  pUI->m_lfWindow->init();
+  pUI->m_lfWindow->show();
 }
 
 void GraphicalUI::cb_reload(Fl_Widget* o, void* v) {

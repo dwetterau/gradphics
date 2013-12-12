@@ -6,6 +6,7 @@
 #include "scene/ray.h"
 #include "fileio/bitmap.h"
 #include "RayTracer.h"
+#include <vector>
 
 class Scene;
 
@@ -33,17 +34,25 @@ public:
   Vec3d trace( double x, double y );
   Vec3d traceRay( const ray& r, const Vec3d& thresh, int depth );
   Vec3d sample(double u, double v, double s, double t);
-  void init(LIGHTFIELD_HEADER h, unsigned char* bigbuf);
   void getCoeffs(double &c00, double &c01, double &c10, double &c11, double u, double v, int u_n, int v_n);
   Vec3d samplePicture(int u_index, int v_index, double s, double t);
   Vec3d samplePicture(int u_index, int v_index, int s_index, int t_index);
   const ray rayLens(const ray& r, double u, double v);
+  void init(LIGHTFIELD_HEADER h, unsigned char* bigbuf);
+  void init(std::vector<LIGHTFIELD_HEADER> heads,
+            std::vector<unsigned char*> bbuf);
 
 private:
   unsigned char* bigbuf;
   Plane farPlane;
   Plane nearPlane;
   LIGHTFIELD_HEADER header;
+
+  std::vector<unsigned char*> bigbufs;
+  std::vector<Plane> farPlanes;
+  std::vector<Plane> nearPlanes;
+  std::vector<LIGHTFIELD_HEADER> headers;
+  int index;
 };
 
 #endif 

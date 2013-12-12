@@ -6,6 +6,7 @@
 #include <FL/Fl_Gl_Window.H>
 #include <FL/gl.h>
 #include <FL/glu.h>
+#include <vector>
 
 #include "../RayTracer.h"
 #include "../LFTracer.h"
@@ -26,11 +27,16 @@ public:
 	void setHeader(LIGHTFIELD_HEADER *h);
 	void setBuffer(unsigned char * buf);
   void init();
+	void addHeader(LIGHTFIELD_HEADER *h);
+	void addBuffer(unsigned char * buf);
 
 private:
-	unsigned char* buffer;
-    unsigned char* drawbuffer;
+  unsigned char* drawbuffer;
+	  unsigned char* buffer;
     LIGHTFIELD_HEADER header;
+
+    std::vector<unsigned char*> buffers;
+    std::vector<LIGHTFIELD_HEADER> headers;
 	int m_nWindowWidth, m_nWindowHeight;
   int m_nDrawWidth, m_nDrawHeight;
   LFTracer* tracer;

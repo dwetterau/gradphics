@@ -22,6 +22,15 @@ extern TraceUI* traceUI;
 
 using namespace std;
 
+LFTracer::LFTracer()
+	: RayTracer() 
+{
+  vector<unsigned char*> bigbufs = vector<unsigned char*>();
+  vector<Plane> farPlanes = vector<Plane>();
+  vector<Plane> nearPlanes = vector<Plane>();
+  vector<LIGHTFIELD_HEADER> headers = vector<LIGHTFIELD_HEADER>();
+}
+
 void LFTracer::rotateU(double ang) {
   glPushMatrix();
   glLoadIdentity();
@@ -99,25 +108,53 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 	isect i;
 
   double u, v, s, t;
-  if (nearPlane.intersect(u, v, r, header.factor)) {
-    if (farPlane.intersect(s, t, r, 1.0)) {
-      return sample(u / header.factor, v / header.factor, s, t);
+  if (traceUI->get360()) {
+    for (int i = 0; i < 4; i++) {
+      nearPlane = nearPlanes[i];
+      farPlane = farPlanes[i];
+      header = headers[i];
+      if (nearPlane.intersect(u, v, r, header.factor)) {
+        if (farPlane.intersect(s, t, r, 1.0)) {
+          index = i;
+          return sample(u / header.factor, v / header.factor, s, t);
+        }
+        return Vec3d( .5, .5 ,.5);
+      } else {
+	    	// No intersection.  This ray travels to infinity, so we color
+	    	// it according to the background color, which in this (simple) case
+	    	// is just black.
+        if (scene->cubeMap()) {
+          // TODO: Extract cubeMap code to other method and call that here 
+	    	  return Vec3d( 0.0, 0.0, 0.0 );
+        } else {
+	    	  return Vec3d( 0.0, 0.0, 0.0 );
+	      }
+      }
     }
-    return Vec3d( .5, .5 ,.5);
   } else {
-		// No intersection.  This ray travels to infinity, so we color
-		// it according to the background color, which in this (simple) case
-		// is just black.
-    if (scene->cubeMap()) {
-      // TODO: Extract cubeMap code to other method and call that here 
-		  return Vec3d( 0.0, 0.0, 0.0 );
+    if (nearPlane.intersect(u, v, r, header.factor)) {
+      if (farPlane.intersect(s, t, r, 1.0)) {
+        return sample(u / header.factor, v / header.factor, s, t);
+      }
+      return Vec3d( .5, .5 ,.5);
     } else {
-		  return Vec3d( 0.0, 0.0, 0.0 );
-	  }
+	  	// No intersection.  This ray travels to infinity, so we color
+	  	// it according to the background color, which in this (simple) case
+	  	// is just black.
+      if (scene->cubeMap()) {
+        // TODO: Extract cubeMap code to other method and call that here 
+	  	  return Vec3d( 0.0, 0.0, 0.0 );
+      } else {
+	  	  return Vec3d( 0.0, 0.0, 0.0 );
+	    }
+    }
   }
 }
 
 Vec3d LFTracer::sample(double u, double v, double s, double t) {
+  if (traceUI->get360()) {
+    header = headers[index];
+  }
   int n = header.num_pictures - 1;
   int u_index = (u + .5) * n;
   int v_index = (v + .5) * n;
@@ -162,6 +199,9 @@ void LFTracer::getCoeffs(double &c00, double &c01, double &c10, double &c11, dou
 }
 
 Vec3d LFTracer::samplePicture(int u_index, int v_index, double s, double t) {
+  if (traceUI->get360()) {
+    header = headers[index];
+  }
   int s_index = (s + .5) * (header.width - 1);
   int t_index = (t + .5) * (header.height - 1);
 
@@ -177,6 +217,10 @@ Vec3d LFTracer::samplePicture(int u_index, int v_index, double s, double t) {
 }
 
 Vec3d LFTracer::samplePicture(int u_index, int v_index, int s_index, int t_index) {
+  if (traceUI->get360()) {
+    header = headers[index];
+    bigbuf = bigbufs[index];
+  }
   int n = header.num_pictures - 1;
   int picture_index = (v_index * (n + 1)) + u_index;
   int picture_offset = picture_index * (header.width * header.height * 3);
@@ -185,12 +229,6 @@ Vec3d LFTracer::samplePicture(int u_index, int v_index, int s_index, int t_index
   double g = bigbuf[picture_offset + pixel_index + 1] / 255.0;
   double b = bigbuf[picture_offset + pixel_index + 2] / 255.0;
   return Vec3d(r, g, b);
-}
-
-LFTracer::LFTracer()
-	: RayTracer() 
-{
-
 }
 
 void LFTracer::moveU(double d) {
@@ -230,6 +268,40 @@ void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
   nearPlane.n = (h.image_point - h.camera_point);
 
   header = h;
+}
+
+void LFTracer::init(std::vector<LIGHTFIELD_HEADER> heads, std::vector<unsigned char*> bbufs) {
+  LIGHTFIELD_HEADER h = heads[0];
+  scene = new Scene;
+  scene->getCamera().eye = h.camera_point - .3 * (h.camera_point - h.image_point);
+  scene->getCamera().look = h.image_point - h.camera_point;
+  scene->getCamera().aspectRatio = h.ar;
+  scene->getCamera().normalizedHeight = h.nh;
+  scene->getCamera().m = h.m;
+  scene->getCamera().u = h.v1;
+  scene->getCamera().v = h.v2;
+  
+  bigbufs = bbufs;
+  
+  for (int i = 0; i < 4; i++) {
+    LIGHTFIELD_HEADER he = heads[i];
+    farPlane = Plane();
+    farPlane.origin = he.image_point;
+    farPlane.u = he.v1;
+    farPlane.v = he.v2;
+    farPlane.n = (he.image_point - he.camera_point);
+    farPlanes.push_back(farPlane);
+
+    nearPlane = Plane();
+    nearPlane.origin = he.camera_point;
+    nearPlane.u = he.v1;
+    nearPlane.v = he.v2;
+    nearPlane.n = (he.image_point - he.camera_point);
+    nearPlanes.push_back(nearPlane);
+  }
+  header = h;
+  headers = heads;
+  bigbufs = bbufs;
 }
 
 LFTracer::~LFTracer()
