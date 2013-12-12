@@ -13,3 +13,5 @@ shader/src/objs.*
 *.lf
 ray/Penrose_Triangle/
 ray/src/PenroseTriangle.stl
+cubemaps/
+.gitignore
