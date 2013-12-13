@@ -68,8 +68,8 @@ void LFTracer::getImage( double x, double y ) {
 
   double u, v, s, t;
   cout << "x: " << x << " y: " << y << endl;
-  if (nearPlane.intersect(u, v, r, header.factor)) {
-    if (farPlane.intersect(s, t, r, 1.0)) {    
+  if (nearPlane.intersect(u, v, r, header.factor, true)) {
+    if (farPlane.intersect(s, t, r, 1.0, true)) {    
       int n = header.num_pictures - 1;
       int u_index = (u + .5) * n;
       int v_index = (v + .5) * n;
@@ -111,27 +111,18 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
       nearPlane = nearPlanes[i];
       farPlane = farPlanes[i];
       header = headers[i];
-      if (nearPlane.intersect(u, v, r, header.factor)) {
-        if (farPlane.intersect(s, t, r, 1.0)) {
+      if (nearPlane.intersect(u, v, r, header.factor, true)) {
+        if (farPlane.intersect(s, t, r, 1.0, false)) {
           index = i;
           return sample(u / header.factor, v / header.factor, s, t);
         }
-        return Vec3d( .5, .5 ,.5);
-      } else {
-	    	// No intersection.  This ray travels to infinity, so we color
-	    	// it according to the background color, which in this (simple) case
-	    	// is just black.
-        if (scene->cubeMap()) {
-          // TODO: Extract cubeMap code to other method and call that here 
-	    	  return Vec3d( 0.0, 0.0, 0.0 );
-        } else {
-	    	  return Vec3d( 0.0, 0.0, 0.0 );
-	      }
+        //return Vec3d( .5, .5 ,.5);
       }
     }
+	  return Vec3d( 0.0, 0.0, 0.0 );
   } else {
-    if (nearPlane.intersect(u, v, r, header.factor)) {
-      if (farPlane.intersect(s, t, r, 1.0)) {
+    if (nearPlane.intersect(u, v, r, header.factor, true)) {
+      if (farPlane.intersect(s, t, r, 1.0, false)) {
         return sample(u / header.factor, v / header.factor, s, t);
       }
       return Vec3d( .5, .5 ,.5);
@@ -308,7 +299,7 @@ LFTracer::~LFTracer()
 	delete [] buffer;
 }
 
-bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scale) {
+bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scale, bool allow_negative) {
   double dot = n * r.getDirection();
   if (dot == 0 || (dot != dot)) {
     return false;
@@ -321,6 +312,9 @@ bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scal
   double du = (toPoint * u) / u.length2();
   double ub = .5 * scale;
   double lb = -.5 * scale;
+  if (!allow_negative && t < 0) {
+    return false;
+  }
 
   if (du < lb || du > ub) {
     return false;
