@@ -121,6 +121,7 @@ Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
               cout << "camera point=" << header.camera_point << " image_point=" << header.image_point << endl;
               cout << "our position=" << scene->getCamera().eye << endl;
               cout << header.v1 << " l=" << header.v1.length() << endl;
+              cout << header.v2 << " l=" << header.v1.length() << endl;
             }
             best_time = time;
             best_i = i;
@@ -271,7 +272,7 @@ void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
 void LFTracer::init(std::vector<LIGHTFIELD_HEADER> heads, std::vector<unsigned char*> bbufs) {
   LIGHTFIELD_HEADER h = heads[0];
   scene = new Scene;
-  scene->getCamera().eye = h.camera_point - .5 * (h.camera_point - h.image_point);
+  scene->getCamera().eye = h.camera_point - ((1- h.v1.length()) + h.v1.length() / 2) * (h.camera_point - h.image_point);
   scene->getCamera().look = h.image_point - h.camera_point;
   scene->getCamera().aspectRatio = h.ar;
   scene->getCamera().normalizedHeight = h.nh;

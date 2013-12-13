@@ -287,11 +287,11 @@ void GraphicalUI::cb_renderLightfield(Fl_Widget* o, void* v)
       cout << "factor: " << header.factor << endl;
       w = header.width;
       h = header.height;
-      pUI->m_lfWindow->resizeWindow( w, h );
       pUI->m_lfWindow->setHeader(&header);
       pUI->m_lfWindow->setBuffer(bigbuf);
     }
   }
+  pUI->m_lfWindow->resizeWindow( w, h );
   pUI->m_lfWindow->init();
   pUI->m_lfWindow->show();
 }
@@ -727,7 +727,7 @@ GraphicalUI::GraphicalUI() {
         m_factorSlider->labelfont(FL_COURIER);
         m_factorSlider->labelsize(12);
 		m_factorSlider->minimum(0.01);
-		m_factorSlider->maximum(2.0);
+		m_factorSlider->maximum(3.0);
 		m_factorSlider->step(0.01);
 		m_factorSlider->value(1.0);
 		m_factorSlider->align(FL_ALIGN_RIGHT);
