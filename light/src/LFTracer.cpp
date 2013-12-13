@@ -66,10 +66,10 @@ void LFTracer::getImage( double x, double y ) {
   ray r( Vec3d(0,0,0), Vec3d(0,0,0), ray::VISIBILITY);
   scene->getCamera().rayThrough(x, y, r, Vec3d(0,0,0));
 
-  double u, v, s, t;
+  double u, v, s, t, time;
   cout << "x: " << x << " y: " << y << endl;
-  if (nearPlane.intersect(u, v, r, header.factor, true)) {
-    if (farPlane.intersect(s, t, r, 1.0, true)) {    
+  if (nearPlane.intersect(u, v, r, header.factor, true, time)) {
+    if (farPlane.intersect(s, t, r, 1.0, true, time)) {    
       int n = header.num_pictures - 1;
       int u_index = (u + .5) * n;
       int v_index = (v + .5) * n;
@@ -103,39 +103,48 @@ Vec3d LFTracer::trace( double x, double y ) {
 
 Vec3d LFTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 {
-	isect i;
-
-  double u, v, s, t;
+  double u, v, s, t, time, time2;
+  double best_time = -1234567890;
+  double best_u, best_v, best_s, best_t;
+  int best_i;
   if (traceUI->get360()) {
     for (int i = 0; i < 4; i++) {
       nearPlane = nearPlanes[i];
       farPlane = farPlanes[i];
       header = headers[i];
-      if (nearPlane.intersect(u, v, r, header.factor, true)) {
-        if (farPlane.intersect(s, t, r, 1.0, false)) {
-          index = i;
-          return sample(u / header.factor, v / header.factor, s, t);
+      if (nearPlane.intersect(u, v, r, header.factor, true, time)) {
+        if (farPlane.intersect(s, t, r, 1.0, false, time2)) {
+          if (time > best_time && time < 0) {
+            if (traceUI->m_done) {
+              cout << "index #=" << i << " had an intersection with uvst=" << u << ", " << v << ", " << s << ", " << t << endl;
+              cout << "look of this camera=" << header.image_point - header.camera_point << endl;
+              cout << "camera point=" << header.camera_point << " image_point=" << header.image_point << endl;
+              cout << "our position=" << scene->getCamera().eye << endl;
+              cout << header.v1 << " l=" << header.v1.length() << endl;
+            }
+            best_time = time;
+            best_i = i;
+            best_u = u;
+            best_v = v;
+            best_s = s;
+            best_t = t;
+          }
         }
-        //return Vec3d( .5, .5 ,.5);
       }
+    }
+    if (best_time > -1234567890) {
+      index = best_i;
+      return sample(best_u / header.factor, best_v / header.factor, best_s, best_t);
     }
 	  return Vec3d( 0.0, 0.0, 0.0 );
   } else {
-    if (nearPlane.intersect(u, v, r, header.factor, true)) {
-      if (farPlane.intersect(s, t, r, 1.0, false)) {
+    if (nearPlane.intersect(u, v, r, header.factor, true, time)) {
+      if (farPlane.intersect(s, t, r, 1.0, false, time)) {
         return sample(u / header.factor, v / header.factor, s, t);
       }
       return Vec3d( .5, .5 ,.5);
     } else {
-	  	// No intersection.  This ray travels to infinity, so we color
-	  	// it according to the background color, which in this (simple) case
-	  	// is just black.
-      if (scene->cubeMap()) {
-        // TODO: Extract cubeMap code to other method and call that here 
-	  	  return Vec3d( 0.0, 0.0, 0.0 );
-      } else {
-	  	  return Vec3d( 0.0, 0.0, 0.0 );
-	    }
+	    return Vec3d(0, 0, 0);	
     }
   }
 }
@@ -262,7 +271,7 @@ void LFTracer::init(LIGHTFIELD_HEADER h, unsigned char* bbuf) {
 void LFTracer::init(std::vector<LIGHTFIELD_HEADER> heads, std::vector<unsigned char*> bbufs) {
   LIGHTFIELD_HEADER h = heads[0];
   scene = new Scene;
-  scene->getCamera().eye = h.camera_point - .3 * (h.camera_point - h.image_point);
+  scene->getCamera().eye = h.camera_point - .5 * (h.camera_point - h.image_point);
   scene->getCamera().look = h.image_point - h.camera_point;
   scene->getCamera().aspectRatio = h.ar;
   scene->getCamera().normalizedHeight = h.nh;
@@ -274,6 +283,7 @@ void LFTracer::init(std::vector<LIGHTFIELD_HEADER> heads, std::vector<unsigned c
   
   for (int i = 0; i < 4; i++) {
     LIGHTFIELD_HEADER he = heads[i];
+    cout << "header #=" << i << " camera_point=" << he.camera_point << " image_point" << he.image_point << endl;
     farPlane = Plane();
     farPlane.origin = he.image_point;
     farPlane.u = he.v1;
@@ -299,7 +309,7 @@ LFTracer::~LFTracer()
 	delete [] buffer;
 }
 
-bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scale, bool allow_negative) {
+bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scale, bool allow_negative, double &time) {
   double dot = n * r.getDirection();
   if (dot == 0 || (dot != dot)) {
     return false;
@@ -324,6 +334,7 @@ bool Plane::intersect(double &u_coeff, double&v_coeff, const ray& r, double scal
   if (dv < lb || dv > ub) {
     return false;
   }
+  time = t;
   v_coeff = dv;
   return true;        
 }

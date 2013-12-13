@@ -87,18 +87,31 @@ int LFWindow::handle(int event)
     s = true;
 		int x = Fl::event_x();
 		int y = Fl::event_y();
-		/*
-    if(x < 0) x = 0;
-		if(x > m_nWindowWidth) x = m_nWindowWidth;
-		if(y < 0) y = 0;
-		if(y > m_nWindowHeight) y = m_nWindowHeight;*/
+		
     
+   
+    if (!traceUI->getDebug()) {
     if (prevx != -1) {
       // do a rotation thing!
       int dx = x - prevx;
       int dy = y - prevy;
-      tracer->moveU(-.005 * dx);
-      tracer->moveV(.005 * dy);
+      if (traceUI->get360()) {
+        tracer->rotateV(.2 * dx);
+      } else {
+        tracer->moveU(-.005 * dx);
+        tracer->moveV(.005 * dy);
+      }
+    }
+    } else {
+      int x = Fl::event_x();
+	  	int y = Fl::event_y();
+
+      if(x < 0) x = 0;
+		  if(x > m_nWindowWidth) x = m_nWindowWidth;
+		  if(y < 0) y = 0;
+		  if(y > m_nWindowHeight) y = m_nWindowHeight;
+      cout << "clicking " << x << ", " << y << endl;       
+      tracer->tracePixel(x, y);
     }
     prevx = x;
     prevy = y;
@@ -106,7 +119,7 @@ int LFWindow::handle(int event)
     s = true;
     tracer->moveLook(-.01 * Fl::event_dy());
   }
-
+  
   if (s) {
 	  Fl::flush();
     if (Fl::damage()) {
